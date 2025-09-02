@@ -1,352 +1,377 @@
 import tensorflow as tf
+from tensorflow.keras.layers import Dense, Flatten, Reshape, Conv2D, Conv2DTranspose, LeakyReLU, Input
+from tensorflow.keras import Model
 import matplotlib.pyplot as plt
 import numpy as np
+import tensorflow_datasets as tfds
 
 # check if GPU is available
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 print("TensorFlow version:", tf.__version__)
 
-# Download/load CIFAR-10 dataset
-(x_train, y_train), (x_test, y_test) = tf.keras.datasets.cifar10.load_data()
 
+# 1. Load the dataset and metadata
+ds_train, ds_info = tfds.load(
+    "celeb_a",
+    split="train",
+    shuffle_files=True,
+    with_info=True,
+    as_supervised=False
+)
 
-print(f"before: Training data shape: {x_train.shape}, Training labels shape: {y_train.shape}")
-print(f"before: Test data shape: {x_test.shape}, Test labels shape: {y_test.shape}")
+print(ds_info)  
+print(ds_info.features)
 
+def buildEncoder(latent_dim):
+    encoder_input = Input(shape=(256, 256, 3), name="encoder_input")
+    x = Conv2D(32, 3, strides=2, padding="same")(encoder_input)  # 128x128
+    x = LeakyReLU()(x)
+    x = Conv2D(64, 3, strides=2, padding="same")(x)  # 64x64
+    x = LeakyReLU()(x)
+    x = Conv2D(128, 3, strides=2, padding="same")(x)  # 32x32
+    x = LeakyReLU()(x)
+    x = Conv2D(256, 3, strides=2, padding="same")(x)  # 16x16
+    x = LeakyReLU()(x)
+    x = Flatten()(x)
+    encoder_output = Dense(latent_dim, name="encoder_output")(x)
+    encoder = Model(encoder_input, encoder_output, name="encoder")
+    return encoder
 
-# lower the dataset size for quicker training during testing
-x_train, y_train = x_train[:10000], y_train[:10000]
-x_test, y_test = x_test[:2000], y_test[:2000]
+def buildClassifier(latent_dim):
+    classifier_input = Input(shape=(latent_dim,), name="classifier_input")
+    x = Dense(256, activation="relu")(classifier_input)
+    x = Dense(512, activation="relu")(x)
+    x = Dense(512, activation="relu")(x)
+    x = Dense(256, activation="relu")(x)
+    classifier_output = Dense(40, activation="sigmoid", name="classifier_output")(x)
+    classifier = Model(classifier_input, classifier_output, name="classifier")
+    return classifier
 
-print(f"after: Training data shape: {x_train.shape}, Training labels shape: {y_train.shape}")
-print(f"after: Test data shape: {x_test.shape}, Test labels shape: {y_test.shape}")
-
-# Normalize pixel values to [0, 1]
-x_train = x_train.astype('float32') / 255.0
-x_test = x_test.astype('float32') / 255.0
-
-class TransformerBlock(tf.keras.layers.Layer):
-    def __init__(self, d_model, num_heads, dff, dropout_rate=0.1):
-        super(TransformerBlock, self).__init__()
-        self.d_model = d_model
-        self.num_heads = num_heads
-        self.dff = dff
-        
-        self.mha = tf.keras.layers.MultiHeadAttention(num_heads=num_heads, key_dim=d_model//num_heads)
-        self.ffn = tf.keras.Sequential([
-            tf.keras.layers.Dense(dff, activation='relu'),
-            tf.keras.layers.Dense(d_model),
-        ])
-        
-        self.layernorm1 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
-        self.layernorm2 = tf.keras.layers.LayerNormalization(epsilon=1e-6)
-        
-        self.dropout1 = tf.keras.layers.Dropout(dropout_rate)
-        self.dropout2 = tf.keras.layers.Dropout(dropout_rate)
-
-    def call(self, x, training):
-        # Multi-head attention
-        attn_output = self.mha(x, x)
-        attn_output = self.dropout1(attn_output, training=training)
-        out1 = self.layernorm1(x + attn_output)
-        
-        # Feed forward network
-        ffn_output = self.ffn(out1)
-        ffn_output = self.dropout2(ffn_output, training=training)
-        out2 = self.layernorm2(out1 + ffn_output)
-        
-        return out2
-
-class veaEncoderDecoder(tf.keras.Model):
-    def __init__(self, latent_dim):
-        super(veaEncoderDecoder, self).__init__()
-        self.latent_dim = latent_dim
-        
-        # Encoder with CNN + Transformer
-        self.cnn_encoder = tf.keras.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(32, 32, 3)),
-            tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.MaxPooling2D((2, 2), padding='same'),  # 16x16
-            
-            tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.MaxPooling2D((2, 2), padding='same'),  # 8x8
-            
-            tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.MaxPooling2D((2, 2), padding='same'),  # 4x4
-            
-            tf.keras.layers.Conv2D(512, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.BatchNormalization(),
-        ])
-        
-        # Transformer layers
-        self.d_model = 512
-        self.num_transformer_layers = 2
-        self.transformer_blocks = [
-            TransformerBlock(d_model=self.d_model, num_heads=8, dff=1024, dropout_rate=0.1)
-            for _ in range(self.num_transformer_layers)
-        ]
-        
-        # Final encoder layers
-        self.encoder_final = tf.keras.Sequential([
-            tf.keras.layers.GlobalAveragePooling2D(),  # Pool the spatial dimensions
-            tf.keras.layers.Dense(1024, activation='relu'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(512, activation='relu'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(latent_dim * 2),  # mean and logvar
-        ])
-
-        # Decoder with Transformer + CNN
-        self.decoder_start = tf.keras.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(latent_dim,)),
-            tf.keras.layers.Dense(512, activation='relu'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(1024, activation='relu'),
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Dropout(0.2),
-            tf.keras.layers.Dense(4*4*512, activation='relu'),
-            tf.keras.layers.Reshape((4, 4, 512)),
-        ])
-        
-        # Transformer blocks for decoder
-        self.decoder_transformer_blocks = [
-            TransformerBlock(d_model=self.d_model, num_heads=8, dff=1024, dropout_rate=0.1)
-            for _ in range(self.num_transformer_layers)
-        ]
-        
-        # CNN Decoder
-        self.cnn_decoder = tf.keras.Sequential([
-            tf.keras.layers.Conv2DTranspose(256, (3, 3), strides=2, activation='relu', padding='same'),  # 8x8
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(256, (3, 3), activation='relu', padding='same'),
-            
-            tf.keras.layers.Conv2DTranspose(128, (3, 3), strides=2, activation='relu', padding='same'),  # 16x16
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(128, (3, 3), activation='relu', padding='same'),
-            
-            tf.keras.layers.Conv2DTranspose(64, (3, 3), strides=2, activation='relu', padding='same'),  # 32x32
-            tf.keras.layers.BatchNormalization(),
-            tf.keras.layers.Conv2D(64, (3, 3), activation='relu', padding='same'),
-            
-            tf.keras.layers.Conv2D(32, (3, 3), activation='relu', padding='same'),
-            tf.keras.layers.Conv2D(3, (3, 3), activation='sigmoid', padding='same'),
-        ])
-
-        # Build the model
-        self._build_model()
-
-    def _build_model(self):
-        """Build the model to initialize layers"""
-        dummy_input = tf.zeros((1, 32, 32, 3))
-        # Build encoder path
-        mean, logvar = self.encode(dummy_input, training=False)
-        z = self.reparameterize(mean, logvar)
-        # Build decoder path
-        reconstructed = self.decode(z, training=False)
-        # Build full model
-        _ = self.call(dummy_input, training=False)
-
-    def call(self, x, training=False):
-        mean, logvar = self.encode(x, training=training)
-        z = self.reparameterize(mean, logvar)
-        reconstructed = self.decode(z, training=training)
-        return reconstructed
-
-    def train_step(self, x):
-        if isinstance(x, tuple):
-            x = x[0]
+def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent_dim=128):
+    optimizer = tf.keras.optimizers.Adam()
+    bce_loss_fn = tf.keras.losses.BinaryCrossentropy()
+    
+    @tf.function
+    def train_step(x, y):
         with tf.GradientTape() as tape:
-            mean, logvar = self.encode(x, training=True)
-            z = self.reparameterize(mean, logvar)
-            x_logit = self.decode(z, training=True)
+            z = encoder(x, training=False)  # Freeze encoder during classifier training
+            y_pred = classifier(z, training=True)
+            loss = bce_loss_fn(y, y_pred)
+        grads = tape.gradient(loss, classifier.trainable_weights)
+        optimizer.apply_gradients(zip(grads, classifier.trainable_weights))
+        return loss
+
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}")
+        for step, batch in enumerate(data):
+            images = tf.cast(batch['image'], tf.float32) / 255.0
             
-            # Compute reconstruction loss
-            reconstruction_loss = tf.reduce_mean(
-                tf.keras.losses.binary_crossentropy(x, x_logit)
-            )
-            reconstruction_loss *= 32 * 32 * 3
+            # Convert nested attributes dict to tensor array
+            attr_list = []
+            for attr_name in sorted(batch['attributes'].keys()):  # Sort for consistent order
+                attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
+            attributes = tf.stack(attr_list, axis=1)  # Shape: (batch_size, 40)
             
-            # Compute KL divergence
-            kl_loss = -0.5 * tf.reduce_mean(
-                logvar - tf.square(mean) - tf.exp(logvar) + 1
-            )
+            loss = train_step(images, attributes)
+            if step % 100 == 0:
+                print(f"Step {step}, Loss: {loss.numpy():.6f}")
+        # Save model checkpoints
+        classifier.save_weights(f"classifier.weights.h5")
+    print("Classifier training completed.")
+
+def buildDecoder(latent_dim):
+    decoder_input = Input(shape=(latent_dim,), name="decoder_input")
+    x = Dense(16 * 16 * 256)(decoder_input)
+    x = Reshape((16, 16, 256))(x)
+    x = Conv2DTranspose(128, 3, strides=2, padding="same")(x)  # 32x32
+    x = LeakyReLU()(x)
+    x = Conv2DTranspose(64, 3, strides=2, padding="same")(x)   # 64x64
+    x = LeakyReLU()(x)
+    x = Conv2DTranspose(32, 3, strides=2, padding="same")(x)   # 128x128
+    x = LeakyReLU()(x)
+    decoder_output = Conv2DTranspose(3, 3, strides=2, activation="sigmoid", padding="same", name="decoder_output")(x)  # 256x256
+    decoder = Model(decoder_input, decoder_output, name="decoder")
+    return decoder
+
+def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
+    optimizer = tf.keras.optimizers.Adam()
+    mse_loss_fn = tf.keras.losses.MeanSquaredError()
+    
+    @tf.function
+    def train_step(x):
+        with tf.GradientTape() as tape:
+            z = encoder(x, training=True)
+            x_recon = decoder(z, training=True)
+            loss = mse_loss_fn(x, x_recon)
+        grads = tape.gradient(loss, encoder.trainable_weights + decoder.trainable_weights)
+        optimizer.apply_gradients(zip(grads, encoder.trainable_weights + decoder.trainable_weights))
+        return loss
+
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}")
+        for step, batch in enumerate(data):
+            images = tf.cast(batch['image'], tf.float32) / 255.0
+            # Debug: print image stats
+            if step == 0:
+                print(f"Image shape: {images.shape}")
+                print(f"Image min/max: {tf.reduce_min(images).numpy():.4f} / {tf.reduce_max(images).numpy():.4f}")
+                print(f"Image mean: {tf.reduce_mean(images).numpy():.4f}")
+            loss = train_step(images)
+            if step % 100 == 0:
+                print(f"Step {step}, Loss: {loss.numpy():.6f}")
+        # Save model checkpoints
+        encoder.save_weights(f"encoder.weights.h5")
+        decoder.save_weights(f"decoder.weights.h5")
+    print("Training completed.")
+
+def buildInverseClassifier(latent_dim):
+    """Network that maps from attributes to latent space"""
+    inverse_input = Input(shape=(40,), name="inverse_input")  # 40 CelebA attributes
+    x = Dense(256, activation="relu")(inverse_input)
+    x = Dense(512, activation="relu")(x)
+    x = Dense(512, activation="relu")(x)
+    x = Dense(256, activation="relu")(x)
+    inverse_output = Dense(latent_dim, name="inverse_output")(x)
+    inverse_classifier = Model(inverse_input, inverse_output, name="inverse_classifier")
+    return inverse_classifier
+
+def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch_size=32, latent_dim=128):
+    """Train inverse classifier to map from attributes to latent space"""
+    optimizer = tf.keras.optimizers.Adam()
+    mse_loss_fn = tf.keras.losses.MeanSquaredError()
+    
+    @tf.function
+    def train_step(x, y):
+        with tf.GradientTape() as tape:
+            z_real = encoder(x, training=False)  # Get real latent codes
+            z_pred = inverse_classifier(y, training=True)  # Predict latent from attributes
+            loss = mse_loss_fn(z_real, z_pred)
+        grads = tape.gradient(loss, inverse_classifier.trainable_weights)
+        optimizer.apply_gradients(zip(grads, inverse_classifier.trainable_weights))
+        return loss
+
+    for epoch in range(epochs):
+        print(f"Inverse Classifier Epoch {epoch + 1}/{epochs}")
+        for step, batch in enumerate(data):
+            images = tf.cast(batch['image'], tf.float32) / 255.0
             
-            total_loss = reconstruction_loss + kl_loss
+            # Convert nested attributes dict to tensor array
+            attr_list = []
+            for attr_name in sorted(batch['attributes'].keys()):
+                attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
+            attributes = tf.stack(attr_list, axis=1)
             
-        gradients = tape.gradient(total_loss, self.trainable_variables)
-        self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
+            loss = train_step(images, attributes)
+            if step % 100 == 0:
+                print(f"Step {step}, Loss: {loss.numpy():.6f}")
         
-        return {
-            "loss": total_loss,
-            "reconstruction_loss": reconstruction_loss,
-            "kl_loss": kl_loss,
-        }
-    
-    def sample(self, eps=None):
-        if eps is None:
-            eps = tf.random.normal(shape=(100, self.latent_dim))
-        return self.decode(eps, training=False)
-    
-    def encode(self, x, training=False):
-        # CNN feature extraction
-        features = self.cnn_encoder(x, training=training)
-        batch_size = tf.shape(features)[0]
-        
-        # Reshape for transformer: (batch, seq_len, d_model)
-        features_reshaped = tf.reshape(features, (batch_size, -1, self.d_model))
-        
-        # Apply transformer blocks
-        transformer_output = features_reshaped
-        for transformer_block in self.transformer_blocks:
-            transformer_output = transformer_block(transformer_output, training=training)
-        
-        # Reshape back to spatial format
-        spatial_features = tf.reshape(transformer_output, tf.shape(features))
-        
-        # Final encoding
-        mean_logvar = self.encoder_final(spatial_features, training=training)
-        mean, logvar = tf.split(mean_logvar, num_or_size_splits=2, axis=1)
-        return mean, logvar
-    
-    def reparameterize(self, mean, logvar):
-        eps = tf.random.normal(shape=mean.shape)
-        return eps * tf.exp(logvar * 0.5) + mean
-    
-    def decode(self, z, training=False):
-        # Start decoding
-        features = self.decoder_start(z, training=training)
-        batch_size = tf.shape(features)[0]
-        
-        # Reshape for transformer: (batch, seq_len, d_model)
-        features_reshaped = tf.reshape(features, (batch_size, -1, self.d_model))
-        
-        # Apply transformer blocks
-        transformer_output = features_reshaped
-        for transformer_block in self.decoder_transformer_blocks:
-            transformer_output = transformer_block(transformer_output, training=training)
-        
-        # Reshape back to spatial format
-        spatial_features = tf.reshape(transformer_output, tf.shape(features))
-        
-        # CNN decoding
-        return self.cnn_decoder(spatial_features, training=training)
+        # Save model checkpoints
+        inverse_classifier.save_weights(f"inverse_classifier.weights.h5")
+    print("Inverse classifier training completed.")
 
-
-# Use larger latent dimension for the bigger model
-latent_dim = 128  # Increased from 64
-model = veaEncoderDecoder(latent_dim)
-
-# Build the model explicitly with actual data shape
-model.build(input_shape=(None, 32, 32, 3))
-
-model.optimizer = tf.keras.optimizers.Adam(1e-4)
-
-# Print model summary
-print("Model created successfully!")
-print(f"Latent dimension: {latent_dim}")
-print(f"Number of transformer layers: {model.num_transformer_layers}")
-
-def plot_reconstructions(model, test_images, num_images=10):
-    """Plot original and reconstructed images"""
-    test_sample = test_images[:num_images]
-    mean, logvar = model.encode(test_sample)
-    z = model.reparameterize(mean, logvar)
-    reconstructed = model.decode(z)
+def generate_image_from_features(feature_list, inverse_classifier, decoder, attribute_names=None):
+    # Convert to tensor and add batch dimension
+    features = tf.constant([feature_list], dtype=tf.float32)
     
-    fig, axes = plt.subplots(2, num_images, figsize=(15, 4))
-    for i in range(num_images):
-        # Original images
-        axes[0, i].imshow(test_sample[i])
-        axes[0, i].axis('off')
-        axes[0, i].set_title('Original')
-        
-        # Reconstructed images
-        axes[1, i].imshow(reconstructed[i])
-        axes[1, i].axis('off')
-        axes[1, i].set_title('Reconstructed')
+    # Map features to latent space
+    latent_code = inverse_classifier(features, training=False)
     
-    plt.tight_layout()
-    plt.show()
+    # Generate image from latent code
+    generated_image = decoder(latent_code, training=False)
+    
+    return generated_image[0].numpy()  # Remove batch dimension
 
-def plot_generated_samples(model, num_samples=10):
-    """Generate and plot new samples from the VAE"""
-    generated = model.sample(tf.random.normal(shape=(num_samples, model.latent_dim)))
+def format_attributes(attributes_dict, ds_info, max_attrs=5):
+    """Format CelebA attributes into readable descriptions"""
+    active_attrs = []
     
-    fig, axes = plt.subplots(1, num_samples, figsize=(15, 2))
-    for i in range(num_samples):
-        axes[i].imshow(generated[i])
-        axes[i].axis('off')
-        axes[i].set_title('Generated')
+    for attr_name, attr_value in attributes_dict.items():
+        if attr_value == 1:  # attribute is present
+            # Clean up attribute names for display
+            clean_name = attr_name.replace('_', ' ').title()
+            active_attrs.append(clean_name)
     
-    plt.tight_layout()
-    plt.show()
-
-# Training loop
-epochs = 100
-batch_size = 128
-best_loss = float('inf')
-patience = 20
-wait = 0
-
-# Create dataset
-train_dataset = tf.data.Dataset.from_tensor_slices(x_train).shuffle(len(x_train)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
-
-# Build model with actual training data to ensure all weights are initialized
-print("Building model with training data...")
-sample_batch = next(iter(train_dataset))
-_ = model(sample_batch[:1], training=False)
-print("Model built successfully!")
-
-print("Starting training...")
-for epoch in range(epochs):
-    epoch_loss = 0
-    epoch_reconstruction_loss = 0
-    epoch_kl_loss = 0
-    num_batches = 0
-    
-    # Reset dataset for each epoch to avoid iterator issues
-    epoch_dataset = tf.data.Dataset.from_tensor_slices(x_train).shuffle(len(x_train)).batch(batch_size).prefetch(tf.data.AUTOTUNE)
-    
-    for batch in epoch_dataset:
-        losses = model.train_step(batch)
-        epoch_loss += losses["loss"]
-        epoch_reconstruction_loss += losses["reconstruction_loss"]
-        epoch_kl_loss += losses["kl_loss"]
-        num_batches += 1
-    
-    # Average losses
-    epoch_loss /= num_batches
-    epoch_reconstruction_loss /= num_batches
-    epoch_kl_loss /= num_batches
-    
-    print(f'Epoch {epoch}, Loss: {epoch_loss:.4f}, Reconstruction: {epoch_reconstruction_loss:.4f}, KL: {epoch_kl_loss:.4f}')
-    
-    # Early stopping
-    if epoch_loss < best_loss:
-        best_loss = epoch_loss
-        wait = 0
-        model.save_weights('best_vae_weights.weights.h5')
+    # Limit number of attributes shown
+    if len(active_attrs) > max_attrs:
+        shown_attrs = active_attrs[:max_attrs]
+        description = ", ".join(shown_attrs) + f" (+{len(active_attrs)-max_attrs} more)"
     else:
-        wait += 1
-        if wait >= patience:
-            print(f"Early stopping at epoch {epoch}")
-            break
+        description = ", ".join(active_attrs) if active_attrs else "No notable attributes"
+    
+    return description
 
-print("Training completed!")
+def display_reconstructions(encoder, decoder, data, num_images=5):
+    sample_batch = next(iter(data))
+    images = tf.cast(sample_batch['image'], tf.float32) / 255.0
+    
+    # Debug: print image stats
+    print(f"Display - Image shape: {images.shape}")
+    print(f"Display - Image min/max: {tf.reduce_min(images).numpy():.4f} / {tf.reduce_max(images).numpy():.4f}")
+    
+    z = encoder(images[:num_images])
+    reconstructions = decoder(z)
 
-# Final visualization
-print("\nFinal reconstructions:")
-plot_reconstructions(model, x_test, 10)
+    plt.figure(figsize=(15, 10))
+    for i in range(num_images):
+        # Get attributes for this image - handle nested dict structure
+        attrs_dict = {}
+        for attr_name in sample_batch['attributes'].keys():
+            attrs_dict[attr_name] = sample_batch['attributes'][attr_name][i].numpy()
+        description = format_attributes(attrs_dict, ds_info)
+        
+        # Original
+        ax = plt.subplot(3, num_images, i + 1)
+        plt.imshow(np.clip(images[i].numpy(), 0, 1))
+        plt.axis("off")
+        if i == 0:
+            ax.set_title("Originals", fontsize=12, fontweight='bold')
+        
+        # Reconstructed
+        ax = plt.subplot(3, num_images, i + 1 + num_images)
+        plt.imshow(np.clip(reconstructions[i].numpy(), 0, 1))
+        plt.axis("off")
+        if i == 0:
+            ax.set_title("Reconstructions", fontsize=12, fontweight='bold')
+            
+        # Description
+        ax = plt.subplot(3, num_images, i + 1 + 2*num_images)
+        plt.text(0.5, 0.5, description, ha='center', va='center', wrap=True, 
+                fontsize=8, transform=ax.transAxes)
+        plt.axis("off")
+        if i == 0:
+            ax.set_title("Attributes", fontsize=12, fontweight='bold')
+    
+    plt.tight_layout()
+    plt.show()
 
-print("\nGenerated samples:")
-plot_generated_samples(model, 10)
+def get_celeba_attribute_names():
+    """Get the ordered list of CelebA attribute names"""
+    return [
+        '5_o_Clock_Shadow', 'Arched_Eyebrows', 'Attractive', 'Bags_Under_Eyes', 'Bald',
+        'Bangs', 'Big_Lips', 'Big_Nose', 'Black_Hair', 'Blond_Hair', 'Blurry', 'Brown_Hair',
+        'Bushy_Eyebrows', 'Chubby', 'Double_Chin', 'Eyeglasses', 'Goatee', 'Gray_Hair',
+        'Heavy_Makeup', 'High_Cheekbones', 'Male', 'Mouth_Slightly_Open', 'Mustache',
+        'Narrow_Eyes', 'No_Beard', 'Oval_Face', 'Pale_Skin', 'Pointy_Nose', 'Receding_Hairline',
+        'Rosy_Cheeks', 'Sideburns', 'Smiling', 'Straight_Hair', 'Wavy_Hair', 'Wearing_Earrings',
+        'Wearing_Hat', 'Wearing_Lipstick', 'Wearing_Necklace', 'Wearing_Necktie', 'Young'
+    ]
 
+def create_feature_vector_from_descriptions(descriptions, attribute_names=None, intensities=None):
+    if attribute_names is None:
+        attribute_names = get_celeba_attribute_names()
+    
+    feature_vector = [0.0] * len(attribute_names)
+    
+    if intensities is None:
+        intensities = [1.0] * len(descriptions)
+    
+    for desc, intensity in zip(descriptions, intensities):
+        try:
+            idx = attribute_names.index(desc)
+            feature_vector[idx] = max(0.0, min(1.0, intensity))  # Clamp to 0-1
+        except ValueError:
+            print(f"Warning: '{desc}' not found in attribute names")
+    
+    return feature_vector
+
+if __name__ == "__main__":
+    latent_dim = 128
+    batch_size = 128
+    epochs = 3
+
+    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
+    feature_vector = create_feature_vector_from_descriptions(desired_features)
+
+    # Prepare the dataset - keep attributes in the data
+    ds_train = ds_train.map(lambda x: {
+        'image': tf.image.resize(x['image'], (256, 256)),
+        'attributes': x['attributes']
+    })
+    ds_train = ds_train.shuffle(1000).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
+    # check if decoder and encoder weights exist, if so load them
+    import os
+    if os.path.exists("encoder.weights.h5") and os.path.exists("decoder.weights.h5"):
+        print("Loading existing model weights...")
+        encoder = buildEncoder(latent_dim)
+        decoder = buildDecoder(latent_dim)
+        encoder.load_weights("encoder.weights.h5")
+        decoder.load_weights("decoder.weights.h5")
+    else:
+        print("No existing model weights found. Training from scratch.")
+        # Build models
+        encoder = buildEncoder(latent_dim)
+        decoder = buildDecoder(latent_dim)
+
+    display_reconstructions(encoder, decoder, ds_train, num_images=1)
+    train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+
+    classifier = buildClassifier(latent_dim)
+    if os.path.exists("classifier.weights.h5"):
+        print("Loading existing classifier weights...")
+        classifier.load_weights("classifier.weights.h5")
+
+    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+   
+    # Build and train inverse classifier
+    inverse_classifier = buildInverseClassifier(latent_dim)
+    if os.path.exists("inverse_classifier.weights.h5"):
+        print("Loading existing inverse classifier weights...")
+        inverse_classifier.load_weights("inverse_classifier.weights.h5")
+    
+    train_inverse_classifier(ds_train, encoder, inverse_classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    
+
+    print("\n=== Generating Images from Features ===")
+    
+    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
+    intensities = [0.8, 0.9, 0.7, 0.8]
+    feature_vector = create_feature_vector_from_descriptions(desired_features, intensities=intensities)
+    
+    generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
+    
+    plt.figure(figsize=(15, 8))
+    
+    plt.subplot(2, 3, 1)
+    plt.imshow(np.clip(generated_image, 0, 1))
+    plt.title(f"Strong: {', '.join(desired_features)}")
+    plt.axis('off')
+    
+    # Subtle version
+    intensities_subtle = [0.3, 0.4, 0.2, 0.3]
+    feature_vector_subtle = create_feature_vector_from_descriptions(desired_features, intensities=intensities_subtle)
+    generated_image_subtle = generate_image_from_features(feature_vector_subtle, inverse_classifier, decoder)
+    
+    plt.subplot(2, 3, 2)
+    plt.imshow(np.clip(generated_image_subtle, 0, 1))
+    plt.title(f"Subtle: {', '.join(desired_features)}")
+    plt.axis('off')
+    
+    # Male with varying intensities
+    desired_features2 = ['Male', 'Eyeglasses', 'Mustache', 'Young']
+    intensities2 = [0.9, 0.8, 0.6, 0.7]
+    feature_vector2 = create_feature_vector_from_descriptions(desired_features2, intensities=intensities2)
+    generated_image2 = generate_image_from_features(feature_vector2, inverse_classifier, decoder)
+    
+    plt.subplot(2, 3, 3)
+    plt.imshow(np.clip(generated_image2, 0, 1))
+    plt.title(f"Male Strong")
+    plt.axis('off')
+    
+    # Progressive smile intensity
+    for i, smile_intensity in enumerate([0.2, 0.5, 0.8]):
+        features = ['Young', 'Smiling', 'Attractive']
+        intensities = [0.8, smile_intensity, 0.7]
+        fv = create_feature_vector_from_descriptions(features, intensities=intensities)
+        img = generate_image_from_features(fv, inverse_classifier, decoder)
+        
+        plt.subplot(2, 3, 4 + i)
+        plt.imshow(np.clip(img, 0, 1))
+        plt.title(f"Smile: {smile_intensity}")
+        plt.axis('off')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Display some reconstructions
+    display_reconstructions(encoder, decoder, ds_train, num_images=1)

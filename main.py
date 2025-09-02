@@ -211,39 +211,126 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
     print("Training completed.")
 
 def buildInverseClassifier(latent_dim):
-    """Network that maps from attributes to latent space"""
+    """Enhanced network that maps from attributes to latent space with residual connections"""
     inverse_input = Input(shape=(40,), name="inverse_input")  # 40 CelebA attributes
-    x = Dense(256, activation="relu")(inverse_input)
+    
+    # Initial embedding layer
+    x = Dense(512, activation="relu")(inverse_input)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # First residual block
+    residual1 = x
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
     x = Dense(512, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual1])  # Residual connection
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Second residual block
+    residual2 = x
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
     x = Dense(512, activation="relu")(x)
-    x = Dense(256, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual2])  # Residual connection
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Third residual block
+    residual3 = x
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    x = Dense(512, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual3])  # Residual connection
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Additional deep layers
+    x = Dense(768, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    x = Dense(512, activation="relu")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # Final projection to latent space
     inverse_output = Dense(latent_dim, name="inverse_output")(x)
-    inverse_classifier = Model(inverse_input, inverse_output, name="inverse_classifier")
+    
+    inverse_classifier = Model(inverse_input, inverse_output, name="enhanced_inverse_classifier")
     return inverse_classifier
 
 def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch_size=32, latent_dim=128):
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    # Learning rate scheduling
+    initial_learning_rate = 0.001
+    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
+        initial_learning_rate,
+        decay_steps=1000,
+        decay_rate=0.96,
+        staircase=True
+    )
+    
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule, beta_1=0.9, beta_2=0.999)
     mse_loss_fn = tf.keras.losses.MeanSquaredError()
+    cosine_loss_fn = tf.keras.losses.CosineSimilarity()
+    
+    # Track best loss for saving best model
+    best_loss = float('inf')
     
     @tf.function
     def train_step(x, y):
         with tf.GradientTape() as tape:
-            z_mean, z_log_var, z_real = encoder(x, training=False)
+            # Get encoder outputs (use z_mean for stability)
+            z_mean, z_log_var, z_sample = encoder(x, training=False)
+            
+            # Get inverse classifier prediction
             z_pred = inverse_classifier(y, training=True)
             
-            # Use z_mean for more stable training
-            loss = mse_loss_fn(z_mean, z_pred)
+            # Combined loss: MSE + Cosine similarity for better direction matching
+            mse_loss = mse_loss_fn(z_mean, z_pred)
+            cosine_loss = 1.0 - cosine_loss_fn(z_mean, z_pred)  # Convert to loss (1 - similarity)
             
-            # Add L2 regularization
-            l2_loss = tf.add_n([tf.nn.l2_loss(w) for w in inverse_classifier.trainable_weights])
-            total_loss = loss + 0.0001 * l2_loss
+            # Weighted combination
+            reconstruction_loss = 0.7 * mse_loss + 0.3 * cosine_loss
             
+            # L2 regularization with different weights for different layer types
+            l2_loss = 0
+            for layer in inverse_classifier.layers:
+                if hasattr(layer, 'kernel'):
+                    if hasattr(layer, 'units') and layer.units >= 512:
+                        l2_loss += 0.0001 * tf.nn.l2_loss(layer.kernel)
+                    else:
+                        l2_loss += 0.00005 * tf.nn.l2_loss(layer.kernel)
+            
+            # Total loss
+            total_loss = reconstruction_loss + l2_loss
+            
+        # Gradient computation and clipping
         grads = tape.gradient(total_loss, inverse_classifier.trainable_weights)
+        grads = [tf.clip_by_norm(g, 1.0) for g in grads]  # Gradient clipping
+        
+        # Apply gradients
         optimizer.apply_gradients(zip(grads, inverse_classifier.trainable_weights))
-        return total_loss
+        
+        return total_loss, mse_loss, cosine_loss
+
+    # Training metrics tracking
+    train_loss_metric = tf.keras.metrics.Mean(name='train_loss')
+    mse_metric = tf.keras.metrics.Mean(name='mse_loss')
+    cosine_metric = tf.keras.metrics.Mean(name='cosine_loss')
 
     for epoch in range(epochs):
-        print(f"Inverse Classifier Epoch {epoch + 1}/{epochs}")
+        print(f"Enhanced Inverse Classifier Epoch {epoch + 1}/{epochs}")
+        
+        # Reset metrics
+        train_loss_metric.reset_state()
+        mse_metric.reset_state()
+        cosine_metric.reset_state()
+        
         for step, batch in enumerate(data):
             images = tf.cast(batch['image'], tf.float32) / 255.0
             
@@ -253,13 +340,40 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
                 attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
             attributes = tf.stack(attr_list, axis=1)
             
-            total_loss = train_step(images, attributes)
+            # Add label smoothing to attributes
+            noise = tf.random.normal(tf.shape(attributes), stddev=0.05)
+            attributes_smoothed = tf.clip_by_value(attributes + noise, 0.0, 1.0)
+            
+            total_loss, mse_loss, cosine_loss = train_step(images, attributes_smoothed)
+            
+            # Update metrics
+            train_loss_metric.update_state(total_loss)
+            mse_metric.update_state(mse_loss)
+            cosine_metric.update_state(cosine_loss)
+            
             if step % 100 == 0:
-                print(f"Step {step}, Loss: {total_loss.numpy():.6f}")
+                print(f"Step {step}, Total Loss: {total_loss.numpy():.6f}, "
+                      f"MSE: {mse_loss.numpy():.6f}, Cosine: {cosine_loss.numpy():.6f}, "
+                      f"LR: {optimizer.learning_rate.numpy():.6f}")
         
-        # Save model checkpoints
-        inverse_classifier.save_weights(f"inverse_classifier.weights.h5")
-    print("Inverse classifier training completed.")
+        # Calculate epoch average loss
+        epoch_avg_loss = train_loss_metric.result().numpy()
+        
+        # Print epoch summary
+        print(f"Epoch {epoch + 1} Summary:")
+        print(f"  Average Total Loss: {epoch_avg_loss:.6f}")
+        print(f"  Average MSE Loss: {mse_metric.result():.6f}")
+        print(f"  Average Cosine Loss: {cosine_metric.result():.6f}")
+        
+        # Save only if this is the best model so far
+        if epoch_avg_loss < best_loss:
+            best_loss = epoch_avg_loss
+            inverse_classifier.save_weights("inverse_classifier.weights.h5")
+            print(f"  New best model saved! Loss: {best_loss:.6f}")
+        else:
+            print(f"  Current best loss: {best_loss:.6f}")
+    
+    print(f"Enhanced inverse classifier training completed. Best loss: {best_loss:.6f}")
 
 def generate_image_from_features(feature_list, inverse_classifier, decoder, attribute_names=None):
     features = tf.constant([feature_list], dtype=tf.float32)
@@ -368,7 +482,7 @@ def create_feature_vector_from_descriptions(descriptions, attribute_names=None, 
 if __name__ == "__main__":
     latent_dim = 256  # Increased latent dimension
     batch_size = 64   # Reduced batch size for better gradients
-    epochs = 5       # More epochs
+    epochs = 25       # More epochs
 
 
     # Prepare the dataset - keep attributes in the data
@@ -434,10 +548,9 @@ if __name__ == "__main__":
 
     plt.show()
 
-
     train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
-    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     train_inverse_classifier(ds_train, encoder, inverse_classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
 
     print("\n=== Generating Images from Features ===")

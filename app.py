@@ -59,8 +59,8 @@ with col1:
                     image_tensor = tf.expand_dims(image_array, 0)
                     
                     # Get latent representation and predict attributes
-                    latent_code = encoder(image_tensor, training=False)
-                    predicted_attributes = classifier(latent_code, training=False)
+                    z_mean, z_log_var, z = encoder(image_tensor, training=False)
+                    predicted_attributes = classifier(z, training=False)
                     
                     # Update sliders with predicted values
                     for i, feature in enumerate(feature_names):

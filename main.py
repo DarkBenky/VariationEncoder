@@ -370,9 +370,6 @@ if __name__ == "__main__":
     batch_size = 64   # Reduced batch size for better gradients
     epochs = 5       # More epochs
 
-    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
-    intensities = [0.8, 0.9, 0.7, 0.8]
-    feature_vector = create_feature_vector_from_descriptions(desired_features)
 
     # Prepare the dataset - keep attributes in the data
     ds_train = ds_train.map(lambda x: {
@@ -395,22 +392,51 @@ if __name__ == "__main__":
         encoder = buildEncoder(latent_dim)
         decoder = buildDecoder(latent_dim)
 
+    
     display_reconstructions(encoder, decoder, ds_train, num_images=1)
-    train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
 
     classifier = buildClassifier(latent_dim)
     if os.path.exists("classifier.weights.h5"):
         print("Loading existing classifier weights...")
         classifier.load_weights("classifier.weights.h5")
 
-    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
-   
     # Build and train inverse classifier
     inverse_classifier = buildInverseClassifier(latent_dim)
     if os.path.exists("inverse_classifier.weights.h5"):
         print("Loading existing inverse classifier weights...")
         inverse_classifier.load_weights("inverse_classifier.weights.h5")
     
+    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
+    intensities = [0.8, 0.9, 0.7, 0.8]
+    feature_vector = create_feature_vector_from_descriptions(desired_features)
+    generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
+
+    plt.figure(figsize=(15, 8))
+    
+    plt.subplot(2, 3, 1)
+    plt.imshow(np.clip(generated_image, 0, 1))
+    plt.title(f"Strong: {', '.join(desired_features)}")
+    plt.axis('off')
+
+    plt.show()
+
+    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
+    intensities = [0.1, 0.21, 0.95, 0.8]
+    feature_vector = create_feature_vector_from_descriptions(desired_features)
+    generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
+
+    plt.figure(figsize=(15, 8))
+    
+    plt.subplot(2, 3, 1)
+    plt.imshow(np.clip(generated_image, 0, 1))
+    plt.title(f"Strong: {', '.join(desired_features)}")
+    plt.axis('off')
+
+    plt.show()
+
+
+    train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     train_inverse_classifier(ds_train, encoder, inverse_classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
 

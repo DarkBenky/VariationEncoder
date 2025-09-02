@@ -24,17 +24,36 @@ print(ds_info.features)
 
 def buildEncoder(latent_dim):
     encoder_input = Input(shape=(256, 256, 3), name="encoder_input")
-    x = Conv2D(32, 3, strides=2, padding="same")(encoder_input)  # 128x128
-    x = LeakyReLU()(x)
-    x = Conv2D(64, 3, strides=2, padding="same")(x)  # 64x64
-    x = LeakyReLU()(x)
-    x = Conv2D(128, 3, strides=2, padding="same")(x)  # 32x32
-    x = LeakyReLU()(x)
-    x = Conv2D(256, 3, strides=2, padding="same")(x)  # 16x16
-    x = LeakyReLU()(x)
+    x = Conv2D(32, 4, strides=2, padding="same")(encoder_input)  # 128x128
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Conv2D(64, 4, strides=2, padding="same")(x)  # 64x64
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Conv2D(128, 4, strides=2, padding="same")(x)  # 32x32
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Conv2D(256, 4, strides=2, padding="same")(x)  # 16x16
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Conv2D(512, 4, strides=2, padding="same")(x)  # 8x8
+    x = LeakyReLU(0.2)(x)
     x = Flatten()(x)
-    encoder_output = Dense(latent_dim, name="encoder_output")(x)
-    encoder = Model(encoder_input, encoder_output, name="encoder")
+    
+    # VAE latent space with mean and log variance
+    z_mean = Dense(latent_dim, name="z_mean")(x)
+    z_log_var = Dense(latent_dim, name="z_log_var")(x)
+    
+    def sampling(args):
+        z_mean, z_log_var = args
+        batch = tf.shape(z_mean)[0]
+        dim = tf.shape(z_mean)[1]
+        epsilon = tf.keras.backend.random_normal(shape=(batch, dim))
+        return z_mean + tf.exp(0.5 * z_log_var) * epsilon
+    
+    z = tf.keras.layers.Lambda(sampling, output_shape=(latent_dim,), name="z")([z_mean, z_log_var])
+    
+    encoder = Model(encoder_input, [z_mean, z_log_var, z], name="encoder")
     return encoder
 
 def buildClassifier(latent_dim):
@@ -48,18 +67,23 @@ def buildClassifier(latent_dim):
     return classifier
 
 def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent_dim=128):
-    optimizer = tf.keras.optimizers.Adam()
-    bce_loss_fn = tf.keras.losses.BinaryCrossentropy()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    bce_loss_fn = tf.keras.losses.BinaryCrossentropy(label_smoothing=0.1)
     
     @tf.function
     def train_step(x, y):
         with tf.GradientTape() as tape:
-            z = encoder(x, training=False)  # Freeze encoder during classifier training
+            z_mean, z_log_var, z = encoder(x, training=False)
             y_pred = classifier(z, training=True)
             loss = bce_loss_fn(y, y_pred)
-        grads = tape.gradient(loss, classifier.trainable_weights)
+            
+            # Add L2 regularization
+            l2_loss = tf.add_n([tf.nn.l2_loss(w) for w in classifier.trainable_weights])
+            total_loss = loss + 0.0001 * l2_loss
+        
+        grads = tape.gradient(total_loss, classifier.trainable_weights)
         optimizer.apply_gradients(zip(grads, classifier.trainable_weights))
-        return loss
+        return total_loss, loss
 
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1}/{epochs}")
@@ -72,56 +96,118 @@ def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent
                 attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
             attributes = tf.stack(attr_list, axis=1)  # Shape: (batch_size, 40)
             
-            loss = train_step(images, attributes)
+            total_loss, loss = train_step(images, attributes)
             if step % 100 == 0:
-                print(f"Step {step}, Loss: {loss.numpy():.6f}")
+                print(f"Step {step}, Total Loss: {total_loss.numpy():.6f}, BCE Loss: {loss.numpy():.6f}")
         # Save model checkpoints
         classifier.save_weights(f"classifier.weights.h5")
     print("Classifier training completed.")
 
 def buildDecoder(latent_dim):
     decoder_input = Input(shape=(latent_dim,), name="decoder_input")
-    x = Dense(16 * 16 * 256)(decoder_input)
-    x = Reshape((16, 16, 256))(x)
-    x = Conv2DTranspose(128, 3, strides=2, padding="same")(x)  # 32x32
-    x = LeakyReLU()(x)
-    x = Conv2DTranspose(64, 3, strides=2, padding="same")(x)   # 64x64
-    x = LeakyReLU()(x)
-    x = Conv2DTranspose(32, 3, strides=2, padding="same")(x)   # 128x128
-    x = LeakyReLU()(x)
-    decoder_output = Conv2DTranspose(3, 3, strides=2, activation="sigmoid", padding="same", name="decoder_output")(x)  # 256x256
+    x = Dense(8 * 8 * 512)(decoder_input)
+    x = Reshape((8, 8, 512))(x)
+    x = Conv2DTranspose(256, 4, strides=2, padding="same")(x)  # 16x16
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = Conv2DTranspose(128, 4, strides=2, padding="same")(x)  # 32x32
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = Conv2DTranspose(64, 4, strides=2, padding="same")(x)   # 64x64
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = Conv2DTranspose(32, 4, strides=2, padding="same")(x)   # 128x128
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    decoder_output = Conv2DTranspose(3, 4, strides=2, activation="sigmoid", padding="same", name="decoder_output")(x)  # 256x256
     decoder = Model(decoder_input, decoder_output, name="decoder")
     return decoder
 
+def vae_loss(x, x_decoded_mean, z_mean, z_log_var):
+    # Reconstruction loss
+    reconstruction_loss = tf.keras.losses.binary_crossentropy(
+        tf.keras.backend.flatten(x),
+        tf.keras.backend.flatten(x_decoded_mean)
+    )
+    reconstruction_loss *= 256 * 256
+    
+    # KL divergence loss
+    kl_loss = 1 + z_log_var - tf.keras.backend.square(z_mean) - tf.keras.backend.exp(z_log_var)
+    kl_loss = tf.keras.backend.sum(kl_loss, axis=-1)
+    kl_loss *= -0.5
+    
+    # Perceptual loss using VGG16
+    vgg = tf.keras.applications.VGG16(weights='imagenet', include_top=False)
+    vgg.trainable = False
+    
+    x_vgg = vgg(x * 255)
+    x_decoded_vgg = vgg(x_decoded_mean * 255)
+    perceptual_loss = tf.keras.losses.mse(x_vgg, x_decoded_vgg)
+    
+    return tf.keras.backend.mean(reconstruction_loss + 0.1 * kl_loss + 0.01 * perceptual_loss)
+
 def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
-    optimizer = tf.keras.optimizers.Adam()
-    mse_loss_fn = tf.keras.losses.MeanSquaredError()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
+    global_step = tf.Variable(0, trainable=False, dtype=tf.int64)
     
     @tf.function
-    def train_step(x):
+    def train_step(x, step):
         with tf.GradientTape() as tape:
-            z = encoder(x, training=True)
+            z_mean, z_log_var, z = encoder(x, training=True)
             x_recon = decoder(z, training=True)
-            loss = mse_loss_fn(x, x_recon)
-        grads = tape.gradient(loss, encoder.trainable_weights + decoder.trainable_weights)
+            
+            # Calculate VAE loss components
+            reconstruction_loss = tf.reduce_mean(
+                tf.keras.losses.binary_crossentropy(
+                    tf.reshape(x, [-1, 256*256*3]),
+                    tf.reshape(x_recon, [-1, 256*256*3])
+                )
+            ) * 256 * 256 * 3
+            
+            kl_loss = -0.5 * tf.reduce_mean(
+                tf.reduce_sum(1 + z_log_var - tf.square(z_mean) - tf.exp(z_log_var), axis=1)
+            )
+            
+            # Progressive KL weight
+            kl_weight = tf.minimum(1.0, tf.cast(step, tf.float32) / 10000.0)
+            
+            total_loss = reconstruction_loss + kl_weight * kl_loss
+        
+        grads = tape.gradient(total_loss, encoder.trainable_weights + decoder.trainable_weights)
+        grads = [tf.clip_by_norm(g, 1.0) for g in grads]  # Gradient clipping
         optimizer.apply_gradients(zip(grads, encoder.trainable_weights + decoder.trainable_weights))
-        return loss
+        
+        return total_loss, reconstruction_loss, kl_loss
 
     for epoch in range(epochs):
         print(f"Epoch {epoch + 1}/{epochs}")
+        epoch_loss = 0
+        step_count = 0
+        
         for step, batch in enumerate(data):
             images = tf.cast(batch['image'], tf.float32) / 255.0
-            # Debug: print image stats
-            if step == 0:
-                print(f"Image shape: {images.shape}")
-                print(f"Image min/max: {tf.reduce_min(images).numpy():.4f} / {tf.reduce_max(images).numpy():.4f}")
-                print(f"Image mean: {tf.reduce_mean(images).numpy():.4f}")
-            loss = train_step(images)
+            
+            # Data augmentation
+            if tf.random.uniform([]) > 0.5:
+                images = tf.image.flip_left_right(images)
+            images = tf.image.random_brightness(images, 0.1)
+            images = tf.image.random_contrast(images, 0.9, 1.1)
+            
+            loss, recon_loss, kl_loss = train_step(images, global_step)
+            epoch_loss += loss
+            step_count += 1
+            global_step.assign_add(1)
+            
             if step % 100 == 0:
-                print(f"Step {step}, Loss: {loss.numpy():.6f}")
+                print(f"Step {step}, Total: {loss.numpy():.4f}, Recon: {recon_loss.numpy():.4f}, KL: {kl_loss.numpy():.4f}")
+        
+        avg_loss = epoch_loss / step_count
+        print(f"Epoch {epoch + 1} Average Loss: {avg_loss:.4f}")
+        
         # Save model checkpoints
         encoder.save_weights(f"encoder.weights.h5")
         decoder.save_weights(f"decoder.weights.h5")
+    
     print("Training completed.")
 
 def buildInverseClassifier(latent_dim):
@@ -136,19 +222,25 @@ def buildInverseClassifier(latent_dim):
     return inverse_classifier
 
 def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch_size=32, latent_dim=128):
-    """Train inverse classifier to map from attributes to latent space"""
-    optimizer = tf.keras.optimizers.Adam()
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     mse_loss_fn = tf.keras.losses.MeanSquaredError()
     
     @tf.function
     def train_step(x, y):
         with tf.GradientTape() as tape:
-            z_real = encoder(x, training=False)  # Get real latent codes
-            z_pred = inverse_classifier(y, training=True)  # Predict latent from attributes
-            loss = mse_loss_fn(z_real, z_pred)
-        grads = tape.gradient(loss, inverse_classifier.trainable_weights)
+            z_mean, z_log_var, z_real = encoder(x, training=False)
+            z_pred = inverse_classifier(y, training=True)
+            
+            # Use z_mean for more stable training
+            loss = mse_loss_fn(z_mean, z_pred)
+            
+            # Add L2 regularization
+            l2_loss = tf.add_n([tf.nn.l2_loss(w) for w in inverse_classifier.trainable_weights])
+            total_loss = loss + 0.0001 * l2_loss
+            
+        grads = tape.gradient(total_loss, inverse_classifier.trainable_weights)
         optimizer.apply_gradients(zip(grads, inverse_classifier.trainable_weights))
-        return loss
+        return total_loss
 
     for epoch in range(epochs):
         print(f"Inverse Classifier Epoch {epoch + 1}/{epochs}")
@@ -161,25 +253,24 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
                 attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
             attributes = tf.stack(attr_list, axis=1)
             
-            loss = train_step(images, attributes)
+            total_loss = train_step(images, attributes)
             if step % 100 == 0:
-                print(f"Step {step}, Loss: {loss.numpy():.6f}")
+                print(f"Step {step}, Loss: {total_loss.numpy():.6f}")
         
         # Save model checkpoints
         inverse_classifier.save_weights(f"inverse_classifier.weights.h5")
     print("Inverse classifier training completed.")
 
 def generate_image_from_features(feature_list, inverse_classifier, decoder, attribute_names=None):
-    # Convert to tensor and add batch dimension
     features = tf.constant([feature_list], dtype=tf.float32)
-    
-    # Map features to latent space
     latent_code = inverse_classifier(features, training=False)
     
-    # Generate image from latent code
-    generated_image = decoder(latent_code, training=False)
+    # Add slight noise for variation
+    noise = tf.random.normal(tf.shape(latent_code), stddev=0.1)
+    latent_code = latent_code + noise
     
-    return generated_image[0].numpy()  # Remove batch dimension
+    generated_image = decoder(latent_code, training=False)
+    return generated_image[0].numpy()
 
 def format_attributes(attributes_dict, ds_info, max_attrs=5):
     """Format CelebA attributes into readable descriptions"""
@@ -208,7 +299,7 @@ def display_reconstructions(encoder, decoder, data, num_images=5):
     print(f"Display - Image shape: {images.shape}")
     print(f"Display - Image min/max: {tf.reduce_min(images).numpy():.4f} / {tf.reduce_max(images).numpy():.4f}")
     
-    z = encoder(images[:num_images])
+    z_mean, z_log_var, z = encoder(images[:num_images])
     reconstructions = decoder(z)
 
     plt.figure(figsize=(15, 10))
@@ -275,11 +366,12 @@ def create_feature_vector_from_descriptions(descriptions, attribute_names=None, 
     return feature_vector
 
 if __name__ == "__main__":
-    latent_dim = 128
-    batch_size = 128
-    epochs = 3
+    latent_dim = 256  # Increased latent dimension
+    batch_size = 64   # Reduced batch size for better gradients
+    epochs = 5       # More epochs
 
     desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
+    intensities = [0.8, 0.9, 0.7, 0.8]
     feature_vector = create_feature_vector_from_descriptions(desired_features)
 
     # Prepare the dataset - keep attributes in the data

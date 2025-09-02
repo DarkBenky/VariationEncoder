@@ -1,0 +1,884 @@
+tfds.core.DatasetInfo(
+    name='celeb_a',
+    full_name='celeb_a/2.1.0',
+    description="""
+    CelebFaces Attributes Dataset (CelebA) is a large-scale face attributes dataset
+    with more than 200K celebrity images, each with 40 attribute annotations. The
+    images in this dataset cover large pose variations and background clutter.
+    CelebA has large diversities, large quantities, and rich annotations,
+    including - 10,177 number of identities, - 202,599 number of face images, and -
+    5 landmark locations, 40 binary attributes annotations per image.
+
+    The dataset can be employed as the training and test sets for the following
+    computer vision tasks: face attribute recognition, face detection, and landmark
+    (or facial part) localization.
+
+    Note: CelebA dataset may contain potential bias. The fairness indicators
+    [example](https://www.tensorflow.org/responsible_ai/fairness_indicators/tutorials/Fairness_Indicators_TFCO_CelebA_Case_Study)
+    goes into detail about several considerations to keep in mind while using the
+    CelebA dataset.
+    """,
+    homepage='http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html',
+    data_dir='/home/user/tensorflow_datasets/celeb_a/2.1.0',
+    file_format=tfrecord,
+    download_size=1.39 GiB,
+    dataset_size=1.63 GiB,
+    features=FeaturesDict({
+        'attributes': FeaturesDict({
+            '5_o_Clock_Shadow': bool,
+            'Arched_Eyebrows': bool,
+            'Attractive': bool,
+            'Bags_Under_Eyes': bool,
+            'Bald': bool,
+            'Bangs': bool,
+            'Big_Lips': bool,
+            'Big_Nose': bool,
+            'Black_Hair': bool,
+            'Blond_Hair': bool,
+            'Blurry': bool,
+            'Brown_Hair': bool,
+            'Bushy_Eyebrows': bool,
+            'Chubby': bool,
+            'Double_Chin': bool,
+            'Eyeglasses': bool,
+            'Goatee': bool,
+            'Gray_Hair': bool,
+            'Heavy_Makeup': bool,
+            'High_Cheekbones': bool,
+            'Male': bool,
+            'Mouth_Slightly_Open': bool,
+            'Mustache': bool,
+            'Narrow_Eyes': bool,
+            'No_Beard': bool,
+            'Oval_Face': bool,
+            'Pale_Skin': bool,
+            'Pointy_Nose': bool,
+            'Receding_Hairline': bool,
+            'Rosy_Cheeks': bool,
+            'Sideburns': bool,
+            'Smiling': bool,
+            'Straight_Hair': bool,
+            'Wavy_Hair': bool,
+            'Wearing_Earrings': bool,
+            'Wearing_Hat': bool,
+            'Wearing_Lipstick': bool,
+            'Wearing_Necklace': bool,
+            'Wearing_Necktie': bool,
+            'Young': bool,
+        }),
+        'identity': FeaturesDict({
+            'Identity_No': int64,
+        }),
+        'image': Image(shape=(218, 178, 3), dtype=uint8),
+        'landmarks': FeaturesDict({
+            'lefteye_x': int64,
+            'lefteye_y': int64,
+            'leftmouth_x': int64,
+            'leftmouth_y': int64,
+            'nose_x': int64,
+            'nose_y': int64,
+            'righteye_x': int64,
+            'righteye_y': int64,
+            'rightmouth_x': int64,
+            'rightmouth_y': int64,
+        }),
+    }),
+    supervised_keys=None,
+    disable_shuffling=False,
+    nondeterministic_order=False,
+    splits={
+        'test': <SplitInfo num_examples=19962, num_shards=2>,
+        'train': <SplitInfo num_examples=162770, num_shards=16>,
+        'validation': <SplitInfo num_examples=19867, num_shards=2>,
+    },
+    citation="""@inproceedings{conf/iccv/LiuLWT15,
+      added-at = {2018-10-09T00:00:00.000+0200},
+      author = {Liu, Ziwei and Luo, Ping and Wang, Xiaogang and Tang, Xiaoou},
+      biburl = {https://www.bibsonomy.org/bibtex/250e4959be61db325d2f02c1d8cd7bfbb/dblp},
+      booktitle = {ICCV},
+      crossref = {conf/iccv/2015},
+      ee = {http://doi.ieeecomputersociety.org/10.1109/ICCV.2015.425},
+      interhash = {3f735aaa11957e73914bbe2ca9d5e702},
+      intrahash = {50e4959be61db325d2f02c1d8cd7bfbb},
+      isbn = {978-1-4673-8391-2},
+      keywords = {dblp},
+      pages = {3730-3738},
+      publisher = {IEEE Computer Society},
+      timestamp = {2018-10-11T11:43:28.000+0200},
+      title = {Deep Learning Face Attributes in the Wild.},
+      url = {http://dblp.uni-trier.de/db/conf/iccv/iccv2015.html#LiuLWT15},
+      year = 2015
+    }""",
+)
+FeaturesDict({
+    'attributes': FeaturesDict({
+        '5_o_Clock_Shadow': bool,
+        'Arched_Eyebrows': bool,
+        'Attractive': bool,
+        'Bags_Under_Eyes': bool,
+        'Bald': bool,
+        'Bangs': bool,
+        'Big_Lips': bool,
+        'Big_Nose': bool,
+        'Black_Hair': bool,
+        'Blond_Hair': bool,
+        'Blurry': bool,
+        'Brown_Hair': bool,
+        'Bushy_Eyebrows': bool,
+        'Chubby': bool,
+        'Double_Chin': bool,
+        'Eyeglasses': bool,
+        'Goatee': bool,
+        'Gray_Hair': bool,
+        'Heavy_Makeup': bool,
+        'High_Cheekbones': bool,
+        'Male': bool,
+        'Mouth_Slightly_Open': bool,
+        'Mustache': bool,
+        'Narrow_Eyes': bool,
+        'No_Beard': bool,
+        'Oval_Face': bool,
+        'Pale_Skin': bool,
+        'Pointy_Nose': bool,
+        'Receding_Hairline': bool,
+        'Rosy_Cheeks': bool,
+        'Sideburns': bool,
+        'Smiling': bool,
+        'Straight_Hair': bool,
+        'Wavy_Hair': bool,
+        'Wearing_Earrings': bool,
+        'Wearing_Hat': bool,
+        'Wearing_Lipstick': bool,
+        'Wearing_Necklace': bool,
+        'Wearing_Necktie': bool,
+        'Young': bool,
+    }),
+    'identity': FeaturesDict({
+        'Identity_No': int64,
+    }),
+    'image': Image(shape=(218, 178, 3), dtype=uint8),
+    'landmarks': FeaturesDict({
+        'lefteye_x': int64,
+        'lefteye_y': int64,
+        'leftmouth_x': int64,
+        'leftmouth_y': int64,
+        'nose_x': int64,
+        'nose_y': int64,
+        'righteye_x': int64,
+        'righteye_y': int64,
+        'rightmouth_x': int64,
+        'rightmouth_y': int64,
+    }),
+})
+Loading existing model weights...
+Display - Image shape: (64, 256, 256, 3)
+Display - Image min/max: 0.0000 / 1.0000
+Loading existing classifier weights...
+Loading existing inverse classifier weights...
+Starting training with wandb logging...
+VAE Epoch 1/25
+Step 0, Total: 88983.7891, Recon: 88983.7891, KL: 589.9223
+Step 100, Total: 77548.8516, Recon: 77538.0469, KL: 1080.7822
+Step 200, Total: 98152.6797, Recon: 98130.9219, KL: 1087.8660
+Step 300, Total: 101606.9688, Recon: 101574.4922, KL: 1082.5471
+Step 400, Total: 55864.4492, Recon: 55817.3320, KL: 1177.9377
+Step 500, Total: 95424.1328, Recon: 95372.3750, KL: 1035.0974
+Step 600, Total: 93569.6250, Recon: 93510.9219, KL: 978.3315
+Step 700, Total: 88309.5625, Recon: 88242.6875, KL: 955.3824
+Step 800, Total: 78344.8047, Recon: 78264.9062, KL: 998.7244
+Step 900, Total: 55474.2383, Recon: 55380.1172, KL: 1045.7810
+Step 1000, Total: 83711.1562, Recon: 83612.3750, KL: 987.7773
+Step 1100, Total: 72051.0234, Recon: 71947.4219, KL: 941.8237
+Step 1200, Total: 93376.8906, Recon: 93265.5703, KL: 927.6428
+Step 1300, Total: 80152.8984, Recon: 80027.5469, KL: 964.2435
+Step 1400, Total: 56520.9336, Recon: 56377.8750, KL: 1021.8455
+Step 1500, Total: 88305.2578, Recon: 88171.0469, KL: 894.7410
+Step 1600, Total: 97479.8438, Recon: 97349.3125, KL: 815.8099
+Step 1700, Total: 99656.7344, Recon: 99516.3750, KL: 825.6490
+Step 1800, Total: 103204.9922, Recon: 103058.1328, KL: 815.8643
+Step 1900, Total: 84146.0078, Recon: 83975.5625, KL: 897.0862
+Step 2000, Total: 83561.1250, Recon: 83395.2500, KL: 829.3732
+Step 2100, Total: 98793.8281, Recon: 98622.1406, KL: 817.5530
+Step 2200, Total: 85607.9609, Recon: 85426.0469, KL: 826.8801
+Step 2300, Total: 100460.3516, Recon: 100288.4844, KL: 747.2397
+Step 2400, Total: 100332.0234, Recon: 100148.9297, KL: 762.8964
+Step 2500, Total: 76935.7031, Recon: 76726.3828, KL: 837.2710
+Epoch 1 Average Loss: 87106.4688
+VAE Epoch 2/25
+Step 0, Total: 82191.4844, Recon: 81993.5312, KL: 778.1096
+Step 100, Total: 86027.0781, Recon: 85810.5234, KL: 819.0547
+Step 200, Total: 71237.0469, Recon: 71010.9688, KL: 823.8927
+Step 300, Total: 93747.5703, Recon: 93531.9766, KL: 758.0621
+Step 400, Total: 93260.3281, Recon: 93044.8359, KL: 731.9678
+Step 500, Total: 90849.2891, Recon: 90623.0859, KL: 743.1199
+Step 600, Total: 77292.0469, Recon: 77037.2734, KL: 810.3563
+Step 700, Total: 90700.2969, Recon: 90455.0625, KL: 755.9723
+Step 800, Total: 88783.3047, Recon: 88522.1172, KL: 781.0730
+Step 900, Total: 99957.7734, Recon: 99707.7656, KL: 725.9129
+Step 1000, Total: 89399.7812, Recon: 89143.0000, KL: 724.5512
+Step 1100, Total: 92714.0312, Recon: 92456.2344, KL: 707.4498
+Step 1200, Total: 65609.7578, Recon: 65307.6094, KL: 807.0268
+Step 1300, Total: 95032.9375, Recon: 94748.6562, KL: 739.5432
+Step 1400, Total: 83246.5312, Recon: 82936.0938, KL: 787.1145
+Step 1500, Total: 105432.9219, Recon: 105148.1719, KL: 704.1387
+Step 1600, Total: 78112.4219, Recon: 77806.4297, KL: 738.3914
+Step 1700, Total: 82898.2422, Recon: 82585.4375, KL: 737.0547
+Step 1800, Total: 89229.8984, Recon: 88926.4453, KL: 698.5574
+Step 1900, Total: 84450.3828, Recon: 84116.2578, KL: 751.8564
+Step 2000, Total: 92145.1641, Recon: 91820.2188, KL: 715.1168
+Step 2100, Total: 94646.1406, Recon: 94307.1328, KL: 729.9946
+Step 2200, Total: 92077.0625, Recon: 91756.2891, KL: 676.1738
+Step 2300, Total: 91270.6562, Recon: 90942.3750, KL: 677.7026
+Step 2400, Total: 96877.7344, Recon: 96549.7734, KL: 663.3524
+Step 2500, Total: 97934.2188, Recon: 97605.2031, KL: 652.2957
+Epoch 2 Average Loss: 87270.8828
+VAE Epoch 3/25
+Step 0, Total: 86863.0000, Recon: 86504.5938, KL: 704.4163
+Step 100, Total: 92080.2734, Recon: 91722.4062, KL: 689.7968
+Step 200, Total: 91893.4844, Recon: 91539.6875, KL: 669.0515
+Step 300, Total: 88609.1484, Recon: 88239.4062, KL: 686.2383
+Step 400, Total: 81637.7812, Recon: 81268.3438, KL: 673.1735
+Step 500, Total: 93552.9609, Recon: 93188.3750, KL: 652.4504
+Step 600, Total: 101475.5234, Recon: 101114.0391, KL: 635.5271
+Step 700, Total: 92481.3828, Recon: 92082.1953, KL: 689.6857
+Step 800, Total: 79341.7578, Recon: 78929.5234, KL: 700.1285
+Step 900, Total: 73625.6172, Recon: 73213.3359, KL: 688.5150
+Step 1000, Total: 86069.0312, Recon: 85653.7266, KL: 682.1750
+Step 1100, Total: 91355.0391, Recon: 90971.9297, KL: 619.1122
+Step 1200, Total: 59128.0156, Recon: 58671.3438, KL: 726.2606
+Step 1300, Total: 85182.3672, Recon: 84750.9531, KL: 675.3492
+Step 1400, Total: 95784.3906, Recon: 95358.8594, KL: 655.8733
+Step 1500, Total: 86048.5078, Recon: 85621.7656, KL: 647.7541
+Step 1600, Total: 96383.4531, Recon: 95965.7500, KL: 624.5508
+Step 1700, Total: 100064.1797, Recon: 99631.7812, KL: 637.0078
+Step 1800, Total: 101222.3281, Recon: 100797.5156, KL: 616.7467
+Step 1900, Total: 76924.8906, Recon: 76441.3438, KL: 691.9667
+Step 2000, Total: 93847.8203, Recon: 93405.9375, KL: 623.4202
+Step 2100, Total: 96790.3906, Recon: 96368.6875, KL: 586.6779
+Step 2200, Total: 45289.5117, Recon: 44774.8164, KL: 706.2230
+Step 2300, Total: 102521.1484, Recon: 102086.2031, KL: 588.7139
+Step 2400, Total: 78147.5156, Recon: 77663.7500, KL: 646.0497
+Step 2500, Total: 93894.0938, Recon: 93442.2969, KL: 595.4133
+Epoch 3 Average Loss: 87096.2344
+VAE Epoch 4/25
+Step 0, Total: 39917.1094, Recon: 39381.3750, KL: 701.9596
+Step 100, Total: 96184.8984, Recon: 95705.9375, KL: 619.4530
+Step 200, Total: 97267.8203, Recon: 96810.7188, KL: 583.6310
+Step 300, Total: 97096.9453, Recon: 96641.7188, KL: 573.9143
+Step 400, Total: 89927.8047, Recon: 89446.9531, KL: 598.6665
+Step 500, Total: 89114.7891, Recon: 88617.2031, KL: 611.8884
+Step 600, Total: 98671.1953, Recon: 98176.5625, KL: 600.8674
+Step 700, Total: 75159.8516, Recon: 74618.4219, KL: 649.8179
+Step 800, Total: 88899.3359, Recon: 88399.2500, KL: 593.0797
+Step 900, Total: 81172.6797, Recon: 80670.3984, KL: 588.7072
+Step 1000, Total: 87348.4297, Recon: 86820.6406, KL: 611.4290
+Step 1100, Total: 71911.5000, Recon: 71349.3984, KL: 643.7302
+Step 1200, Total: 80456.4453, Recon: 79916.8672, KL: 610.9329
+Step 1300, Total: 70974.6797, Recon: 70402.7109, KL: 640.3611
+Step 1400, Total: 103975.3750, Recon: 103477.8281, KL: 550.8672
+Step 1500, Total: 81763.9219, Recon: 81210.4297, KL: 606.0981
+Step 1600, Total: 84792.0391, Recon: 84246.5312, KL: 590.8846
+Step 1700, Total: 97380.3125, Recon: 96854.8203, KL: 563.1055
+Step 1800, Total: 85781.8516, Recon: 85195.5625, KL: 621.5918
+Step 1900, Total: 97460.4453, Recon: 96936.6016, KL: 549.5612
+Step 2000, Total: 97868.6250, Recon: 97337.8125, KL: 551.0950
+Step 2100, Total: 87036.9062, Recon: 86479.1406, KL: 573.1258
+Step 2200, Total: 76942.4141, Recon: 76365.3984, KL: 586.8738
+Step 2300, Total: 95587.0859, Recon: 95031.2188, KL: 559.6719
+Step 2400, Total: 78484.3906, Recon: 77849.1719, KL: 635.2188
+Step 2500, Total: 101628.3438, Recon: 101093.2969, KL: 535.0438
+Epoch 4 Average Loss: 87190.6094
+VAE Epoch 5/25
+Step 0, Total: 98322.0938, Recon: 97768.4062, KL: 553.6888
+Step 100, Total: 75364.6875, Recon: 74771.9766, KL: 592.7122
+Step 200, Total: 89598.9531, Recon: 89057.8125, KL: 541.1421
+Step 300, Total: 87085.5156, Recon: 86486.2344, KL: 599.2829
+Step 400, Total: 97598.0156, Recon: 97011.2188, KL: 586.8006
+Step 500, Total: 99341.0156, Recon: 98781.1172, KL: 559.8945
+Step 600, Total: 96938.8359, Recon: 96366.7969, KL: 572.0405
+Step 700, Total: 54968.7266, Recon: 54325.1367, KL: 643.5905
+Step 800, Total: 79052.7188, Recon: 78445.3750, KL: 607.3434
+Step 900, Total: 80500.1094, Recon: 79931.2812, KL: 568.8281
+Step 1000, Total: 88826.6719, Recon: 88252.3672, KL: 574.3030
+Step 1100, Total: 91372.4062, Recon: 90769.7344, KL: 602.6715
+Step 1200, Total: 86852.2500, Recon: 86287.0938, KL: 565.1533
+Step 1300, Total: 91065.6484, Recon: 90467.0938, KL: 598.5543
+Step 1400, Total: 94494.1172, Recon: 93926.0312, KL: 568.0851
+Step 1500, Total: 78623.8359, Recon: 78030.1875, KL: 593.6487
+Step 1600, Total: 93810.6641, Recon: 93217.5234, KL: 593.1399
+Step 1700, Total: 89734.6406, Recon: 89162.9375, KL: 571.7017
+Step 1800, Total: 70513.1250, Recon: 69888.9844, KL: 624.1372
+Step 1900, Total: 49960.4609, Recon: 49305.9844, KL: 654.4777
+Step 2000, Total: 80386.0469, Recon: 79795.1953, KL: 590.8551
+Step 2100, Total: 96262.4609, Recon: 95711.6797, KL: 550.7800
+Step 2200, Total: 90691.2422, Recon: 90110.9219, KL: 580.3228
+Step 2300, Total: 95923.7812, Recon: 95375.7734, KL: 548.0109
+Step 2400, Total: 82317.6875, Recon: 81711.8281, KL: 605.8586
+Step 2500, Total: 99856.9766, Recon: 99265.4219, KL: 591.5585
+Epoch 5 Average Loss: 87380.5000
+VAE Epoch 6/25
+Step 0, Total: 46221.8594, Recon: 45548.3555, KL: 673.5022
+Step 100, Total: 67582.3828, Recon: 66948.2734, KL: 634.1058
+Step 200, Total: 63124.5664, Recon: 62494.2773, KL: 630.2886
+Step 300, Total: 94813.9766, Recon: 94225.2188, KL: 588.7563
+Step 400, Total: 104422.9531, Recon: 103890.5156, KL: 532.4410
+Step 500, Total: 88714.0391, Recon: 88128.5469, KL: 585.4925
+Step 600, Total: 91509.4219, Recon: 90941.5156, KL: 567.9084
+Step 700, Total: 97084.0391, Recon: 96496.2344, KL: 587.8022
+Step 800, Total: 88015.0781, Recon: 87449.6484, KL: 565.4285
+Step 900, Total: 60560.8945, Recon: 59938.2109, KL: 622.6853
+Step 1000, Total: 96793.9844, Recon: 96262.2344, KL: 531.7509
+Step 1100, Total: 91784.2812, Recon: 91212.8672, KL: 571.4158
+Step 1200, Total: 87306.8125, Recon: 86731.6953, KL: 575.1204
+Step 1300, Total: 102799.9141, Recon: 102259.0000, KL: 540.9147
+Step 1400, Total: 98834.9531, Recon: 98274.3281, KL: 560.6266
+Step 1500, Total: 91836.7891, Recon: 91273.3906, KL: 563.3999
+Step 1600, Total: 95214.5703, Recon: 94684.0781, KL: 530.4901
+Step 1700, Total: 67333.5781, Recon: 66731.5156, KL: 602.0637
+Step 1800, Total: 78006.0703, Recon: 77391.1172, KL: 614.9496
+Step 1900, Total: 91374.7344, Recon: 90808.5625, KL: 566.1714
+Step 2000, Total: 90290.1406, Recon: 89725.7500, KL: 564.3893
+Step 2100, Total: 89641.5391, Recon: 89037.3984, KL: 604.1439
+Step 2200, Total: 73870.3359, Recon: 73257.1797, KL: 613.1594
+Step 2300, Total: 79746.4141, Recon: 79122.3672, KL: 624.0470
+Step 2400, Total: 95074.1797, Recon: 94472.2031, KL: 601.9754
+Step 2500, Total: 92370.4922, Recon: 91788.7656, KL: 581.7283
+Epoch 6 Average Loss: 87571.3750
+VAE Epoch 7/25
+Step 0, Total: 92527.8828, Recon: 91951.7969, KL: 576.0862
+Step 100, Total: 81828.6484, Recon: 81264.2109, KL: 564.4352
+Step 200, Total: 96741.2500, Recon: 96221.4922, KL: 519.7596
+Step 300, Total: 90538.3750, Recon: 89943.2188, KL: 595.1541
+Step 400, Total: 89806.8984, Recon: 89224.9766, KL: 581.9185
+Step 500, Total: 88221.8516, Recon: 87657.5156, KL: 564.3389
+Step 600, Total: 94710.2969, Recon: 94182.0469, KL: 528.2480
+Step 700, Total: 80551.6328, Recon: 79980.2734, KL: 571.3621
+Step 800, Total: 95665.7578, Recon: 95140.8984, KL: 524.8600
+Step 900, Total: 75925.4766, Recon: 75358.4062, KL: 567.0719
+Step 1000, Total: 84482.9453, Recon: 83892.4688, KL: 590.4734
+Step 1100, Total: 87194.9844, Recon: 86601.4531, KL: 593.5310
+Step 1200, Total: 77358.2422, Recon: 76750.0781, KL: 608.1631
+Step 1300, Total: 95786.6641, Recon: 95219.0938, KL: 567.5682
+Step 1400, Total: 97805.5859, Recon: 97228.3047, KL: 577.2848
+Step 1500, Total: 87000.4766, Recon: 86406.5391, KL: 593.9379
+Step 1600, Total: 68236.8359, Recon: 67605.5234, KL: 631.3124
+Step 1700, Total: 86318.6094, Recon: 85741.4062, KL: 577.2006
+Step 1800, Total: 87873.3203, Recon: 87299.4766, KL: 573.8461
+Step 1900, Total: 92407.9766, Recon: 91828.7578, KL: 579.2186
+Step 2000, Total: 75479.3906, Recon: 74859.6562, KL: 619.7363
+Step 2100, Total: 66178.8125, Recon: 65534.8711, KL: 643.9448
+Step 2200, Total: 63918.1797, Recon: 63302.0469, KL: 616.1333
+Step 2300, Total: 85735.8125, Recon: 85182.2188, KL: 553.5941
+Step 2400, Total: 95117.2734, Recon: 94580.6094, KL: 536.6614
+Step 2500, Total: 94747.4375, Recon: 94175.7500, KL: 571.6893
+Epoch 7 Average Loss: 87638.5312
+VAE Epoch 8/25
+Step 0, Total: 89869.3047, Recon: 89296.3906, KL: 572.9147
+Step 100, Total: 85572.9844, Recon: 85024.1016, KL: 548.8800
+Step 200, Total: 86296.4688, Recon: 85702.4141, KL: 594.0556
+Step 300, Total: 86744.8594, Recon: 86165.8516, KL: 579.0092
+Step 400, Total: 96581.6641, Recon: 96020.3047, KL: 561.3620
+Step 500, Total: 89607.1875, Recon: 89040.5547, KL: 566.6339
+Step 600, Total: 88434.7734, Recon: 87871.7031, KL: 563.0698
+Step 700, Total: 93751.7109, Recon: 93210.2500, KL: 541.4628
+Step 800, Total: 92204.2500, Recon: 91671.5000, KL: 532.7462
+Step 900, Total: 100988.5156, Recon: 100460.9297, KL: 527.5834
+Step 1000, Total: 76052.4922, Recon: 75450.8516, KL: 601.6383
+Step 1100, Total: 83689.7969, Recon: 83086.9922, KL: 602.8075
+Step 1200, Total: 95043.7578, Recon: 94472.7656, KL: 570.9940
+Step 1300, Total: 99190.5781, Recon: 98634.0234, KL: 556.5585
+Step 1400, Total: 84417.3281, Recon: 83859.2031, KL: 558.1279
+Step 1500, Total: 104080.0469, Recon: 103519.5625, KL: 560.4812
+Step 1600, Total: 75684.2578, Recon: 75080.8438, KL: 603.4159
+Step 1700, Total: 66106.3047, Recon: 65457.5859, KL: 648.7201
+Step 1800, Total: 85169.2188, Recon: 84605.2734, KL: 563.9424
+Step 1900, Total: 92259.3828, Recon: 91681.0469, KL: 578.3356
+Step 2000, Total: 58922.7500, Recon: 58259.4023, KL: 663.3481
+Step 2100, Total: 88537.2344, Recon: 87957.5547, KL: 579.6787
+Step 2200, Total: 97362.6953, Recon: 96809.1719, KL: 553.5244
+Step 2300, Total: 98208.1797, Recon: 97693.7188, KL: 514.4646
+Step 2400, Total: 88025.5469, Recon: 87453.6719, KL: 571.8750
+Step 2500, Total: 68415.4609, Recon: 67763.5938, KL: 651.8669
+Epoch 8 Average Loss: 87500.0938
+VAE Epoch 9/25
+Step 0, Total: 89912.5938, Recon: 89372.1250, KL: 540.4677
+Step 100, Total: 96140.4375, Recon: 95546.1875, KL: 594.2463
+Step 200, Total: 80418.1953, Recon: 79815.6719, KL: 602.5236
+Step 300, Total: 90037.7109, Recon: 89478.3594, KL: 559.3505
+Step 400, Total: 94687.9922, Recon: 94170.5859, KL: 517.4087
+Step 500, Total: 82405.2266, Recon: 81798.1484, KL: 607.0790
+Step 600, Total: 92828.3906, Recon: 92263.4844, KL: 564.9092
+Step 700, Total: 86865.7656, Recon: 86296.5312, KL: 569.2350
+Step 800, Total: 64107.0742, Recon: 63463.9102, KL: 643.1637
+Step 900, Total: 88935.3984, Recon: 88382.1797, KL: 553.2190
+Step 1000, Total: 83944.3359, Recon: 83361.9688, KL: 582.3657
+Step 1100, Total: 98531.9297, Recon: 97982.6562, KL: 549.2728
+Step 1200, Total: 84158.4297, Recon: 83558.2266, KL: 600.2007
+Step 1300, Total: 84687.7422, Recon: 84080.9844, KL: 606.7604
+Step 1400, Total: 96926.2891, Recon: 96368.4844, KL: 557.8018
+Step 1500, Total: 91073.3516, Recon: 90536.1562, KL: 537.1940
+Step 1600, Total: 95200.2031, Recon: 94627.5312, KL: 572.6743
+Step 1700, Total: 91881.4375, Recon: 91310.3203, KL: 571.1165
+Step 1800, Total: 50994.0820, Recon: 50320.8398, KL: 673.2403
+Step 1900, Total: 96447.8125, Recon: 95933.1797, KL: 514.6289
+Step 2000, Total: 97139.3750, Recon: 96599.9844, KL: 539.3873
+Step 2100, Total: 100720.5859, Recon: 100122.6875, KL: 597.9023
+Step 2200, Total: 79453.3750, Recon: 78866.9688, KL: 586.4030
+Step 2300, Total: 79799.0703, Recon: 79224.8906, KL: 574.1826
+Step 2400, Total: 92517.4531, Recon: 91970.6719, KL: 546.7849
+Step 2500, Total: 86110.0234, Recon: 85530.8125, KL: 579.2101
+Epoch 9 Average Loss: 87759.4844
+VAE Epoch 10/25
+Step 0, Total: 102213.7734, Recon: 101668.8750, KL: 544.8987
+Step 100, Total: 97192.4688, Recon: 96639.2422, KL: 553.2267
+Step 200, Total: 102770.5234, Recon: 102228.8438, KL: 541.6813
+Step 300, Total: 84197.4766, Recon: 83604.0625, KL: 593.4143
+Step 400, Total: 91098.0312, Recon: 90540.3047, KL: 557.7281
+Step 500, Total: 97204.9844, Recon: 96675.9219, KL: 529.0664
+Step 600, Total: 85136.6094, Recon: 84540.1719, KL: 596.4412
+Step 700, Total: 95220.0625, Recon: 94656.8047, KL: 563.2567
+Step 800, Total: 91693.9219, Recon: 91158.4375, KL: 535.4841
+Step 900, Total: 99852.0391, Recon: 99307.2656, KL: 544.7709
+Step 1000, Total: 95694.0078, Recon: 95154.0781, KL: 539.9311
+Step 1100, Total: 91224.7656, Recon: 90656.7656, KL: 568.0014
+Step 1200, Total: 80484.3125, Recon: 79897.8125, KL: 586.4976
+Step 1300, Total: 91258.4219, Recon: 90694.7578, KL: 563.6606
+Step 1400, Total: 102534.3906, Recon: 102003.9609, KL: 530.4276
+Step 1500, Total: 88944.5938, Recon: 88359.8047, KL: 584.7879
+Step 1600, Total: 83010.2031, Recon: 82377.0078, KL: 633.1990
+Step 1700, Total: 89089.9375, Recon: 88493.0391, KL: 596.8974
+Step 1800, Total: 96839.2344, Recon: 96287.3594, KL: 551.8773
+Step 1900, Total: 98330.1484, Recon: 97758.4531, KL: 571.6934
+Step 2000, Total: 65371.0273, Recon: 64764.9219, KL: 606.1061
+Step 2100, Total: 92215.7734, Recon: 91641.0391, KL: 574.7368
+Step 2200, Total: 98900.7266, Recon: 98337.0781, KL: 563.6499
+Step 2300, Total: 97828.5859, Recon: 97279.8359, KL: 548.7538
+Step 2400, Total: 95444.6328, Recon: 94889.9531, KL: 554.6781
+Step 2500, Total: 100594.4141, Recon: 100018.3125, KL: 576.1008
+Epoch 10 Average Loss: 87818.6172
+VAE Epoch 11/25
+Step 0, Total: 79961.0625, Recon: 79388.1562, KL: 572.9050
+Step 100, Total: 86276.3516, Recon: 85682.1406, KL: 594.2135
+Step 200, Total: 79470.4375, Recon: 78883.8828, KL: 586.5570
+Step 300, Total: 80336.8516, Recon: 79764.3047, KL: 572.5434
+Step 400, Total: 99047.6328, Recon: 98545.3281, KL: 502.3082
+Step 500, Total: 84252.7422, Recon: 83682.3984, KL: 570.3462
+Step 600, Total: 103020.6406, Recon: 102500.6484, KL: 519.9946
+Step 700, Total: 96548.4062, Recon: 96028.2969, KL: 520.1083
+Step 800, Total: 75642.0234, Recon: 75044.9219, KL: 597.1018
+Step 900, Total: 103394.3516, Recon: 102887.6094, KL: 506.7421
+Step 1000, Total: 63100.8359, Recon: 62461.5352, KL: 639.2994
+Step 1100, Total: 90389.2812, Recon: 89799.1953, KL: 590.0865
+Step 1200, Total: 96556.7734, Recon: 95985.4453, KL: 571.3245
+Step 1300, Total: 90274.9453, Recon: 89714.0781, KL: 560.8666
+Step 1400, Total: 100261.2891, Recon: 99693.5469, KL: 567.7411
+Step 1500, Total: 100541.2812, Recon: 99998.1875, KL: 543.0963
+Step 1600, Total: 76488.6094, Recon: 75861.3203, KL: 627.2854
+Step 1700, Total: 75895.8047, Recon: 75303.3906, KL: 592.4102
+Step 1800, Total: 93542.9531, Recon: 93021.1797, KL: 521.7717
+Step 1900, Total: 88724.8984, Recon: 88167.8203, KL: 557.0756
+Step 2000, Total: 81144.8359, Recon: 80568.3047, KL: 576.5276
+Step 2100, Total: 95075.5859, Recon: 94516.9062, KL: 558.6793
+Step 2200, Total: 89184.6719, Recon: 88585.5312, KL: 599.1426
+Step 2300, Total: 91805.0469, Recon: 91233.1641, KL: 571.8851
+Step 2400, Total: 83731.0703, Recon: 83147.7891, KL: 583.2836
+Step 2500, Total: 105733.8125, Recon: 105203.0391, KL: 530.7764
+Epoch 11 Average Loss: 87188.5000
+VAE Epoch 12/25
+Step 0, Total: 102336.1875, Recon: 101802.3281, KL: 533.8585
+Step 100, Total: 102932.1406, Recon: 102394.9922, KL: 537.1515
+Step 200, Total: 92593.3125, Recon: 92022.7812, KL: 570.5335
+Step 300, Total: 87690.8359, Recon: 87110.3594, KL: 580.4769
+Step 400, Total: 100634.5000, Recon: 100126.1719, KL: 508.3304
+Step 500, Total: 79343.6328, Recon: 78743.3594, KL: 600.2732
+Step 600, Total: 99124.9844, Recon: 98577.1875, KL: 547.7969
+Step 700, Total: 95343.5078, Recon: 94822.5312, KL: 520.9728
+Step 800, Total: 88539.6875, Recon: 87981.4375, KL: 558.2476
+Step 900, Total: 93426.7656, Recon: 92889.1875, KL: 537.5775
+Step 1000, Total: 81847.2578, Recon: 81241.3906, KL: 605.8682
+Step 1100, Total: 75459.7812, Recon: 74863.1797, KL: 596.6010
+Step 1200, Total: 96357.7734, Recon: 95754.0234, KL: 603.7515
+Step 1300, Total: 88954.2734, Recon: 88381.8828, KL: 572.3934
+Step 1400, Total: 66756.0859, Recon: 66132.8203, KL: 623.2644
+Step 1500, Total: 94317.6406, Recon: 93767.9609, KL: 549.6830
+Step 1600, Total: 79327.0938, Recon: 78752.3906, KL: 574.7035
+Step 1700, Total: 82999.7344, Recon: 82412.2344, KL: 587.5039
+Step 1800, Total: 97996.5000, Recon: 97425.8750, KL: 570.6251
+Step 1900, Total: 100977.3203, Recon: 100432.0078, KL: 545.3157
+Step 2000, Total: 98056.1094, Recon: 97492.5391, KL: 563.5696
+Step 2100, Total: 61270.7969, Recon: 60617.9883, KL: 652.8066
+Step 2200, Total: 86247.7734, Recon: 85658.0234, KL: 589.7471
+Step 2300, Total: 97570.9531, Recon: 97045.2344, KL: 525.7206
+Step 2400, Total: 67879.2031, Recon: 67257.8594, KL: 621.3455
+Step 2500, Total: 83971.9609, Recon: 83386.2422, KL: 585.7216
+Epoch 12 Average Loss: 87813.1641
+VAE Epoch 13/25
+Step 0, Total: 67633.9297, Recon: 67023.5938, KL: 610.3337
+Step 100, Total: 86756.6641, Recon: 86203.0703, KL: 553.5928
+Step 200, Total: 92015.2266, Recon: 91466.6719, KL: 548.5545
+Step 300, Total: 93181.6172, Recon: 92603.7031, KL: 577.9150
+Step 400, Total: 73512.2656, Recon: 72938.0000, KL: 574.2666
+Step 500, Total: 86904.7734, Recon: 86340.5703, KL: 564.2048
+Step 600, Total: 86164.5703, Recon: 85628.4219, KL: 536.1450
+Step 700, Total: 77332.7734, Recon: 76745.5156, KL: 587.2578
+Step 800, Total: 80548.7422, Recon: 79962.6719, KL: 586.0701
+Step 900, Total: 94060.9453, Recon: 93506.8438, KL: 554.1013
+Step 1000, Total: 98681.1641, Recon: 98148.4375, KL: 532.7269
+Step 1100, Total: 104774.0469, Recon: 104274.4844, KL: 499.5645
+Step 1200, Total: 87927.1406, Recon: 87346.3203, KL: 580.8228
+Step 1300, Total: 90102.0703, Recon: 89531.8828, KL: 570.1843
+Step 1400, Total: 88664.3516, Recon: 88084.2266, KL: 580.1227
+Step 1500, Total: 80444.4453, Recon: 79861.8750, KL: 582.5736
+Step 1600, Total: 94327.0547, Recon: 93751.5000, KL: 575.5554
+Step 1700, Total: 98625.4844, Recon: 98072.0781, KL: 553.4031
+Step 1800, Total: 48077.0234, Recon: 47433.5312, KL: 643.4911
+Step 1900, Total: 100950.8750, Recon: 100392.4688, KL: 558.4092
+Step 2000, Total: 89163.6172, Recon: 88583.5312, KL: 580.0851
+Step 2100, Total: 77172.7422, Recon: 76593.3438, KL: 579.4005
+Step 2200, Total: 92786.4688, Recon: 92213.1875, KL: 573.2775
+Step 2300, Total: 92440.5859, Recon: 91912.9062, KL: 527.6803
+Step 2400, Total: 79970.6953, Recon: 79368.5000, KL: 602.1958
+Step 2500, Total: 91363.2578, Recon: 90769.6172, KL: 593.6394
+Epoch 13 Average Loss: 87255.3359
+VAE Epoch 14/25
+Step 0, Total: 89110.0625, Recon: 88545.4531, KL: 564.6078
+Step 100, Total: 96271.6016, Recon: 95747.6406, KL: 523.9597
+Step 200, Total: 61533.7969, Recon: 60905.5625, KL: 628.2333
+Step 300, Total: 89423.9062, Recon: 88843.7031, KL: 580.2042
+Step 400, Total: 92468.2969, Recon: 91933.9766, KL: 534.3203
+Step 500, Total: 86855.2188, Recon: 86268.1562, KL: 587.0618
+Step 600, Total: 87953.2109, Recon: 87391.6094, KL: 561.6016
+Step 700, Total: 88736.9141, Recon: 88155.4688, KL: 581.4452
+Step 800, Total: 101644.3047, Recon: 101108.2031, KL: 536.1038
+Step 900, Total: 101381.8750, Recon: 100850.1797, KL: 531.6957
+Step 1000, Total: 80090.3125, Recon: 79525.1641, KL: 565.1462
+Step 1100, Total: 87638.6797, Recon: 87076.7656, KL: 561.9111
+Step 1200, Total: 81202.7109, Recon: 80614.6562, KL: 588.0537
+Step 1300, Total: 98023.8516, Recon: 97480.3594, KL: 543.4896
+Step 1400, Total: 83618.8203, Recon: 83056.0234, KL: 562.7947
+Step 1500, Total: 91954.8828, Recon: 91395.2656, KL: 559.6138
+Step 1600, Total: 92748.8906, Recon: 92213.6484, KL: 535.2389
+Step 1700, Total: 88587.0312, Recon: 88030.7969, KL: 556.2355
+Step 1800, Total: 88295.6562, Recon: 87737.0469, KL: 558.6122
+Step 1900, Total: 100483.1953, Recon: 99949.5000, KL: 533.6920
+Step 2000, Total: 101197.8359, Recon: 100643.6484, KL: 554.1892
+Step 2100, Total: 104293.8516, Recon: 103759.9688, KL: 533.8818
+Step 2200, Total: 88778.6875, Recon: 88229.4688, KL: 549.2222
+Step 2300, Total: 79469.5547, Recon: 78898.0000, KL: 571.5511
+Step 2400, Total: 97825.9766, Recon: 97282.3359, KL: 543.6440
+Step 2500, Total: 100468.2812, Recon: 99946.2188, KL: 522.0594
+Epoch 14 Average Loss: 87393.7266
+VAE Epoch 15/25
+Step 0, Total: 90257.0234, Recon: 89696.7422, KL: 560.2838
+Step 100, Total: 94747.7969, Recon: 94165.9844, KL: 581.8160
+Step 200, Total: 87302.1797, Recon: 86719.7656, KL: 582.4121
+Step 300, Total: 88445.8750, Recon: 87876.4766, KL: 569.3963
+Step 400, Total: 100293.0312, Recon: 99764.0391, KL: 528.9915
+Step 500, Total: 96220.7578, Recon: 95679.1562, KL: 541.5994
+Step 600, Total: 81840.5781, Recon: 81253.9453, KL: 586.6313
+Step 700, Total: 78271.3125, Recon: 77663.5625, KL: 607.7516
+Step 800, Total: 84236.3594, Recon: 83648.2188, KL: 588.1426
+Step 900, Total: 100056.7812, Recon: 99523.5703, KL: 533.2127
+Step 1000, Total: 96232.5781, Recon: 95677.2656, KL: 555.3091
+Step 1100, Total: 52655.8398, Recon: 52040.6875, KL: 615.1505
+Step 1200, Total: 99123.4141, Recon: 98567.8594, KL: 555.5563
+Step 1300, Total: 101915.5391, Recon: 101388.3281, KL: 527.2143
+Step 1400, Total: 85007.2734, Recon: 84413.1094, KL: 594.1622
+Step 1500, Total: 61670.7266, Recon: 61055.3125, KL: 615.4141
+Step 1600, Total: 97049.8125, Recon: 96522.3047, KL: 527.5082
+Step 1700, Total: 70105.3828, Recon: 69515.8438, KL: 589.5390
+Step 1800, Total: 91065.1016, Recon: 90453.8438, KL: 611.2596
+Step 1900, Total: 101115.7578, Recon: 100587.0938, KL: 528.6658
+Step 2000, Total: 85193.6094, Recon: 84613.8281, KL: 579.7800
+Step 2100, Total: 88576.8438, Recon: 88026.6875, KL: 550.1545
+Step 2200, Total: 100819.2734, Recon: 100294.9844, KL: 524.2908
+Step 2300, Total: 66423.9219, Recon: 65812.5781, KL: 611.3442
+Step 2400, Total: 94604.9062, Recon: 94086.1719, KL: 518.7318
+Step 2500, Total: 103571.5078, Recon: 103041.8672, KL: 529.6380
+Epoch 15 Average Loss: 87438.1406
+VAE Epoch 16/25
+Step 0, Total: 88707.0469, Recon: 88104.8828, KL: 602.1652
+Step 100, Total: 92620.1562, Recon: 92052.9688, KL: 567.1866
+Step 200, Total: 91922.0703, Recon: 91373.7422, KL: 548.3284
+Step 300, Total: 91426.0156, Recon: 90867.0781, KL: 558.9410
+Step 400, Total: 52843.3906, Recon: 52234.1133, KL: 609.2761
+Step 500, Total: 82992.5312, Recon: 82413.2422, KL: 579.2882
+Step 600, Total: 92278.6250, Recon: 91709.9062, KL: 568.7209
+Step 700, Total: 66762.9609, Recon: 66131.5156, KL: 631.4436
+Step 800, Total: 100236.8672, Recon: 99654.7031, KL: 582.1646
+Step 900, Total: 54938.5195, Recon: 54279.2500, KL: 659.2706
+Step 1000, Total: 45536.6367, Recon: 44874.6328, KL: 662.0021
+Step 1100, Total: 91469.9375, Recon: 90924.6406, KL: 545.2964
+Step 1200, Total: 48882.7070, Recon: 48224.7891, KL: 657.9182
+Step 1300, Total: 98711.2891, Recon: 98210.1406, KL: 501.1495
+Step 1400, Total: 94704.8516, Recon: 94171.1094, KL: 533.7446
+Step 1500, Total: 85312.7031, Recon: 84742.8906, KL: 569.8132
+Step 1600, Total: 91873.0156, Recon: 91316.6094, KL: 556.4058
+Step 1700, Total: 94075.0547, Recon: 93538.4688, KL: 536.5858
+Step 1800, Total: 83726.2656, Recon: 83124.8125, KL: 601.4509
+Step 1900, Total: 57829.0312, Recon: 57209.5664, KL: 619.4652
+Step 2000, Total: 106131.7031, Recon: 105597.7812, KL: 533.9222
+Step 2100, Total: 80423.9141, Recon: 79794.6406, KL: 629.2736
+Step 2200, Total: 75094.0781, Recon: 74489.2891, KL: 604.7865
+Step 2300, Total: 84652.7031, Recon: 84059.9844, KL: 592.7198
+Step 2400, Total: 84916.7422, Recon: 84318.2031, KL: 598.5402
+Step 2500, Total: 98106.6172, Recon: 97571.9531, KL: 534.6646
+Epoch 16 Average Loss: 87286.7188
+VAE Epoch 17/25
+Step 0, Total: 101057.3594, Recon: 100523.2500, KL: 534.1132
+Step 100, Total: 100743.5859, Recon: 100219.7812, KL: 523.8078
+Step 200, Total: 104534.5625, Recon: 104018.3906, KL: 516.1687
+Step 300, Total: 88174.5312, Recon: 87585.7500, KL: 588.7782
+Step 400, Total: 87637.3281, Recon: 87063.2422, KL: 574.0834
+Step 500, Total: 89593.9766, Recon: 89041.1250, KL: 552.8478
+Step 600, Total: 86071.1797, Recon: 85499.6562, KL: 571.5223
+Step 700, Total: 88295.1250, Recon: 87765.7734, KL: 529.3522
+Step 800, Total: 85972.9297, Recon: 85416.9688, KL: 555.9585
+Step 900, Total: 94430.9609, Recon: 93901.2031, KL: 529.7581
+Step 1000, Total: 96429.9844, Recon: 95881.0078, KL: 548.9755
+Step 1100, Total: 59262.2383, Recon: 58632.4688, KL: 629.7714
+Step 1200, Total: 99086.2188, Recon: 98512.2031, KL: 574.0139
+Step 1300, Total: 86265.5781, Recon: 85679.9062, KL: 585.6699
+Step 1400, Total: 86705.7266, Recon: 86136.4375, KL: 569.2872
+Step 1500, Total: 92946.5625, Recon: 92394.4922, KL: 552.0725
+Step 1600, Total: 85661.2969, Recon: 85080.3984, KL: 580.8981
+Step 1700, Total: 95235.1250, Recon: 94688.5938, KL: 546.5312
+Step 1800, Total: 106343.0781, Recon: 105812.6250, KL: 530.4526
+Step 1900, Total: 85883.5312, Recon: 85322.6328, KL: 560.9004
+Step 2000, Total: 92766.9766, Recon: 92179.0625, KL: 587.9133
+Step 2100, Total: 87746.2266, Recon: 87189.0312, KL: 557.1943
+Step 2200, Total: 92159.2188, Recon: 91617.1172, KL: 542.0989
+Step 2300, Total: 87408.6328, Recon: 86835.8672, KL: 572.7690
+Step 2400, Total: 48123.2656, Recon: 47513.0898, KL: 610.1752
+Step 2500, Total: 93475.2656, Recon: 92931.4531, KL: 543.8157
+Epoch 17 Average Loss: 87400.7969
+VAE Epoch 18/25
+Step 0, Total: 90225.6484, Recon: 89674.2969, KL: 551.3516
+Step 100, Total: 95871.1641, Recon: 95330.5469, KL: 540.6204
+Step 200, Total: 96989.3125, Recon: 96452.7656, KL: 536.5433
+Step 300, Total: 76318.2969, Recon: 75700.0781, KL: 618.2169
+Step 400, Total: 101024.4453, Recon: 100460.2812, KL: 564.1633
+Step 500, Total: 90519.1484, Recon: 89946.9688, KL: 572.1808
+Step 600, Total: 101666.3750, Recon: 101158.6641, KL: 507.7142
+Step 700, Total: 62535.4648, Recon: 61905.9258, KL: 629.5387
+Step 800, Total: 85835.3828, Recon: 85253.8438, KL: 581.5407
+Step 900, Total: 65842.7578, Recon: 65205.4336, KL: 637.3255
+Step 1000, Total: 83619.0000, Recon: 83024.5312, KL: 594.4682
+Step 1100, Total: 88801.3359, Recon: 88232.2734, KL: 569.0613
+Step 1200, Total: 56972.6523, Recon: 56343.2344, KL: 629.4169
+Step 1300, Total: 75733.8750, Recon: 75132.6250, KL: 601.2480
+Step 1400, Total: 89211.3672, Recon: 88666.0469, KL: 545.3178
+Step 1500, Total: 67981.7109, Recon: 67373.2031, KL: 608.5084
+Step 1600, Total: 88516.9844, Recon: 87965.3594, KL: 551.6281
+Step 1700, Total: 86380.2344, Recon: 85791.3125, KL: 588.9199
+Step 1800, Total: 89254.7422, Recon: 88670.7578, KL: 583.9845
+Step 1900, Total: 96757.9844, Recon: 96209.9219, KL: 548.0663
+Step 2000, Total: 85275.6484, Recon: 84702.8984, KL: 572.7534
+Step 2100, Total: 91354.4531, Recon: 90772.8438, KL: 581.6109
+Step 2200, Total: 97666.8438, Recon: 97149.1094, KL: 517.7307
+Step 2300, Total: 88194.3828, Recon: 87604.8750, KL: 589.5107
+Step 2400, Total: 94317.8438, Recon: 93771.9219, KL: 545.9242
+Step 2500, Total: 100156.7109, Recon: 99615.5391, KL: 541.1716
+Epoch 18 Average Loss: 87243.7188
+VAE Epoch 19/25
+Step 0, Total: 67535.2266, Recon: 66893.5625, KL: 641.6648
+Step 100, Total: 104837.2031, Recon: 104336.8906, KL: 500.3118
+Step 200, Total: 104370.3516, Recon: 103857.7656, KL: 512.5859
+Step 300, Total: 90320.6953, Recon: 89765.5938, KL: 555.1011
+Step 400, Total: 90142.6328, Recon: 89562.3594, KL: 580.2698
+Step 500, Total: 76067.6875, Recon: 75462.2344, KL: 605.4548
+Step 600, Total: 95963.3906, Recon: 95470.4219, KL: 492.9688
+Step 700, Total: 85093.7422, Recon: 84530.8359, KL: 562.9079
+Step 800, Total: 68482.1641, Recon: 67889.0938, KL: 593.0670
+Step 900, Total: 53690.9688, Recon: 53042.4727, KL: 648.4970
+Step 1000, Total: 86940.5938, Recon: 86352.2656, KL: 588.3293
+Step 1100, Total: 98196.6562, Recon: 97687.6719, KL: 508.9852
+Step 1200, Total: 48000.5273, Recon: 47358.7617, KL: 641.7675
+Step 1300, Total: 92398.0156, Recon: 91848.2578, KL: 549.7597
+Step 1400, Total: 58341.9180, Recon: 57704.9883, KL: 636.9299
+Step 1500, Total: 103729.7422, Recon: 103192.3125, KL: 537.4327
+Step 1600, Total: 59027.9219, Recon: 58389.1992, KL: 638.7213
+Step 1700, Total: 82858.8906, Recon: 82263.4219, KL: 595.4680
+Step 1800, Total: 76534.7578, Recon: 75919.9375, KL: 614.8235
+Step 1900, Total: 86755.3281, Recon: 86187.8125, KL: 567.5123
+Step 2000, Total: 87697.8906, Recon: 87109.8438, KL: 588.0431
+Step 2100, Total: 95747.4609, Recon: 95180.0547, KL: 567.4043
+Step 2200, Total: 74190.3281, Recon: 73587.0469, KL: 603.2806
+Step 2300, Total: 92748.8438, Recon: 92223.5391, KL: 525.3033
+Step 2400, Total: 88396.2500, Recon: 87807.2500, KL: 589.0000
+Step 2500, Total: 61468.0820, Recon: 60825.6562, KL: 642.4267
+Epoch 19 Average Loss: 87426.3281
+VAE Epoch 20/25
+Step 0, Total: 84133.3281, Recon: 83579.3281, KL: 554.0015
+Step 100, Total: 92579.9531, Recon: 92050.6562, KL: 529.2942
+Step 200, Total: 87847.7422, Recon: 87248.4141, KL: 599.3295
+Step 300, Total: 75812.1406, Recon: 75204.8750, KL: 607.2675
+Step 400, Total: 99332.0469, Recon: 98810.0781, KL: 521.9672
+Step 500, Total: 98871.2500, Recon: 98298.3281, KL: 572.9218
+Step 600, Total: 100809.7812, Recon: 100254.0234, KL: 555.7567
+Step 700, Total: 92580.5938, Recon: 92033.8828, KL: 546.7098
+Step 800, Total: 93915.7812, Recon: 93349.0156, KL: 566.7632
+Step 900, Total: 92130.7188, Recon: 91571.3281, KL: 559.3876
+Step 1000, Total: 101125.8906, Recon: 100608.6406, KL: 517.2535
+Step 1100, Total: 93611.1016, Recon: 93076.8594, KL: 534.2401
+Step 1200, Total: 102214.7188, Recon: 101650.6406, KL: 564.0784
+Step 1300, Total: 97519.5000, Recon: 96964.5312, KL: 554.9662
+Step 1400, Total: 81588.2578, Recon: 81016.0312, KL: 572.2241
+Step 1500, Total: 95479.3438, Recon: 94937.7266, KL: 541.6155
+Step 1600, Total: 56321.6055, Recon: 55687.4844, KL: 634.1208
+Step 1700, Total: 97940.2656, Recon: 97374.9531, KL: 565.3136
+Step 1800, Total: 90378.0703, Recon: 89825.7031, KL: 552.3690
+Step 1900, Total: 94770.7812, Recon: 94206.1094, KL: 564.6703
+Step 2000, Total: 89116.7891, Recon: 88533.9062, KL: 582.8848
+Step 2100, Total: 64972.7812, Recon: 64345.1172, KL: 627.6622
+Step 2200, Total: 83129.8672, Recon: 82544.9219, KL: 584.9467
+Step 2300, Total: 59971.1719, Recon: 59344.9453, KL: 626.2275
+Step 2400, Total: 77475.4531, Recon: 76870.8125, KL: 604.6401
+Step 2500, Total: 102948.2891, Recon: 102417.8672, KL: 530.4253
+Epoch 20 Average Loss: 86892.6484
+VAE Epoch 21/25
+Step 0, Total: 79266.0625, Recon: 78684.4844, KL: 581.5807
+Step 100, Total: 109226.5312, Recon: 108683.6484, KL: 542.8843
+Step 200, Total: 78907.5703, Recon: 78324.9531, KL: 582.6201
+Step 300, Total: 75399.7969, Recon: 74824.7500, KL: 575.0439
+Step 400, Total: 89760.3047, Recon: 89188.4688, KL: 571.8358
+Step 500, Total: 85141.1641, Recon: 84563.5000, KL: 577.6622
+Step 600, Total: 85367.1953, Recon: 84783.9922, KL: 583.2032
+Step 700, Total: 71298.6797, Recon: 70701.8438, KL: 596.8350
+Step 800, Total: 96781.7500, Recon: 96261.4375, KL: 520.3156
+Step 900, Total: 77570.8984, Recon: 76994.1328, KL: 576.7653
+Step 1000, Total: 80651.5312, Recon: 80044.9844, KL: 606.5497
+Step 1100, Total: 91445.6953, Recon: 90891.4609, KL: 554.2338
+Step 1200, Total: 100597.3359, Recon: 100069.4297, KL: 527.9053
+Step 1300, Total: 71186.2969, Recon: 70562.2500, KL: 624.0475
+Step 1400, Total: 52544.5234, Recon: 51884.9531, KL: 659.5691
+Step 1500, Total: 94352.3594, Recon: 93806.7500, KL: 545.6064
+Step 1600, Total: 101557.9609, Recon: 101042.6953, KL: 515.2635
+Step 1700, Total: 55142.8086, Recon: 54519.5039, KL: 623.3054
+Step 1800, Total: 101016.6875, Recon: 100437.5625, KL: 579.1220
+Step 1900, Total: 80565.1797, Recon: 79988.7188, KL: 576.4584
+Step 2000, Total: 98386.2422, Recon: 97841.1250, KL: 545.1180
+Step 2100, Total: 83495.2109, Recon: 82889.8281, KL: 605.3860
+Step 2200, Total: 82169.5547, Recon: 81577.5469, KL: 592.0086
+Step 2300, Total: 96377.3438, Recon: 95846.6406, KL: 530.7021
+Step 2400, Total: 100131.5156, Recon: 99599.3750, KL: 532.1387
+Step 2500, Total: 67827.4922, Recon: 67204.9844, KL: 622.5047
+Epoch 21 Average Loss: 87312.5703
+VAE Epoch 22/25
+Step 0, Total: 90724.2266, Recon: 90166.3438, KL: 557.8823
+Step 100, Total: 67589.5938, Recon: 66965.4375, KL: 624.1556
+Step 200, Total: 68662.3281, Recon: 68077.8750, KL: 584.4522
+Step 300, Total: 90112.6172, Recon: 89548.8906, KL: 563.7257
+Step 400, Total: 56144.6914, Recon: 55533.9375, KL: 610.7535
+Step 500, Total: 97720.3438, Recon: 97186.9688, KL: 533.3746
+Step 600, Total: 92502.6172, Recon: 91945.3203, KL: 557.2989
+Step 700, Total: 82040.5859, Recon: 81457.7500, KL: 582.8325
+Step 800, Total: 96521.2109, Recon: 95986.9688, KL: 534.2444
+Step 900, Total: 79546.4453, Recon: 78988.2500, KL: 558.1930
+Step 1000, Total: 76690.7031, Recon: 76109.8516, KL: 580.8524
+Step 1100, Total: 88524.6797, Recon: 87958.6875, KL: 565.9892
+Step 1200, Total: 85834.2188, Recon: 85272.0781, KL: 562.1414
+Step 1300, Total: 96123.4219, Recon: 95609.8906, KL: 513.5325
+Step 1400, Total: 76663.2969, Recon: 76060.1562, KL: 603.1403
+Step 1500, Total: 88467.7891, Recon: 87891.7656, KL: 576.0269
+Step 1600, Total: 102478.0078, Recon: 101933.6094, KL: 544.3987
+Step 1700, Total: 92546.6953, Recon: 91978.0547, KL: 568.6396
+Step 1800, Total: 100487.0156, Recon: 99967.8750, KL: 519.1376
+Step 1900, Total: 75513.8906, Recon: 74916.2188, KL: 597.6704
+Step 2000, Total: 89144.9062, Recon: 88552.1250, KL: 592.7810
+Step 2100, Total: 98751.0000, Recon: 98214.8906, KL: 536.1069
+Step 2200, Total: 90158.5391, Recon: 89603.0938, KL: 555.4476
+Step 2300, Total: 101220.0703, Recon: 100686.0703, KL: 533.9987
+Step 2400, Total: 78996.3281, Recon: 78442.7656, KL: 553.5610
+Step 2500, Total: 95979.1641, Recon: 95448.1797, KL: 530.9852
+Epoch 22 Average Loss: 87408.5391
+VAE Epoch 23/25
+Step 0, Total: 65435.5898, Recon: 64820.4961, KL: 615.0944
+Step 100, Total: 73715.0781, Recon: 73108.8750, KL: 606.2015
+Step 200, Total: 85965.3828, Recon: 85402.5781, KL: 562.8046
+Step 300, Total: 82743.4688, Recon: 82151.8750, KL: 591.5959
+Step 400, Total: 97501.5234, Recon: 97000.2891, KL: 501.2343
+Step 500, Total: 91370.3750, Recon: 90830.0938, KL: 540.2787
+Step 600, Total: 50427.0625, Recon: 49772.3555, KL: 654.7084
+Step 700, Total: 98927.7500, Recon: 98422.2188, KL: 505.5294
+Step 800, Total: 86088.2266, Recon: 85500.6719, KL: 587.5527
+Step 900, Total: 93804.3594, Recon: 93265.0000, KL: 539.3630
+Step 1000, Total: 83015.1875, Recon: 82427.5703, KL: 587.6192
+Step 1100, Total: 92277.1641, Recon: 91722.6875, KL: 554.4740
+Step 1200, Total: 95283.3125, Recon: 94736.3672, KL: 546.9469
+Step 1300, Total: 100452.6484, Recon: 99916.5703, KL: 536.0753
+Step 1400, Total: 100629.3438, Recon: 100079.6953, KL: 549.6501
+Step 1500, Total: 91442.8828, Recon: 90874.4688, KL: 568.4106
+Step 1600, Total: 88846.6094, Recon: 88280.9766, KL: 565.6360
+Step 1700, Total: 101833.6484, Recon: 101317.1719, KL: 516.4761
+Step 1800, Total: 56474.5820, Recon: 55876.5312, KL: 598.0525
+Step 1900, Total: 78142.4844, Recon: 77541.1250, KL: 601.3615
+Step 2000, Total: 89757.7969, Recon: 89214.9688, KL: 542.8295
+Step 2100, Total: 77051.2578, Recon: 76447.9688, KL: 603.2917
+Step 2200, Total: 84103.9609, Recon: 83529.5312, KL: 574.4317
+Step 2300, Total: 99558.4766, Recon: 99044.2266, KL: 514.2514
+Step 2400, Total: 79538.8594, Recon: 78929.0625, KL: 609.7932
+Step 2500, Total: 95331.9297, Recon: 94777.0469, KL: 554.8813
+Epoch 23 Average Loss: 87277.0703
+VAE Epoch 24/25
+Step 0, Total: 91649.7344, Recon: 91113.0469, KL: 536.6872
+Step 100, Total: 88090.8906, Recon: 87499.2422, KL: 591.6489
+Step 200, Total: 98698.4062, Recon: 98161.7188, KL: 536.6909
+Step 300, Total: 76421.3438, Recon: 75823.8438, KL: 597.4996
+Step 400, Total: 94424.8438, Recon: 93897.6797, KL: 527.1633
+Step 500, Total: 86161.0703, Recon: 85580.8672, KL: 580.2012
+Step 600, Total: 93528.7266, Recon: 92971.1484, KL: 557.5743
+Step 700, Total: 102303.7344, Recon: 101784.1094, KL: 519.6243
+Step 800, Total: 94608.6875, Recon: 94045.6719, KL: 563.0167
+Step 900, Total: 72116.0078, Recon: 71466.0703, KL: 649.9351
+Step 1000, Total: 107452.7266, Recon: 106941.5000, KL: 511.2264
+Step 1100, Total: 85604.5781, Recon: 84995.8828, KL: 608.6917
+Step 1200, Total: 80307.5547, Recon: 79743.1406, KL: 564.4135
+Step 1300, Total: 93629.8281, Recon: 93085.6406, KL: 544.1836
+Step 1400, Total: 84410.8359, Recon: 83848.2188, KL: 562.6155
+Step 1500, Total: 58083.5938, Recon: 57458.0156, KL: 625.5786
+Step 1600, Total: 97616.9453, Recon: 97075.8438, KL: 541.0991
+Step 1700, Total: 99171.5000, Recon: 98641.5000, KL: 530.0007
+Step 1800, Total: 69531.9375, Recon: 68909.6562, KL: 622.2804
+Step 1900, Total: 101939.5547, Recon: 101396.9219, KL: 542.6303
+Step 2000, Total: 76356.5391, Recon: 75760.7109, KL: 595.8268
+Step 2100, Total: 86167.1250, Recon: 85586.3984, KL: 580.7262
+Step 2200, Total: 58053.8672, Recon: 57457.4297, KL: 596.4389
+Step 2300, Total: 80910.1641, Recon: 80344.2188, KL: 565.9438
+Step 2400, Total: 97416.4375, Recon: 96896.0625, KL: 520.3747
+Step 2500, Total: 84283.4609, Recon: 83725.3594, KL: 558.1027
+Epoch 24 Average Loss: 87175.2500
+VAE Epoch 25/25
+Step 0, Total: 102671.8125, Recon: 102165.3047, KL: 506.5116
+Step 100, Total: 78516.4062, Recon: 77949.5156, KL: 566.8922
+Step 200, Total: 94517.2344, Recon: 93970.3203, KL: 546.9149
+Step 300, Total: 100479.8203, Recon: 99964.3906, KL: 515.4302
+Step 400, Total: 81105.2266, Recon: 80520.0625, KL: 585.1661
+Step 500, Total: 66348.5156, Recon: 65727.9609, KL: 620.5570
+Step 600, Total: 83128.9766, Recon: 82536.8672, KL: 592.1103
+Step 700, Total: 102155.4141, Recon: 101625.7734, KL: 529.6371
+Step 800, Total: 94877.2812, Recon: 94318.9453, KL: 558.3322
+Step 900, Total: 81882.0859, Recon: 81294.3047, KL: 587.7826
+Step 1000, Total: 84843.4922, Recon: 84253.5078, KL: 589.9810
+Step 1100, Total: 96616.0312, Recon: 96060.5156, KL: 555.5142
+Step 1200, Total: 97254.1875, Recon: 96722.7422, KL: 531.4451
+Step 1300, Total: 89178.5391, Recon: 88596.5781, KL: 581.9601
+Step 1400, Total: 103136.7969, Recon: 102589.1250, KL: 547.6741
+Step 1500, Total: 75462.9141, Recon: 74848.8438, KL: 614.0737
+Step 1600, Total: 66698.2969, Recon: 66090.0625, KL: 608.2311
+Step 1700, Total: 88003.3438, Recon: 87457.9062, KL: 545.4403
+Step 1800, Total: 97099.7266, Recon: 96579.0469, KL: 520.6783
+Step 1900, Total: 88445.6250, Recon: 87875.1719, KL: 570.4513
+Step 2000, Total: 80395.3203, Recon: 79819.8438, KL: 575.4756
+Step 2100, Total: 95895.2812, Recon: 95357.9219, KL: 537.3560
+Step 2200, Total: 96816.5469, Recon: 96240.9766, KL: 575.5709
+Step 2300, Total: 84702.0938, Recon: 84118.0938, KL: 584.0020
+Step 2400, Total: 89916.9062, Recon: 89338.6719, KL: 578.2324
+Step 2500, Total: 89668.9609, Recon: 89149.0078, KL: 519.9542
+Epoch 25 Average Loss: 87290.1562
+Training completed.
+Traceback (most recent call last):
+  File "/home/user/Desktop/VAE/main.py", line 656, in <module>
+    log_generated_images_to_wandb(inverse_classifier, decoder, "post_vae_")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'log_generated_images_to_wandb' is not defined

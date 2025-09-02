@@ -1,0 +1,76 @@
+_wandb:
+    value:
+        cli_version: 0.21.3
+        e:
+            3gibwrvo6e0s5hn1zy5tmrmoudzfmta2:
+                codePath: main.py
+                codePathLocal: main.py
+                cpu_count: 16
+                cpu_count_logical: 32
+                cudaVersion: "12.2"
+                disk:
+                    /:
+                        total: "243885932544"
+                        used: "215841697792"
+                email: matus.benky@gmail.com
+                executable: /home/user/miniconda3/envs/myenv/bin/python3
+                git:
+                    commit: 895ec7a7689ee6ba816b6f656362145d6105616a
+                    remote: https://github.com/DarkBenky/VariationEncoder.git
+                gpu: NVIDIA GeForce GTX 1070
+                gpu_count: 2
+                gpu_nvidia:
+                    - architecture: Pascal
+                      cudaCores: 1920
+                      memoryTotal: "8589934592"
+                      name: NVIDIA GeForce GTX 1070
+                      uuid: GPU-3097d742-c1be-ba6a-981f-a21da3484182
+                    - architecture: Ampere
+                      cudaCores: 10496
+                      memoryTotal: "25769803776"
+                      name: NVIDIA GeForce RTX 3090
+                      uuid: GPU-4719cf90-a4e4-4859-2e53-bfd7c9dcd8aa
+                host: user-B450-AORUS-ELITE
+                memory:
+                    total: "75792715776"
+                os: Linux-6.14.0-29-generic-x86_64-with-glibc2.39
+                program: /home/user/Desktop/VAE/main.py
+                python: CPython 3.11.13
+                root: /home/user/Desktop/VAE
+                startedAt: "2025-09-02T20:35:47.710215Z"
+                writerId: 3gibwrvo6e0s5hn1zy5tmrmoudzfmta2
+        m: []
+        python_version: 3.11.13
+        t:
+            "1":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "2":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "3":
+                - 16
+            "4": 3.11.13
+            "5": 0.21.3
+            "12": 0.21.3
+            "13": linux-x86_64
+architecture:
+    value: enhanced_inverse_classifier
+batch_size:
+    value: 64
+epochs:
+    value: 25
+latent_dim:
+    value: 256
+learning_rate_classifier:
+    value: 0.001
+learning_rate_inverse:
+    value: 0.001
+learning_rate_vae:
+    value: 0.0002

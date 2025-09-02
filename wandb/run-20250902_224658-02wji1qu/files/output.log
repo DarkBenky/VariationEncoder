@@ -1,0 +1,1698 @@
+tfds.core.DatasetInfo(
+    name='celeb_a',
+    full_name='celeb_a/2.1.0',
+    description="""
+    CelebFaces Attributes Dataset (CelebA) is a large-scale face attributes dataset
+    with more than 200K celebrity images, each with 40 attribute annotations. The
+    images in this dataset cover large pose variations and background clutter.
+    CelebA has large diversities, large quantities, and rich annotations,
+    including - 10,177 number of identities, - 202,599 number of face images, and -
+    5 landmark locations, 40 binary attributes annotations per image.
+
+    The dataset can be employed as the training and test sets for the following
+    computer vision tasks: face attribute recognition, face detection, and landmark
+    (or facial part) localization.
+
+    Note: CelebA dataset may contain potential bias. The fairness indicators
+    [example](https://www.tensorflow.org/responsible_ai/fairness_indicators/tutorials/Fairness_Indicators_TFCO_CelebA_Case_Study)
+    goes into detail about several considerations to keep in mind while using the
+    CelebA dataset.
+    """,
+    homepage='http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html',
+    data_dir='/home/user/tensorflow_datasets/celeb_a/2.1.0',
+    file_format=tfrecord,
+    download_size=1.39 GiB,
+    dataset_size=1.63 GiB,
+    features=FeaturesDict({
+        'attributes': FeaturesDict({
+            '5_o_Clock_Shadow': bool,
+            'Arched_Eyebrows': bool,
+            'Attractive': bool,
+            'Bags_Under_Eyes': bool,
+            'Bald': bool,
+            'Bangs': bool,
+            'Big_Lips': bool,
+            'Big_Nose': bool,
+            'Black_Hair': bool,
+            'Blond_Hair': bool,
+            'Blurry': bool,
+            'Brown_Hair': bool,
+            'Bushy_Eyebrows': bool,
+            'Chubby': bool,
+            'Double_Chin': bool,
+            'Eyeglasses': bool,
+            'Goatee': bool,
+            'Gray_Hair': bool,
+            'Heavy_Makeup': bool,
+            'High_Cheekbones': bool,
+            'Male': bool,
+            'Mouth_Slightly_Open': bool,
+            'Mustache': bool,
+            'Narrow_Eyes': bool,
+            'No_Beard': bool,
+            'Oval_Face': bool,
+            'Pale_Skin': bool,
+            'Pointy_Nose': bool,
+            'Receding_Hairline': bool,
+            'Rosy_Cheeks': bool,
+            'Sideburns': bool,
+            'Smiling': bool,
+            'Straight_Hair': bool,
+            'Wavy_Hair': bool,
+            'Wearing_Earrings': bool,
+            'Wearing_Hat': bool,
+            'Wearing_Lipstick': bool,
+            'Wearing_Necklace': bool,
+            'Wearing_Necktie': bool,
+            'Young': bool,
+        }),
+        'identity': FeaturesDict({
+            'Identity_No': int64,
+        }),
+        'image': Image(shape=(218, 178, 3), dtype=uint8),
+        'landmarks': FeaturesDict({
+            'lefteye_x': int64,
+            'lefteye_y': int64,
+            'leftmouth_x': int64,
+            'leftmouth_y': int64,
+            'nose_x': int64,
+            'nose_y': int64,
+            'righteye_x': int64,
+            'righteye_y': int64,
+            'rightmouth_x': int64,
+            'rightmouth_y': int64,
+        }),
+    }),
+    supervised_keys=None,
+    disable_shuffling=False,
+    nondeterministic_order=False,
+    splits={
+        'test': <SplitInfo num_examples=19962, num_shards=2>,
+        'train': <SplitInfo num_examples=162770, num_shards=16>,
+        'validation': <SplitInfo num_examples=19867, num_shards=2>,
+    },
+    citation="""@inproceedings{conf/iccv/LiuLWT15,
+      added-at = {2018-10-09T00:00:00.000+0200},
+      author = {Liu, Ziwei and Luo, Ping and Wang, Xiaogang and Tang, Xiaoou},
+      biburl = {https://www.bibsonomy.org/bibtex/250e4959be61db325d2f02c1d8cd7bfbb/dblp},
+      booktitle = {ICCV},
+      crossref = {conf/iccv/2015},
+      ee = {http://doi.ieeecomputersociety.org/10.1109/ICCV.2015.425},
+      interhash = {3f735aaa11957e73914bbe2ca9d5e702},
+      intrahash = {50e4959be61db325d2f02c1d8cd7bfbb},
+      isbn = {978-1-4673-8391-2},
+      keywords = {dblp},
+      pages = {3730-3738},
+      publisher = {IEEE Computer Society},
+      timestamp = {2018-10-11T11:43:28.000+0200},
+      title = {Deep Learning Face Attributes in the Wild.},
+      url = {http://dblp.uni-trier.de/db/conf/iccv/iccv2015.html#LiuLWT15},
+      year = 2015
+    }""",
+)
+FeaturesDict({
+    'attributes': FeaturesDict({
+        '5_o_Clock_Shadow': bool,
+        'Arched_Eyebrows': bool,
+        'Attractive': bool,
+        'Bags_Under_Eyes': bool,
+        'Bald': bool,
+        'Bangs': bool,
+        'Big_Lips': bool,
+        'Big_Nose': bool,
+        'Black_Hair': bool,
+        'Blond_Hair': bool,
+        'Blurry': bool,
+        'Brown_Hair': bool,
+        'Bushy_Eyebrows': bool,
+        'Chubby': bool,
+        'Double_Chin': bool,
+        'Eyeglasses': bool,
+        'Goatee': bool,
+        'Gray_Hair': bool,
+        'Heavy_Makeup': bool,
+        'High_Cheekbones': bool,
+        'Male': bool,
+        'Mouth_Slightly_Open': bool,
+        'Mustache': bool,
+        'Narrow_Eyes': bool,
+        'No_Beard': bool,
+        'Oval_Face': bool,
+        'Pale_Skin': bool,
+        'Pointy_Nose': bool,
+        'Receding_Hairline': bool,
+        'Rosy_Cheeks': bool,
+        'Sideburns': bool,
+        'Smiling': bool,
+        'Straight_Hair': bool,
+        'Wavy_Hair': bool,
+        'Wearing_Earrings': bool,
+        'Wearing_Hat': bool,
+        'Wearing_Lipstick': bool,
+        'Wearing_Necklace': bool,
+        'Wearing_Necktie': bool,
+        'Young': bool,
+    }),
+    'identity': FeaturesDict({
+        'Identity_No': int64,
+    }),
+    'image': Image(shape=(218, 178, 3), dtype=uint8),
+    'landmarks': FeaturesDict({
+        'lefteye_x': int64,
+        'lefteye_y': int64,
+        'leftmouth_x': int64,
+        'leftmouth_y': int64,
+        'nose_x': int64,
+        'nose_y': int64,
+        'righteye_x': int64,
+        'righteye_y': int64,
+        'rightmouth_x': int64,
+        'rightmouth_y': int64,
+    }),
+})
+Loading existing model weights...
+Display - Image shape: (64, 256, 256, 3)
+Display - Image min/max: 0.0000 / 1.0000
+Loading existing classifier weights...
+Loading existing inverse classifier weights...
+Starting training with wandb logging...
+VAE Epoch 1/25
+Step 0, Total: 89210.0078, Recon: 89210.0078, KL: 747.3455
+Step 100, Total: 80452.4141, Recon: 80441.8359, KL: 1057.9359
+Step 200, Total: 102879.8281, Recon: 102858.9141, KL: 1045.8518
+Step 300, Total: 94209.3750, Recon: 94179.5625, KL: 993.8118
+Step 400, Total: 99665.6641, Recon: 99627.0938, KL: 964.1661
+Step 500, Total: 87413.9375, Recon: 87363.7500, KL: 1003.8248
+Step 600, Total: 54914.3711, Recon: 54848.3438, KL: 1100.4253
+Step 700, Total: 94199.6016, Recon: 94134.2422, KL: 933.6589
+Step 800, Total: 92577.3594, Recon: 92499.8281, KL: 969.1389
+Step 900, Total: 97033.0391, Recon: 96953.4531, KL: 884.2468
+Step 1000, Total: 87515.8516, Recon: 87425.5469, KL: 903.0470
+Step 1100, Total: 94707.0156, Recon: 94614.8828, KL: 837.5989
+Step 1200, Total: 97967.5078, Recon: 97866.0391, KL: 845.5825
+Step 1300, Total: 92873.5000, Recon: 92761.7969, KL: 859.2734
+Step 1400, Total: 97789.3594, Recon: 97676.8359, KL: 803.7407
+Step 1500, Total: 88254.9531, Recon: 88127.9375, KL: 846.7788
+Step 1600, Total: 88195.7344, Recon: 88062.7969, KL: 830.8671
+Step 1700, Total: 82286.7266, Recon: 82145.5000, KL: 830.7312
+Step 1800, Total: 95196.1250, Recon: 95054.4375, KL: 787.1418
+Step 1900, Total: 100888.0234, Recon: 100736.3906, KL: 798.0664
+Step 2000, Total: 100275.6875, Recon: 100122.3594, KL: 766.6315
+Step 2100, Total: 68485.3828, Recon: 68311.2266, KL: 829.3068
+Step 2200, Total: 89636.3828, Recon: 89466.7422, KL: 771.0843
+Step 2300, Total: 96662.6641, Recon: 96489.9688, KL: 750.8481
+Step 2400, Total: 98014.1719, Recon: 97831.8516, KL: 759.6532
+Step 2500, Total: 95098.8828, Recon: 94908.4688, KL: 761.6664
+Epoch 1 Average Loss: 86547.1641
+  ✓ New best model saved! Loss: 86547.164062
+VAE Epoch 2/25
+Step 0, Total: 91005.3906, Recon: 90805.1719, KL: 787.0311
+Step 100, Total: 71408.4531, Recon: 71201.0938, KL: 784.2638
+Step 200, Total: 95923.2422, Recon: 95725.7891, KL: 719.5789
+Step 300, Total: 90971.1953, Recon: 90768.1562, KL: 713.9183
+Step 400, Total: 89259.4062, Recon: 89032.7578, KL: 769.8542
+Step 500, Total: 95628.7188, Recon: 95416.3281, KL: 697.7274
+Step 600, Total: 95528.7656, Recon: 95302.3984, KL: 720.0072
+Step 700, Total: 62599.6094, Recon: 62341.5352, KL: 795.5468
+Step 800, Total: 101947.8203, Recon: 101718.0000, KL: 687.2616
+Step 900, Total: 77049.6172, Recon: 76795.7266, KL: 737.1955
+Step 1000, Total: 93153.1250, Recon: 92909.3750, KL: 687.7811
+Step 1100, Total: 92932.5781, Recon: 92687.8906, KL: 671.4836
+Step 1200, Total: 94425.8906, Recon: 94171.1562, KL: 680.3707
+Step 1300, Total: 69655.4922, Recon: 69367.3906, KL: 749.4861
+Step 1400, Total: 83108.7812, Recon: 82832.3281, KL: 700.9362
+Step 1500, Total: 90829.5625, Recon: 90550.8906, KL: 689.0996
+Step 1600, Total: 87386.3516, Recon: 87097.9375, KL: 695.9766
+Step 1700, Total: 56185.5664, Recon: 55857.6914, KL: 772.5615
+Step 1800, Total: 92949.5469, Recon: 92669.8516, KL: 643.8680
+Step 1900, Total: 105499.6094, Recon: 105209.1406, KL: 653.6254
+Step 2000, Total: 97972.4297, Recon: 97683.5469, KL: 635.7474
+Step 2100, Total: 94383.0312, Recon: 94077.8594, KL: 657.1322
+Step 2200, Total: 84013.4609, Recon: 83689.7109, KL: 682.4378
+Step 2300, Total: 79064.0078, Recon: 78732.7969, KL: 683.7521
+Step 2400, Total: 82678.8828, Recon: 82346.9375, KL: 671.4103
+Step 2500, Total: 99995.9297, Recon: 99678.2578, KL: 629.7979
+Epoch 2 Average Loss: 86723.6172
+VAE Epoch 3/25
+Step 0, Total: 56384.8828, Recon: 56012.1875, KL: 732.4954
+Step 100, Total: 100991.6719, Recon: 100664.3438, KL: 630.9390
+Step 200, Total: 69696.5781, Recon: 69333.0078, KL: 687.5434
+Step 300, Total: 87889.9531, Recon: 87532.6719, KL: 663.1057
+Step 400, Total: 82909.9453, Recon: 82558.5781, KL: 640.2510
+Step 500, Total: 40526.5195, Recon: 40128.9258, KL: 711.5139
+Step 600, Total: 99719.7109, Recon: 99354.5625, KL: 641.9583
+Step 700, Total: 51809.8945, Recon: 51373.4062, KL: 754.1293
+Step 800, Total: 89663.2734, Recon: 89291.9219, KL: 630.6965
+Step 900, Total: 89502.5234, Recon: 89137.6250, KL: 609.3776
+Step 1000, Total: 98110.6250, Recon: 97751.5234, KL: 589.8523
+Step 1100, Total: 90237.2734, Recon: 89856.1797, KL: 615.8622
+Step 1200, Total: 91960.8750, Recon: 91577.5625, KL: 609.5987
+Step 1300, Total: 99818.6328, Recon: 99459.8906, KL: 561.5843
+Step 1400, Total: 87677.8828, Recon: 87261.2500, KL: 642.1536
+Step 1500, Total: 63559.1953, Recon: 63111.7969, KL: 679.1092
+Step 1600, Total: 94670.6328, Recon: 94250.6094, KL: 628.0203
+Step 1700, Total: 74717.4375, Recon: 74290.6875, KL: 628.6877
+Step 1800, Total: 80793.4531, Recon: 80363.1562, KL: 624.7040
+Step 1900, Total: 100846.0625, Recon: 100447.6641, KL: 570.1178
+Step 2000, Total: 100216.3281, Recon: 99779.9297, KL: 615.6886
+Step 2100, Total: 97131.9531, Recon: 96717.1094, KL: 577.1375
+Step 2200, Total: 95196.8984, Recon: 94763.5312, KL: 594.6290
+Step 2300, Total: 81317.9844, Recon: 80838.9609, KL: 648.3752
+Step 2400, Total: 101676.1953, Recon: 101251.2188, KL: 567.5472
+Step 2500, Total: 88516.4141, Recon: 88055.4922, KL: 607.4304
+Epoch 3 Average Loss: 86710.0156
+VAE Epoch 4/25
+Step 0, Total: 71623.8984, Recon: 71140.3750, KL: 633.5488
+Step 100, Total: 65447.4531, Recon: 64937.2266, KL: 659.8879
+Step 200, Total: 101874.1562, Recon: 101448.5859, KL: 543.3711
+Step 300, Total: 98384.1875, Recon: 97920.3047, KL: 584.8270
+Step 400, Total: 93538.1328, Recon: 93078.2344, KL: 572.5850
+Step 500, Total: 71978.4688, Recon: 71467.8281, KL: 627.9406
+Step 600, Total: 82040.5547, Recon: 81557.0938, KL: 587.2941
+Step 700, Total: 98202.2969, Recon: 97753.4844, KL: 538.6594
+Step 800, Total: 57010.8242, Recon: 56458.3477, KL: 655.2150
+Step 900, Total: 96042.4531, Recon: 95553.7188, KL: 572.8242
+Step 1000, Total: 95209.5078, Recon: 94726.0469, KL: 560.0793
+Step 1100, Total: 79500.8984, Recon: 78984.1406, KL: 591.8016
+Step 1200, Total: 54531.9141, Recon: 53941.1367, KL: 668.9053
+Step 1300, Total: 74036.7969, Recon: 73477.9922, KL: 625.6176
+Step 1400, Total: 99105.8359, Recon: 98616.2031, KL: 542.1080
+Step 1500, Total: 92552.8281, Recon: 92034.2969, KL: 567.8207
+Step 1600, Total: 84763.3438, Recon: 84210.7891, KL: 598.5237
+Step 1700, Total: 67243.3438, Recon: 66677.2031, KL: 606.6687
+Step 1800, Total: 100908.2734, Recon: 100408.2188, KL: 530.1724
+Step 1900, Total: 94460.9141, Recon: 93919.7344, KL: 567.7544
+Step 2000, Total: 101755.9844, Recon: 101235.8125, KL: 540.0494
+Step 2100, Total: 80245.8359, Recon: 79671.3125, KL: 590.3428
+Step 2200, Total: 90355.4531, Recon: 89791.0703, KL: 574.0292
+Step 2300, Total: 84370.8125, Recon: 83795.8438, KL: 578.9025
+Step 2400, Total: 86222.6172, Recon: 85651.2656, KL: 571.3538
+Step 2500, Total: 92011.1172, Recon: 91473.6328, KL: 537.4810
+Epoch 4 Average Loss: 87358.7891
+VAE Epoch 5/25
+Step 0, Total: 80709.9844, Recon: 80121.8281, KL: 588.1594
+Step 100, Total: 84948.0234, Recon: 84365.1562, KL: 582.8640
+Step 200, Total: 80145.4141, Recon: 79551.5859, KL: 593.8276
+Step 300, Total: 91289.7344, Recon: 90705.4375, KL: 584.2930
+Step 400, Total: 84274.0234, Recon: 83692.2500, KL: 581.7744
+Step 500, Total: 89496.8438, Recon: 88924.4922, KL: 572.3527
+Step 600, Total: 95748.5703, Recon: 95213.0312, KL: 535.5423
+Step 700, Total: 102845.2109, Recon: 102322.1016, KL: 523.1062
+Step 800, Total: 90134.0703, Recon: 89570.2500, KL: 563.8215
+Step 900, Total: 52512.7109, Recon: 51883.6953, KL: 629.0170
+Step 1000, Total: 87153.6953, Recon: 86597.6719, KL: 556.0250
+Step 1100, Total: 95914.4922, Recon: 95393.5938, KL: 520.8989
+Step 1200, Total: 91083.5859, Recon: 90531.3047, KL: 552.2794
+Step 1300, Total: 91168.3828, Recon: 90636.1797, KL: 532.2025
+Step 1400, Total: 64027.3125, Recon: 63407.2383, KL: 620.0723
+Step 1500, Total: 91285.6250, Recon: 90726.7969, KL: 558.8320
+Step 1600, Total: 74641.2969, Recon: 74056.3984, KL: 584.8998
+Step 1700, Total: 83617.4531, Recon: 83042.8906, KL: 574.5634
+Step 1800, Total: 84792.8594, Recon: 84234.1250, KL: 558.7377
+Step 1900, Total: 69536.8906, Recon: 68935.3750, KL: 601.5132
+Step 2000, Total: 83768.7188, Recon: 83202.7109, KL: 566.0072
+Step 2100, Total: 101878.0703, Recon: 101350.4688, KL: 527.6033
+Step 2200, Total: 37801.5469, Recon: 37128.5391, KL: 673.0084
+Step 2300, Total: 94367.0391, Recon: 93851.3594, KL: 515.6827
+Step 2400, Total: 97294.6016, Recon: 96769.8359, KL: 524.7678
+Step 2500, Total: 67888.7969, Recon: 67255.9062, KL: 632.8870
+Epoch 5 Average Loss: 87465.0469
+VAE Epoch 6/25
+Step 0, Total: 86054.4844, Recon: 85473.5938, KL: 580.8906
+Step 100, Total: 90423.7422, Recon: 89875.2031, KL: 548.5385
+Step 200, Total: 82194.6875, Recon: 81607.7969, KL: 586.8923
+Step 300, Total: 48572.3281, Recon: 47947.0547, KL: 625.2720
+Step 400, Total: 94500.6719, Recon: 93964.1328, KL: 536.5421
+Step 500, Total: 94462.9453, Recon: 93908.2500, KL: 554.6920
+Step 600, Total: 101207.7969, Recon: 100675.6875, KL: 532.1078
+Step 700, Total: 100679.1641, Recon: 100173.2188, KL: 505.9467
+Step 800, Total: 86980.8906, Recon: 86401.4688, KL: 579.4229
+Step 900, Total: 94078.6484, Recon: 93530.5312, KL: 548.1161
+Step 1000, Total: 90841.0703, Recon: 90283.8906, KL: 557.1800
+Step 1100, Total: 68832.7734, Recon: 68228.6094, KL: 604.1674
+Step 1200, Total: 50211.3594, Recon: 49578.5508, KL: 632.8093
+Step 1300, Total: 92185.1719, Recon: 91601.4141, KL: 583.7595
+Step 1400, Total: 80408.4062, Recon: 79822.2500, KL: 586.1562
+Step 1500, Total: 98001.1953, Recon: 97442.5000, KL: 558.6973
+Step 1600, Total: 89458.6094, Recon: 88889.9062, KL: 568.7032
+Step 1700, Total: 96378.9844, Recon: 95847.3047, KL: 531.6825
+Step 1800, Total: 92981.6797, Recon: 92439.0781, KL: 542.5994
+Step 1900, Total: 101677.6328, Recon: 101166.1250, KL: 511.5085
+Step 2000, Total: 91883.3438, Recon: 91332.0234, KL: 551.3168
+Step 2100, Total: 98851.1484, Recon: 98311.6406, KL: 539.5090
+Step 2200, Total: 97546.5547, Recon: 97009.8828, KL: 536.6700
+Step 2300, Total: 90984.8750, Recon: 90415.8125, KL: 569.0621
+Step 2400, Total: 93189.3281, Recon: 92640.7266, KL: 548.6035
+Step 2500, Total: 84111.8047, Recon: 83538.3125, KL: 573.4951
+Epoch 6 Average Loss: 87177.0625
+VAE Epoch 7/25
+Step 0, Total: 80214.6797, Recon: 79634.8906, KL: 579.7891
+Step 100, Total: 84655.3828, Recon: 84063.5625, KL: 591.8209
+Step 200, Total: 92574.9922, Recon: 92025.3438, KL: 549.6451
+Step 300, Total: 48041.8320, Recon: 47411.4688, KL: 630.3641
+Step 400, Total: 63133.9609, Recon: 62516.9609, KL: 617.0018
+Step 500, Total: 91020.5312, Recon: 90463.5234, KL: 557.0051
+Step 600, Total: 95706.6875, Recon: 95163.4531, KL: 543.2312
+Step 700, Total: 102126.0703, Recon: 101618.8828, KL: 507.1841
+Step 800, Total: 94523.4766, Recon: 93970.8906, KL: 552.5847
+Step 900, Total: 94221.0703, Recon: 93687.4531, KL: 533.6176
+Step 1000, Total: 90135.4609, Recon: 89593.8125, KL: 541.6487
+Step 1100, Total: 83015.5312, Recon: 82459.3281, KL: 556.2051
+Step 1200, Total: 86980.1250, Recon: 86435.6719, KL: 544.4561
+Step 1300, Total: 92155.7969, Recon: 91598.5625, KL: 557.2336
+Step 1400, Total: 86042.5547, Recon: 85432.5781, KL: 609.9729
+Step 1500, Total: 88941.5469, Recon: 88385.3125, KL: 556.2305
+Step 1600, Total: 78146.3047, Recon: 77587.5781, KL: 558.7253
+Step 1700, Total: 76600.8828, Recon: 75998.8906, KL: 601.9909
+Step 1800, Total: 101890.6484, Recon: 101351.2969, KL: 539.3503
+Step 1900, Total: 86080.1562, Recon: 85497.4609, KL: 582.6942
+Step 2000, Total: 91544.6797, Recon: 90980.9531, KL: 563.7275
+Step 2100, Total: 103556.0391, Recon: 103024.8984, KL: 531.1376
+Step 2200, Total: 79271.8750, Recon: 78687.4375, KL: 584.4402
+Step 2300, Total: 85398.0078, Recon: 84831.6484, KL: 566.3625
+Step 2400, Total: 90483.4141, Recon: 89922.6172, KL: 560.7993
+Step 2500, Total: 89842.1875, Recon: 89273.2188, KL: 568.9702
+Epoch 7 Average Loss: 87209.0781
+VAE Epoch 8/25
+Step 0, Total: 91252.3594, Recon: 90725.5625, KL: 526.7930
+Step 100, Total: 71682.2344, Recon: 71085.3438, KL: 596.8920
+Step 200, Total: 86092.3906, Recon: 85513.1562, KL: 579.2376
+Step 300, Total: 72621.7344, Recon: 72034.0156, KL: 587.7225
+Step 400, Total: 94020.3672, Recon: 93440.0312, KL: 580.3385
+Step 500, Total: 79265.5078, Recon: 78683.2812, KL: 582.2264
+Step 600, Total: 76909.3672, Recon: 76338.2031, KL: 571.1643
+Step 700, Total: 102745.7188, Recon: 102210.1250, KL: 535.5919
+Step 800, Total: 88170.0625, Recon: 87586.1016, KL: 583.9641
+Step 900, Total: 78206.4453, Recon: 77656.8438, KL: 549.5981
+Step 1000, Total: 84741.4766, Recon: 84165.4453, KL: 576.0325
+Step 1100, Total: 90103.9062, Recon: 89553.9375, KL: 549.9705
+Step 1200, Total: 91081.3984, Recon: 90515.4688, KL: 565.9290
+Step 1300, Total: 86071.9531, Recon: 85477.0625, KL: 594.8926
+Step 1400, Total: 86068.3516, Recon: 85500.2188, KL: 568.1355
+Step 1500, Total: 99179.8828, Recon: 98668.6406, KL: 511.2443
+Step 1600, Total: 88763.7891, Recon: 88225.7578, KL: 538.0330
+Step 1700, Total: 94213.3125, Recon: 93653.1250, KL: 560.1896
+Step 1800, Total: 93172.2344, Recon: 92585.8125, KL: 586.4213
+Step 1900, Total: 102217.5781, Recon: 101709.5391, KL: 508.0367
+Step 2000, Total: 93537.8047, Recon: 92985.6953, KL: 552.1122
+Step 2100, Total: 100691.8281, Recon: 100160.2266, KL: 531.5993
+Step 2200, Total: 98324.7734, Recon: 97820.5469, KL: 504.2259
+Step 2300, Total: 93272.5312, Recon: 92706.6875, KL: 565.8403
+Step 2400, Total: 84264.0156, Recon: 83688.3906, KL: 575.6289
+Step 2500, Total: 81732.1328, Recon: 81150.6875, KL: 581.4487
+Epoch 8 Average Loss: 86957.6172
+VAE Epoch 9/25
+Step 0, Total: 88434.9766, Recon: 87891.3672, KL: 543.6090
+Step 100, Total: 89152.9297, Recon: 88592.6172, KL: 560.3099
+Step 200, Total: 85689.2578, Recon: 85116.7500, KL: 572.5096
+Step 300, Total: 92670.3750, Recon: 92128.8047, KL: 541.5664
+Step 400, Total: 89291.4141, Recon: 88757.5391, KL: 533.8744
+Step 500, Total: 80731.4375, Recon: 80123.2344, KL: 608.2048
+Step 600, Total: 93195.7891, Recon: 92630.7188, KL: 565.0733
+Step 700, Total: 86906.2891, Recon: 86328.1719, KL: 578.1149
+Step 800, Total: 102974.3906, Recon: 102437.2031, KL: 537.1910
+Step 900, Total: 95999.3828, Recon: 95483.1094, KL: 516.2738
+Step 1000, Total: 86815.9844, Recon: 86249.7500, KL: 566.2341
+Step 1100, Total: 82730.9922, Recon: 82150.5469, KL: 580.4468
+Step 1200, Total: 73302.9453, Recon: 72708.9141, KL: 594.0283
+Step 1300, Total: 83806.2031, Recon: 83199.2656, KL: 606.9380
+Step 1400, Total: 102204.0938, Recon: 101687.8125, KL: 516.2789
+Step 1500, Total: 102588.1172, Recon: 102039.2344, KL: 548.8831
+Step 1600, Total: 76158.3203, Recon: 75573.6953, KL: 584.6243
+Step 1700, Total: 65908.5938, Recon: 65253.1523, KL: 655.4385
+Step 1800, Total: 81633.0859, Recon: 81049.5938, KL: 583.4932
+Step 1900, Total: 67139.3672, Recon: 66513.6875, KL: 625.6783
+Step 2000, Total: 80919.8516, Recon: 80331.8594, KL: 587.9901
+Step 2100, Total: 103973.5781, Recon: 103436.7656, KL: 536.8143
+Step 2200, Total: 93361.0469, Recon: 92839.1094, KL: 521.9354
+Step 2300, Total: 93525.3672, Recon: 92962.3281, KL: 563.0370
+Step 2400, Total: 91258.5547, Recon: 90665.5312, KL: 593.0262
+Step 2500, Total: 91456.6172, Recon: 90892.0703, KL: 564.5505
+Epoch 9 Average Loss: 87293.8125
+VAE Epoch 10/25
+Step 0, Total: 100004.4531, Recon: 99507.3281, KL: 497.1234
+Step 100, Total: 99146.6641, Recon: 98647.3125, KL: 499.3532
+Step 200, Total: 95965.0469, Recon: 95409.1953, KL: 555.8497
+Step 300, Total: 100133.0469, Recon: 99592.8047, KL: 540.2419
+Step 400, Total: 72146.3594, Recon: 71563.8438, KL: 582.5135
+Step 500, Total: 101465.6797, Recon: 100942.8281, KL: 522.8484
+Step 600, Total: 90872.4453, Recon: 90307.4766, KL: 564.9662
+Step 700, Total: 99032.7812, Recon: 98511.3047, KL: 521.4738
+Step 800, Total: 70134.9609, Recon: 69537.2656, KL: 597.6976
+Step 900, Total: 79306.2109, Recon: 78741.0078, KL: 565.2009
+Step 1000, Total: 46161.3242, Recon: 45515.8438, KL: 645.4814
+Step 1100, Total: 78861.4531, Recon: 78271.6484, KL: 589.8041
+Step 1200, Total: 87339.6719, Recon: 86769.2109, KL: 570.4602
+Step 1300, Total: 100506.1094, Recon: 99983.3750, KL: 522.7365
+Step 1400, Total: 89774.7188, Recon: 89211.1562, KL: 563.5660
+Step 1500, Total: 97212.3750, Recon: 96671.0469, KL: 541.3256
+Step 1600, Total: 94829.4062, Recon: 94308.0703, KL: 521.3362
+Step 1700, Total: 85750.6328, Recon: 85153.1094, KL: 597.5249
+Step 1800, Total: 96431.0703, Recon: 95904.8516, KL: 526.2188
+Step 1900, Total: 92446.9922, Recon: 91910.4141, KL: 536.5790
+Step 2000, Total: 81481.2188, Recon: 80910.4062, KL: 570.8104
+Step 2100, Total: 88940.5000, Recon: 88405.4062, KL: 535.0910
+Step 2200, Total: 85926.7812, Recon: 85380.6094, KL: 546.1746
+Step 2300, Total: 90150.4609, Recon: 89594.6875, KL: 555.7698
+Step 2400, Total: 59378.5977, Recon: 58734.1875, KL: 644.4095
+Step 2500, Total: 87306.8047, Recon: 86738.7422, KL: 568.0644
+Epoch 10 Average Loss: 87021.8516
+VAE Epoch 11/25
+Step 0, Total: 73415.8125, Recon: 72816.7500, KL: 599.0655
+Step 100, Total: 46216.7266, Recon: 45550.8438, KL: 665.8825
+Step 200, Total: 99900.6797, Recon: 99387.0625, KL: 513.6155
+Step 300, Total: 80486.4453, Recon: 79897.2969, KL: 589.1508
+Step 400, Total: 94744.0000, Recon: 94225.6250, KL: 518.3787
+Step 500, Total: 94900.7109, Recon: 94361.7891, KL: 538.9191
+Step 600, Total: 73064.3438, Recon: 72487.8750, KL: 576.4717
+Step 700, Total: 89101.3359, Recon: 88554.8281, KL: 546.5049
+Step 800, Total: 87941.7656, Recon: 87384.8281, KL: 556.9371
+Step 900, Total: 75118.5391, Recon: 74521.0156, KL: 597.5250
+Step 1000, Total: 95423.7188, Recon: 94884.2656, KL: 539.4520
+Step 1100, Total: 93029.4844, Recon: 92482.9219, KL: 546.5640
+Step 1200, Total: 95227.8828, Recon: 94695.7969, KL: 532.0836
+Step 1300, Total: 94732.7734, Recon: 94180.3359, KL: 552.4402
+Step 1400, Total: 83181.1484, Recon: 82585.5703, KL: 595.5815
+Step 1500, Total: 79046.0391, Recon: 78429.6562, KL: 616.3844
+Step 1600, Total: 84503.2031, Recon: 83948.0938, KL: 555.1090
+Step 1700, Total: 74922.3828, Recon: 74338.8984, KL: 583.4868
+Step 1800, Total: 99419.5000, Recon: 98894.9297, KL: 524.5670
+Step 1900, Total: 59389.9180, Recon: 58781.5430, KL: 608.3769
+Step 2000, Total: 65007.6094, Recon: 64408.8867, KL: 598.7218
+Step 2100, Total: 94796.6953, Recon: 94226.5000, KL: 570.1990
+Step 2200, Total: 85981.2344, Recon: 85439.3594, KL: 541.8711
+Step 2300, Total: 95776.8125, Recon: 95259.4766, KL: 517.3346
+Step 2400, Total: 88628.1094, Recon: 88018.6875, KL: 609.4243
+Step 2500, Total: 90604.3516, Recon: 90040.2969, KL: 564.0538
+Epoch 11 Average Loss: 87319.1641
+VAE Epoch 12/25
+Step 0, Total: 95566.3516, Recon: 95007.8750, KL: 558.4783
+Step 100, Total: 87864.6016, Recon: 87313.1562, KL: 551.4481
+Step 200, Total: 96199.1250, Recon: 95652.1875, KL: 546.9400
+Step 300, Total: 84982.8984, Recon: 84399.8125, KL: 583.0825
+Step 400, Total: 104264.1562, Recon: 103739.4062, KL: 524.7464
+Step 500, Total: 86957.9375, Recon: 86387.9688, KL: 569.9669
+Step 600, Total: 79714.2656, Recon: 79134.8672, KL: 579.3993
+Step 700, Total: 63903.8164, Recon: 63243.4922, KL: 660.3225
+Step 800, Total: 72284.1953, Recon: 71670.2734, KL: 613.9198
+Step 900, Total: 100078.0859, Recon: 99554.7891, KL: 523.2933
+Step 1000, Total: 100056.9219, Recon: 99540.7500, KL: 516.1737
+Step 1100, Total: 71623.3750, Recon: 71031.8516, KL: 591.5215
+Step 1200, Total: 46390.3594, Recon: 45761.9062, KL: 628.4551
+Step 1300, Total: 91102.4844, Recon: 90556.6250, KL: 545.8594
+Step 1400, Total: 74678.3047, Recon: 74058.9844, KL: 619.3227
+Step 1500, Total: 87752.3125, Recon: 87191.1641, KL: 561.1506
+Step 1600, Total: 73109.4141, Recon: 72539.7031, KL: 569.7147
+Step 1700, Total: 79060.3750, Recon: 78479.4219, KL: 580.9520
+Step 1800, Total: 72094.6094, Recon: 71495.2188, KL: 599.3909
+Step 1900, Total: 77865.4062, Recon: 77284.3594, KL: 581.0458
+Step 2000, Total: 97370.9375, Recon: 96828.1250, KL: 542.8144
+Step 2100, Total: 87895.2969, Recon: 87339.0312, KL: 556.2687
+Step 2200, Total: 98130.1094, Recon: 97625.7188, KL: 504.3871
+Step 2300, Total: 88080.2969, Recon: 87518.5000, KL: 561.7974
+Step 2400, Total: 82237.6094, Recon: 81647.2188, KL: 590.3907
+Step 2500, Total: 94997.0625, Recon: 94444.7031, KL: 552.3630
+Epoch 12 Average Loss: 87049.6094
+VAE Epoch 13/25
+Step 0, Total: 86754.6172, Recon: 86177.3516, KL: 577.2655
+Step 100, Total: 86780.2188, Recon: 86211.7109, KL: 568.5086
+Step 200, Total: 101941.5859, Recon: 101416.1016, KL: 525.4830
+Step 300, Total: 99570.0391, Recon: 99022.6641, KL: 547.3729
+Step 400, Total: 78626.1641, Recon: 78028.3750, KL: 597.7892
+Step 500, Total: 84084.9922, Recon: 83513.7812, KL: 571.2124
+Step 600, Total: 95476.2422, Recon: 94934.3750, KL: 541.8666
+Step 700, Total: 78657.1641, Recon: 78102.1641, KL: 555.0020
+Step 800, Total: 97108.7422, Recon: 96577.8906, KL: 530.8527
+Step 900, Total: 80448.6016, Recon: 79839.2422, KL: 609.3619
+Step 1000, Total: 94485.0156, Recon: 93974.1562, KL: 510.8606
+Step 1100, Total: 93435.2500, Recon: 92890.8594, KL: 544.3907
+Step 1200, Total: 92160.2578, Recon: 91612.1094, KL: 548.1475
+Step 1300, Total: 95228.6953, Recon: 94698.3750, KL: 530.3182
+Step 1400, Total: 44906.3281, Recon: 44273.4453, KL: 632.8813
+Step 1500, Total: 82288.7812, Recon: 81712.5625, KL: 576.2164
+Step 1600, Total: 92852.3438, Recon: 92328.5859, KL: 523.7606
+Step 1700, Total: 73030.5234, Recon: 72438.9062, KL: 591.6166
+Step 1800, Total: 85051.0625, Recon: 84480.3750, KL: 570.6891
+Step 1900, Total: 80174.4141, Recon: 79594.7109, KL: 579.7031
+Step 2000, Total: 85707.4766, Recon: 85153.9844, KL: 553.4913
+Step 2100, Total: 96919.5938, Recon: 96402.9453, KL: 516.6451
+Step 2200, Total: 58066.4922, Recon: 57444.5234, KL: 621.9705
+Step 2300, Total: 95799.3516, Recon: 95250.3125, KL: 549.0411
+Step 2400, Total: 94428.9062, Recon: 93893.8516, KL: 535.0563
+Step 2500, Total: 68355.5859, Recon: 67741.6406, KL: 613.9480
+Epoch 13 Average Loss: 86881.8203
+VAE Epoch 14/25
+Step 0, Total: 88441.7344, Recon: 87868.6172, KL: 573.1208
+Step 100, Total: 72595.6953, Recon: 72000.6562, KL: 595.0354
+Step 200, Total: 93449.4766, Recon: 92891.8281, KL: 557.6477
+Step 300, Total: 96984.4531, Recon: 96424.7578, KL: 559.6991
+Step 400, Total: 92674.3672, Recon: 92141.7344, KL: 532.6307
+Step 500, Total: 85060.6875, Recon: 84488.6875, KL: 572.0009
+Step 600, Total: 97278.1797, Recon: 96765.3047, KL: 512.8715
+Step 700, Total: 67926.5391, Recon: 67305.4062, KL: 621.1339
+Step 800, Total: 84036.2656, Recon: 83470.4766, KL: 565.7858
+Step 900, Total: 69571.2578, Recon: 68970.2188, KL: 601.0366
+Step 1000, Total: 94833.9766, Recon: 94265.7031, KL: 568.2705
+Step 1100, Total: 84513.8672, Recon: 83954.2344, KL: 559.6360
+Step 1200, Total: 85984.5781, Recon: 85432.4766, KL: 552.0992
+Step 1300, Total: 86640.5391, Recon: 86086.4375, KL: 554.0979
+Step 1400, Total: 53360.9219, Recon: 52703.7578, KL: 657.1655
+Step 1500, Total: 54003.2266, Recon: 53406.3672, KL: 596.8595
+Step 1600, Total: 91507.1719, Recon: 90948.9922, KL: 558.1813
+Step 1700, Total: 98881.5781, Recon: 98351.0156, KL: 530.5655
+Step 1800, Total: 78439.4219, Recon: 77834.0938, KL: 605.3318
+Step 1900, Total: 84970.4688, Recon: 84404.5469, KL: 565.9180
+Step 2000, Total: 85759.7266, Recon: 85216.0312, KL: 543.6960
+Step 2100, Total: 96678.1328, Recon: 96149.4688, KL: 528.6676
+Step 2200, Total: 42490.3125, Recon: 41849.2656, KL: 641.0486
+Step 2300, Total: 76285.2188, Recon: 75671.7891, KL: 613.4320
+Step 2400, Total: 82726.6016, Recon: 82158.5469, KL: 568.0549
+Step 2500, Total: 70173.3047, Recon: 69563.5156, KL: 609.7870
+Epoch 14 Average Loss: 87420.0000
+VAE Epoch 15/25
+Step 0, Total: 87213.3203, Recon: 86662.0469, KL: 551.2751
+Step 100, Total: 92941.4297, Recon: 92402.6797, KL: 538.7526
+Step 200, Total: 102062.6016, Recon: 101564.6562, KL: 497.9491
+Step 300, Total: 89414.8359, Recon: 88851.8672, KL: 562.9724
+Step 400, Total: 61881.7617, Recon: 61258.5586, KL: 623.2036
+Step 500, Total: 99280.5469, Recon: 98773.2969, KL: 507.2515
+Step 600, Total: 95435.9453, Recon: 94908.4375, KL: 527.5101
+Step 700, Total: 95222.7578, Recon: 94686.0547, KL: 536.7025
+Step 800, Total: 80730.0781, Recon: 80163.8203, KL: 566.2562
+Step 900, Total: 99440.6797, Recon: 98916.3516, KL: 524.3289
+Step 1000, Total: 80204.9922, Recon: 79616.4141, KL: 588.5746
+Step 1100, Total: 79299.9141, Recon: 78734.8906, KL: 565.0206
+Step 1200, Total: 73286.7109, Recon: 72703.0078, KL: 583.7040
+Step 1300, Total: 61900.3086, Recon: 61275.2578, KL: 625.0517
+Step 1400, Total: 62669.2617, Recon: 62050.3828, KL: 618.8774
+Step 1500, Total: 79936.8359, Recon: 79358.2188, KL: 578.6173
+Step 1600, Total: 89304.8359, Recon: 88751.6641, KL: 553.1738
+Step 1700, Total: 97159.7344, Recon: 96614.6719, KL: 545.0662
+Step 1800, Total: 95590.4297, Recon: 95052.7734, KL: 537.6597
+Step 1900, Total: 94198.8203, Recon: 93664.9453, KL: 533.8757
+Step 2000, Total: 58355.3203, Recon: 57718.0938, KL: 637.2247
+Step 2100, Total: 76585.1797, Recon: 75988.5156, KL: 596.6637
+Step 2200, Total: 82028.6328, Recon: 81489.8281, KL: 538.8083
+Step 2300, Total: 72254.4844, Recon: 71662.4688, KL: 592.0186
+Step 2400, Total: 95358.5703, Recon: 94824.0469, KL: 534.5269
+Step 2500, Total: 91227.2031, Recon: 90626.1406, KL: 601.0655
+Epoch 15 Average Loss: 87296.3750
+VAE Epoch 16/25
+Step 0, Total: 93301.6172, Recon: 92764.3906, KL: 537.2234
+Step 100, Total: 100780.8281, Recon: 100270.8516, KL: 509.9776
+Step 200, Total: 70948.8516, Recon: 70345.6641, KL: 603.1896
+Step 300, Total: 90775.8750, Recon: 90247.0000, KL: 528.8716
+Step 400, Total: 99599.9375, Recon: 99068.2266, KL: 531.7131
+Step 500, Total: 93495.3516, Recon: 92933.4141, KL: 561.9396
+Step 600, Total: 97056.4219, Recon: 96526.2812, KL: 530.1414
+Step 700, Total: 89411.5000, Recon: 88843.0781, KL: 568.4230
+Step 800, Total: 95599.5391, Recon: 95070.2422, KL: 529.2950
+Step 900, Total: 95781.5547, Recon: 95217.7109, KL: 563.8434
+Step 1000, Total: 43417.9766, Recon: 42745.1094, KL: 672.8667
+Step 1100, Total: 100423.9609, Recon: 99930.4453, KL: 493.5123
+Step 1200, Total: 90917.6172, Recon: 90356.9609, KL: 560.6534
+Step 1300, Total: 91223.8828, Recon: 90679.8281, KL: 544.0524
+Step 1400, Total: 92684.9609, Recon: 92121.8281, KL: 563.1349
+Step 1500, Total: 82147.0078, Recon: 81578.6562, KL: 568.3549
+Step 1600, Total: 99433.5469, Recon: 98907.2344, KL: 526.3123
+Step 1700, Total: 79381.5234, Recon: 78784.5625, KL: 596.9640
+Step 1800, Total: 101854.4531, Recon: 101330.2969, KL: 524.1552
+Step 1900, Total: 95174.8828, Recon: 94625.8125, KL: 549.0665
+Step 2000, Total: 66971.4531, Recon: 66342.4531, KL: 629.0005
+Step 2100, Total: 80648.3359, Recon: 80066.9141, KL: 581.4224
+Step 2200, Total: 93718.2344, Recon: 93170.8828, KL: 547.3505
+Step 2300, Total: 92731.7656, Recon: 92183.7812, KL: 547.9866
+Step 2400, Total: 99542.8906, Recon: 99029.1797, KL: 513.7109
+Step 2500, Total: 86417.8516, Recon: 85825.5469, KL: 592.3058
+Epoch 16 Average Loss: 86940.5547
+VAE Epoch 17/25
+Step 0, Total: 91078.9922, Recon: 90529.9531, KL: 549.0382
+Step 100, Total: 85824.1875, Recon: 85251.3828, KL: 572.8025
+Step 200, Total: 93788.1484, Recon: 93243.7031, KL: 544.4459
+Step 300, Total: 91315.9688, Recon: 90784.9688, KL: 531.0039
+Step 400, Total: 87566.6641, Recon: 87035.4219, KL: 531.2445
+Step 500, Total: 89329.3984, Recon: 88768.6562, KL: 560.7459
+Step 600, Total: 97241.4453, Recon: 96709.4219, KL: 532.0258
+Step 700, Total: 98514.6875, Recon: 97991.8281, KL: 522.8572
+Step 800, Total: 90166.3750, Recon: 89634.6641, KL: 531.7084
+Step 900, Total: 90877.0000, Recon: 90345.5859, KL: 531.4139
+Step 1000, Total: 91759.2969, Recon: 91219.1250, KL: 540.1755
+Step 1100, Total: 93781.9531, Recon: 93232.0859, KL: 549.8636
+Step 1200, Total: 86779.2031, Recon: 86196.6875, KL: 582.5169
+Step 1300, Total: 94329.2109, Recon: 93783.6875, KL: 545.5203
+Step 1400, Total: 97846.3047, Recon: 97339.4766, KL: 506.8259
+Step 1500, Total: 92370.5703, Recon: 91819.5781, KL: 550.9941
+Step 1600, Total: 94451.1484, Recon: 93925.0859, KL: 526.0657
+Step 1700, Total: 89344.6406, Recon: 88778.9297, KL: 565.7070
+Step 1800, Total: 83611.0469, Recon: 83029.5469, KL: 581.4982
+Step 1900, Total: 86806.5703, Recon: 86225.9062, KL: 580.6633
+Step 2000, Total: 85647.1094, Recon: 85054.0156, KL: 593.0948
+Step 2100, Total: 93549.2422, Recon: 93006.9766, KL: 542.2646
+Step 2200, Total: 79037.4609, Recon: 78464.1172, KL: 573.3429
+Step 2300, Total: 89604.5469, Recon: 89057.4219, KL: 547.1232
+Step 2400, Total: 73554.9219, Recon: 72938.0859, KL: 616.8340
+Step 2500, Total: 79032.1953, Recon: 78452.3281, KL: 579.8693
+Epoch 17 Average Loss: 87117.0312
+VAE Epoch 18/25
+Step 0, Total: 95055.3906, Recon: 94512.2969, KL: 543.0901
+Step 100, Total: 61340.2500, Recon: 60708.3125, KL: 631.9380
+Step 200, Total: 94448.5000, Recon: 93902.1875, KL: 546.3094
+Step 300, Total: 84062.5703, Recon: 83494.1016, KL: 568.4661
+Step 400, Total: 92716.6719, Recon: 92161.9453, KL: 554.7247
+Step 500, Total: 90212.1094, Recon: 89659.4375, KL: 552.6725
+Step 600, Total: 98357.3047, Recon: 97831.7500, KL: 525.5530
+Step 700, Total: 53786.2188, Recon: 53154.7422, KL: 631.4747
+Step 800, Total: 101968.9844, Recon: 101449.7812, KL: 519.2061
+Step 900, Total: 90937.0391, Recon: 90409.1094, KL: 527.9268
+Step 1000, Total: 93944.2656, Recon: 93400.9531, KL: 543.3137
+Step 1100, Total: 102910.3594, Recon: 102415.5234, KL: 494.8394
+Step 1200, Total: 81429.1875, Recon: 80884.3828, KL: 544.8020
+Step 1300, Total: 75246.8984, Recon: 74627.1250, KL: 619.7739
+Step 1400, Total: 96502.4844, Recon: 95982.9844, KL: 519.5026
+Step 1500, Total: 82354.9922, Recon: 81764.6406, KL: 590.3494
+Step 1600, Total: 91740.0000, Recon: 91218.1875, KL: 521.8125
+Step 1700, Total: 65915.5000, Recon: 65304.0312, KL: 611.4714
+Step 1800, Total: 93240.1094, Recon: 92704.7734, KL: 535.3369
+Step 1900, Total: 81405.6484, Recon: 80819.1406, KL: 586.5044
+Step 2000, Total: 100934.4219, Recon: 100430.3281, KL: 504.0933
+Step 2100, Total: 82631.2109, Recon: 82042.4062, KL: 588.8051
+Step 2200, Total: 90101.8203, Recon: 89521.9766, KL: 579.8475
+Step 2300, Total: 98577.2031, Recon: 98033.4453, KL: 543.7580
+Step 2400, Total: 99925.8281, Recon: 99396.4531, KL: 529.3715
+Step 2500, Total: 97109.7891, Recon: 96579.8594, KL: 529.9265
+Epoch 18 Average Loss: 87185.2422
+VAE Epoch 19/25
+Step 0, Total: 98238.0469, Recon: 97701.1328, KL: 536.9125
+Step 100, Total: 80291.8047, Recon: 79703.8438, KL: 587.9583
+Step 200, Total: 95522.6953, Recon: 94982.2656, KL: 540.4263
+Step 300, Total: 52381.3359, Recon: 51734.3320, KL: 647.0044
+Step 400, Total: 87791.5391, Recon: 87238.1562, KL: 553.3798
+Step 500, Total: 102404.3438, Recon: 101918.0938, KL: 486.2497
+Step 600, Total: 84291.7734, Recon: 83709.1172, KL: 582.6529
+Step 700, Total: 98150.9531, Recon: 97650.0234, KL: 500.9274
+Step 800, Total: 87780.4141, Recon: 87220.2812, KL: 560.1312
+Step 900, Total: 93387.5312, Recon: 92837.6484, KL: 549.8807
+Step 1000, Total: 94651.7266, Recon: 94108.3047, KL: 543.4227
+Step 1100, Total: 96191.1875, Recon: 95659.9688, KL: 531.2224
+Step 1200, Total: 84180.8750, Recon: 83617.4844, KL: 563.3923
+Step 1300, Total: 96202.2734, Recon: 95643.3750, KL: 558.9006
+Step 1400, Total: 67079.9688, Recon: 66451.7031, KL: 628.2679
+Step 1500, Total: 88420.0703, Recon: 87856.8438, KL: 563.2295
+Step 1600, Total: 76664.6641, Recon: 76069.2500, KL: 595.4136
+Step 1700, Total: 60743.8125, Recon: 60142.6797, KL: 601.1339
+Step 1800, Total: 92280.7500, Recon: 91698.1172, KL: 582.6361
+Step 1900, Total: 96476.0547, Recon: 95974.2500, KL: 501.8074
+Step 2000, Total: 86656.0547, Recon: 86067.3984, KL: 588.6571
+Step 2100, Total: 84207.7891, Recon: 83637.8281, KL: 569.9630
+Step 2200, Total: 100722.6641, Recon: 100215.0625, KL: 507.5988
+Step 2300, Total: 66714.0938, Recon: 66116.1875, KL: 597.9049
+Step 2400, Total: 104830.8906, Recon: 104326.3594, KL: 504.5342
+Step 2500, Total: 62427.3516, Recon: 61796.8672, KL: 630.4857
+Epoch 19 Average Loss: 86775.1641
+VAE Epoch 20/25
+Step 0, Total: 98564.7188, Recon: 98067.0781, KL: 497.6408
+Step 100, Total: 97712.3438, Recon: 97188.6250, KL: 523.7191
+Step 200, Total: 96272.0156, Recon: 95708.8906, KL: 563.1222
+Step 300, Total: 89265.7031, Recon: 88715.9375, KL: 549.7629
+Step 400, Total: 101837.3828, Recon: 101319.5469, KL: 517.8325
+Step 500, Total: 97756.1406, Recon: 97210.5234, KL: 545.6177
+Step 600, Total: 94109.7422, Recon: 93566.4766, KL: 543.2665
+Step 700, Total: 86293.8516, Recon: 85738.6250, KL: 555.2282
+Step 800, Total: 87571.5078, Recon: 87009.8984, KL: 561.6116
+Step 900, Total: 83897.0312, Recon: 83353.5312, KL: 543.4985
+Step 1000, Total: 98391.4062, Recon: 97836.9219, KL: 554.4857
+Step 1100, Total: 57273.6328, Recon: 56631.7578, KL: 641.8752
+Step 1200, Total: 95128.9062, Recon: 94559.5547, KL: 569.3508
+Step 1300, Total: 99879.6406, Recon: 99365.5781, KL: 514.0654
+Step 1400, Total: 76382.8047, Recon: 75803.9531, KL: 578.8526
+Step 1500, Total: 97055.4844, Recon: 96518.5078, KL: 536.9751
+Step 1600, Total: 97952.8438, Recon: 97418.1797, KL: 534.6631
+Step 1700, Total: 90888.9844, Recon: 90339.3594, KL: 549.6213
+Step 1800, Total: 93990.4062, Recon: 93451.6875, KL: 538.7196
+Step 1900, Total: 99852.6250, Recon: 99319.6641, KL: 532.9580
+Step 2000, Total: 94704.3438, Recon: 94168.1484, KL: 536.1920
+Step 2100, Total: 75046.7734, Recon: 74446.6094, KL: 600.1650
+Step 2200, Total: 89014.1250, Recon: 88448.3516, KL: 565.7705
+Step 2300, Total: 94833.1016, Recon: 94279.4062, KL: 553.6984
+Step 2400, Total: 104001.2578, Recon: 103498.3594, KL: 502.8992
+Step 2500, Total: 82198.6719, Recon: 81625.2188, KL: 573.4516
+Epoch 20 Average Loss: 87211.0156
+VAE Epoch 21/25
+Step 0, Total: 77550.7500, Recon: 76966.0000, KL: 584.7510
+Step 100, Total: 101833.5000, Recon: 101297.4375, KL: 536.0657
+Step 200, Total: 88958.2422, Recon: 88420.1875, KL: 538.0580
+Step 300, Total: 73041.9297, Recon: 72475.6641, KL: 566.2639
+Step 400, Total: 94651.9609, Recon: 94119.7734, KL: 532.1886
+Step 500, Total: 82889.7734, Recon: 82328.1016, KL: 561.6708
+Step 600, Total: 56147.7695, Recon: 55540.1484, KL: 607.6196
+Step 700, Total: 89618.2031, Recon: 89059.6719, KL: 558.5298
+Step 800, Total: 83360.7422, Recon: 82770.9219, KL: 589.8192
+Step 900, Total: 91016.3828, Recon: 90462.5859, KL: 553.7958
+Step 1000, Total: 88787.2031, Recon: 88220.4688, KL: 566.7360
+Step 1100, Total: 68694.0391, Recon: 68074.8906, KL: 619.1472
+Step 1200, Total: 99369.4844, Recon: 98859.3906, KL: 510.0961
+Step 1300, Total: 37321.2305, Recon: 36658.7344, KL: 662.4962
+Step 1400, Total: 73538.8438, Recon: 72947.5625, KL: 591.2819
+Step 1500, Total: 88548.0312, Recon: 87969.8125, KL: 578.2154
+Step 1600, Total: 94557.3672, Recon: 93993.6719, KL: 563.6923
+Step 1700, Total: 97121.0312, Recon: 96589.3828, KL: 531.6486
+Step 1800, Total: 99141.9922, Recon: 98618.0859, KL: 523.9079
+Step 1900, Total: 81099.7422, Recon: 80498.1328, KL: 601.6057
+Step 2000, Total: 81120.5547, Recon: 80541.5156, KL: 579.0363
+Step 2100, Total: 96705.7891, Recon: 96158.5703, KL: 547.2190
+Step 2200, Total: 80594.4062, Recon: 79991.3594, KL: 603.0500
+Step 2300, Total: 85805.2422, Recon: 85231.2891, KL: 573.9532
+Step 2400, Total: 90894.6328, Recon: 90342.2578, KL: 552.3726
+Step 2500, Total: 97236.0312, Recon: 96715.0156, KL: 521.0117
+Epoch 21 Average Loss: 87423.9141
+VAE Epoch 22/25
+Step 0, Total: 96897.9375, Recon: 96370.0156, KL: 527.9224
+Step 100, Total: 86958.4219, Recon: 86389.5703, KL: 568.8530
+Step 200, Total: 92149.0781, Recon: 91585.0703, KL: 564.0063
+Step 300, Total: 85645.8750, Recon: 85055.2188, KL: 590.6548
+Step 400, Total: 66799.1016, Recon: 66203.5312, KL: 595.5716
+Step 500, Total: 98162.9922, Recon: 97610.1484, KL: 552.8467
+Step 600, Total: 81657.7031, Recon: 81067.2188, KL: 590.4861
+Step 700, Total: 88187.0781, Recon: 87621.1797, KL: 565.8979
+Step 800, Total: 90389.7031, Recon: 89833.2500, KL: 556.4503
+Step 900, Total: 70750.5391, Recon: 70176.0391, KL: 574.5021
+Step 1000, Total: 89208.1172, Recon: 88633.0781, KL: 575.0405
+Step 1100, Total: 102579.6406, Recon: 102081.4922, KL: 498.1461
+Step 1200, Total: 66040.9297, Recon: 65448.9023, KL: 592.0306
+Step 1300, Total: 78513.0156, Recon: 77948.8281, KL: 564.1892
+Step 1400, Total: 90687.0547, Recon: 90126.6719, KL: 560.3824
+Step 1500, Total: 86559.8359, Recon: 85981.3906, KL: 578.4484
+Step 1600, Total: 72549.8906, Recon: 71927.4219, KL: 622.4682
+Step 1700, Total: 94298.3984, Recon: 93732.2656, KL: 566.1312
+Step 1800, Total: 89456.3438, Recon: 88905.5859, KL: 550.7549
+Step 1900, Total: 95130.0938, Recon: 94579.0625, KL: 551.0293
+Step 2000, Total: 91091.3828, Recon: 90546.4453, KL: 544.9399
+Step 2100, Total: 76489.4375, Recon: 75929.3828, KL: 560.0526
+Step 2200, Total: 47678.3477, Recon: 47037.6484, KL: 640.7003
+Step 2300, Total: 99893.6016, Recon: 99389.2031, KL: 504.4021
+Step 2400, Total: 93378.5156, Recon: 92840.0547, KL: 538.4573
+Step 2500, Total: 85597.8516, Recon: 85029.6562, KL: 568.1931
+Epoch 22 Average Loss: 87315.5156
+VAE Epoch 23/25
+Step 0, Total: 68992.2812, Recon: 68396.6719, KL: 595.6117
+Step 100, Total: 100045.7969, Recon: 99539.1328, KL: 506.6649
+Step 200, Total: 68459.2891, Recon: 67850.7891, KL: 608.5009
+Step 300, Total: 70916.3125, Recon: 70314.3281, KL: 601.9821
+Step 400, Total: 88638.3828, Recon: 88079.8594, KL: 558.5215
+Step 500, Total: 94622.4062, Recon: 94081.0625, KL: 541.3422
+Step 600, Total: 61672.1289, Recon: 61062.2656, KL: 609.8647
+Step 700, Total: 87989.0000, Recon: 87432.5625, KL: 556.4400
+Step 800, Total: 87368.4531, Recon: 86791.3594, KL: 577.0958
+Step 900, Total: 104715.9297, Recon: 104221.8906, KL: 494.0394
+Step 1000, Total: 86208.2344, Recon: 85630.4531, KL: 577.7776
+Step 1100, Total: 99942.1406, Recon: 99440.4375, KL: 501.7070
+Step 1200, Total: 86149.8906, Recon: 85607.2969, KL: 542.5975
+Step 1300, Total: 91199.0156, Recon: 90638.1875, KL: 560.8300
+Step 1400, Total: 83645.8359, Recon: 83066.9297, KL: 578.9044
+Step 1500, Total: 101797.9922, Recon: 101288.3125, KL: 509.6801
+Step 1600, Total: 92659.9141, Recon: 92114.1250, KL: 545.7856
+Step 1700, Total: 48009.0352, Recon: 47357.6016, KL: 651.4338
+Step 1800, Total: 63180.5312, Recon: 62576.0977, KL: 604.4327
+Step 1900, Total: 69659.5781, Recon: 69065.5938, KL: 593.9817
+Step 2000, Total: 89712.2500, Recon: 89162.0391, KL: 550.2126
+Step 2100, Total: 89309.6328, Recon: 88745.3750, KL: 564.2594
+Step 2200, Total: 64909.9141, Recon: 64311.3398, KL: 598.5726
+Step 2300, Total: 79456.5859, Recon: 78862.2500, KL: 594.3376
+Step 2400, Total: 81382.6953, Recon: 80806.1406, KL: 576.5535
+Step 2500, Total: 92870.9141, Recon: 92335.9297, KL: 534.9825
+Epoch 23 Average Loss: 87179.4219
+VAE Epoch 24/25
+Step 0, Total: 65436.0625, Recon: 64828.1602, KL: 607.9026
+Step 100, Total: 95866.8984, Recon: 95353.4766, KL: 513.4198
+Step 200, Total: 49553.1914, Recon: 48915.6094, KL: 637.5822
+Step 300, Total: 80019.4922, Recon: 79429.7500, KL: 589.7407
+Step 400, Total: 100118.3906, Recon: 99591.4062, KL: 526.9846
+Step 500, Total: 92892.1094, Recon: 92336.3594, KL: 555.7469
+Step 600, Total: 85356.3203, Recon: 84793.7031, KL: 562.6183
+Step 700, Total: 88128.9766, Recon: 87585.5938, KL: 543.3854
+Step 800, Total: 91379.9766, Recon: 90782.9062, KL: 597.0699
+Step 900, Total: 69488.9531, Recon: 68899.0703, KL: 589.8851
+Step 1000, Total: 50179.2305, Recon: 49551.7891, KL: 627.4427
+Step 1100, Total: 102012.5547, Recon: 101474.2500, KL: 538.3013
+Step 1200, Total: 70282.8672, Recon: 69677.8906, KL: 604.9792
+Step 1300, Total: 83177.3984, Recon: 82594.9688, KL: 582.4304
+Step 1400, Total: 93863.7266, Recon: 93314.2188, KL: 549.5111
+Step 1500, Total: 91656.6719, Recon: 91104.9141, KL: 551.7572
+Step 1600, Total: 93583.6406, Recon: 93055.9922, KL: 527.6523
+Step 1700, Total: 101043.4297, Recon: 100529.9844, KL: 513.4469
+Step 1800, Total: 94326.3672, Recon: 93732.0156, KL: 594.3546
+Step 1900, Total: 98965.2578, Recon: 98439.2656, KL: 525.9900
+Step 2000, Total: 76657.6250, Recon: 76071.1484, KL: 586.4740
+Step 2100, Total: 85749.3750, Recon: 85196.4609, KL: 552.9172
+Step 2200, Total: 98680.9453, Recon: 98152.8438, KL: 528.1041
+Step 2300, Total: 88362.4844, Recon: 87804.2266, KL: 558.2546
+Step 2400, Total: 72480.6172, Recon: 71909.5078, KL: 571.1124
+Step 2500, Total: 96163.9766, Recon: 95631.4062, KL: 532.5707
+Epoch 24 Average Loss: 87229.2344
+VAE Epoch 25/25
+Step 0, Total: 82447.3359, Recon: 81889.1406, KL: 558.1954
+Step 100, Total: 74836.2344, Recon: 74261.1719, KL: 575.0622
+Step 200, Total: 101388.0312, Recon: 100896.0000, KL: 492.0317
+Step 300, Total: 89367.1562, Recon: 88811.9062, KL: 555.2516
+Step 400, Total: 91416.6172, Recon: 90869.8750, KL: 546.7416
+Step 500, Total: 83961.7578, Recon: 83409.6719, KL: 552.0837
+Step 600, Total: 74429.8594, Recon: 73821.8281, KL: 608.0302
+Step 700, Total: 94395.6172, Recon: 93871.7656, KL: 523.8539
+Step 800, Total: 79304.7812, Recon: 78720.9844, KL: 583.8000
+Step 900, Total: 93185.2422, Recon: 92635.9688, KL: 549.2715
+Step 1000, Total: 88583.3438, Recon: 88030.5547, KL: 552.7869
+Step 1100, Total: 94101.4219, Recon: 93573.4844, KL: 527.9348
+Step 1200, Total: 94022.5703, Recon: 93460.8281, KL: 561.7444
+Step 1300, Total: 79409.9453, Recon: 78833.0469, KL: 576.8990
+Step 1400, Total: 97985.3516, Recon: 97476.7188, KL: 508.6321
+Step 1500, Total: 92511.9297, Recon: 91983.4062, KL: 528.5234
+Step 1600, Total: 94910.3828, Recon: 94362.2891, KL: 548.0938
+Step 1700, Total: 56621.2344, Recon: 55973.4375, KL: 647.7975
+Step 1800, Total: 100061.5703, Recon: 99543.7812, KL: 517.7908
+Step 1900, Total: 96261.2891, Recon: 95726.7656, KL: 534.5217
+Step 2000, Total: 82360.6875, Recon: 81785.5234, KL: 575.1655
+Step 2100, Total: 98829.9531, Recon: 98317.9531, KL: 512.0009
+Step 2200, Total: 98876.4688, Recon: 98339.8594, KL: 536.6069
+Step 2300, Total: 99801.8516, Recon: 99277.8047, KL: 524.0461
+Step 2400, Total: 75503.9375, Recon: 74922.1875, KL: 581.7521
+Step 2500, Total: 65990.5391, Recon: 65381.0625, KL: 609.4758
+Epoch 25 Average Loss: 87262.1094
+Training completed.
+Enhanced Inverse Classifier Epoch 1/25
+Step 0, Total Loss: 0.977244, MSE: 0.895218, Cosine: 1.155863, LR: 0.001000
+Step 100, Total Loss: 0.838838, MSE: 0.836297, Cosine: 0.816024, LR: 0.001000
+Step 200, Total Loss: 0.821409, MSE: 0.812387, Cosine: 0.809629, LR: 0.001000
+Step 300, Total Loss: 0.863484, MSE: 0.869662, Cosine: 0.815678, LR: 0.001000
+Step 400, Total Loss: 0.842202, MSE: 0.837846, Cosine: 0.818500, LR: 0.001000
+Step 500, Total Loss: 0.887019, MSE: 0.902668, Cosine: 0.818340, LR: 0.001000
+Step 600, Total Loss: 0.854839, MSE: 0.859009, Cosine: 0.812427, LR: 0.001000
+Step 700, Total Loss: 0.889416, MSE: 0.910083, Cosine: 0.809218, LR: 0.001000
+Step 800, Total Loss: 0.869790, MSE: 0.889598, Cosine: 0.791409, LR: 0.001000
+Step 900, Total Loss: 0.850995, MSE: 0.859862, Cosine: 0.798559, LR: 0.001000
+Step 1000, Total Loss: 0.880069, MSE: 0.902697, Cosine: 0.795316, LR: 0.000960
+Step 1100, Total Loss: 0.834792, MSE: 0.838932, Cosine: 0.794319, LR: 0.000960
+Step 1200, Total Loss: 0.923830, MSE: 0.966616, Cosine: 0.792860, LR: 0.000960
+Step 1300, Total Loss: 0.851197, MSE: 0.861453, Cosine: 0.796438, LR: 0.000960
+Step 1400, Total Loss: 0.903055, MSE: 0.926821, Cosine: 0.816670, LR: 0.000960
+Step 1500, Total Loss: 0.921987, MSE: 0.961423, Cosine: 0.799180, LR: 0.000960
+Step 1600, Total Loss: 0.872218, MSE: 0.895492, Cosine: 0.787190, LR: 0.000960
+Step 1700, Total Loss: 0.875767, MSE: 0.900640, Cosine: 0.787027, LR: 0.000960
+Step 1800, Total Loss: 0.883146, MSE: 0.906897, Cosine: 0.796997, LR: 0.000960
+Step 1900, Total Loss: 0.859618, MSE: 0.868949, Cosine: 0.806690, LR: 0.000960
+Step 2000, Total Loss: 0.859416, MSE: 0.870953, Cosine: 0.801297, LR: 0.000922
+Step 2100, Total Loss: 0.913461, MSE: 0.949126, Cosine: 0.799328, LR: 0.000922
+Step 2200, Total Loss: 0.850248, MSE: 0.858337, Cosine: 0.800173, LR: 0.000922
+Step 2300, Total Loss: 0.844902, MSE: 0.861450, Cosine: 0.775813, LR: 0.000922
+Step 2400, Total Loss: 0.863775, MSE: 0.877848, Cosine: 0.800174, LR: 0.000922
+Step 2500, Total Loss: 0.837631, MSE: 0.846926, Cosine: 0.785715, LR: 0.000922
+Epoch 1 Summary:
+  Average Total Loss: 0.865247
+  Average MSE Loss: 0.876990
+  Average Cosine Loss: 0.806852
+  ✓ New best model saved! Loss: 0.865247
+Enhanced Inverse Classifier Epoch 2/25
+Step 0, Total Loss: 0.871999, MSE: 0.888663, Cosine: 0.802679, LR: 0.000922
+Step 100, Total Loss: 0.861124, MSE: 0.874223, Cosine: 0.799882, LR: 0.000922
+Step 200, Total Loss: 0.860668, MSE: 0.875553, Cosine: 0.795553, LR: 0.000922
+Step 300, Total Loss: 0.812430, MSE: 0.811154, Cosine: 0.784874, LR: 0.000922
+Step 400, Total Loss: 0.872807, MSE: 0.889900, Cosine: 0.801959, LR: 0.000922
+Step 500, Total Loss: 0.879990, MSE: 0.909245, Cosine: 0.781167, LR: 0.000885
+Step 600, Total Loss: 0.831229, MSE: 0.827561, Cosine: 0.809449, LR: 0.000885
+Step 700, Total Loss: 0.836185, MSE: 0.844671, Cosine: 0.786604, LR: 0.000885
+Step 800, Total Loss: 0.820224, MSE: 0.821150, Cosine: 0.787975, LR: 0.000885
+Step 900, Total Loss: 0.823777, MSE: 0.835376, Cosine: 0.766657, LR: 0.000885
+Step 1000, Total Loss: 0.889170, MSE: 0.916200, Cosine: 0.796193, LR: 0.000885
+Step 1100, Total Loss: 0.872183, MSE: 0.900712, Cosine: 0.775811, LR: 0.000885
+Step 1200, Total Loss: 0.885014, MSE: 0.906777, Cosine: 0.804536, LR: 0.000885
+Step 1300, Total Loss: 0.877176, MSE: 0.900608, Cosine: 0.792096, LR: 0.000885
+Step 1400, Total Loss: 0.871606, MSE: 0.891917, Cosine: 0.794279, LR: 0.000885
+Step 1500, Total Loss: 0.825950, MSE: 0.828079, Cosine: 0.791257, LR: 0.000849
+Step 1600, Total Loss: 0.834148, MSE: 0.852086, Cosine: 0.762969, LR: 0.000849
+Step 1700, Total Loss: 0.882511, MSE: 0.902215, Cosine: 0.807338, LR: 0.000849
+Step 1800, Total Loss: 0.845620, MSE: 0.858342, Cosine: 0.786792, LR: 0.000849
+Step 1900, Total Loss: 0.839152, MSE: 0.850871, Cosine: 0.782585, LR: 0.000849
+Step 2000, Total Loss: 0.848996, MSE: 0.856434, Cosine: 0.802672, LR: 0.000849
+Step 2100, Total Loss: 0.841722, MSE: 0.852994, Cosine: 0.786340, LR: 0.000849
+Step 2200, Total Loss: 0.833012, MSE: 0.842673, Cosine: 0.781431, LR: 0.000849
+Step 2300, Total Loss: 0.860391, MSE: 0.877897, Cosine: 0.791114, LR: 0.000849
+Step 2400, Total Loss: 0.868623, MSE: 0.877850, Cosine: 0.818600, LR: 0.000849
+Step 2500, Total Loss: 0.854899, MSE: 0.866515, Cosine: 0.799416, LR: 0.000815
+Epoch 2 Summary:
+  Average Total Loss: 0.858172
+  Average MSE Loss: 0.873723
+  Average Cosine Loss: 0.792148
+  ✓ New best model saved! Loss: 0.858172
+Enhanced Inverse Classifier Epoch 3/25
+Step 0, Total Loss: 0.843503, MSE: 0.856048, Cosine: 0.786085, LR: 0.000815
+Step 100, Total Loss: 0.819314, MSE: 0.828315, Cosine: 0.769917, LR: 0.000815
+Step 200, Total Loss: 0.845522, MSE: 0.863074, Cosine: 0.776415, LR: 0.000815
+Step 300, Total Loss: 0.842251, MSE: 0.851902, Cosine: 0.791278, LR: 0.000815
+Step 400, Total Loss: 0.857356, MSE: 0.875014, Cosine: 0.788124, LR: 0.000815
+Step 500, Total Loss: 0.793982, MSE: 0.782111, Cosine: 0.793680, LR: 0.000815
+Step 600, Total Loss: 0.816896, MSE: 0.820560, Cosine: 0.780487, LR: 0.000815
+Step 700, Total Loss: 0.837457, MSE: 0.849173, Cosine: 0.782183, LR: 0.000815
+Step 800, Total Loss: 0.851837, MSE: 0.872454, Cosine: 0.775463, LR: 0.000815
+Step 900, Total Loss: 0.876408, MSE: 0.901945, Cosine: 0.788586, LR: 0.000815
+Step 1000, Total Loss: 0.836713, MSE: 0.843871, Cosine: 0.792246, LR: 0.000783
+Step 1100, Total Loss: 0.868170, MSE: 0.889014, Cosine: 0.792213, LR: 0.000783
+Step 1200, Total Loss: 0.845665, MSE: 0.858652, Cosine: 0.787898, LR: 0.000783
+Step 1300, Total Loss: 0.854705, MSE: 0.878578, Cosine: 0.771489, LR: 0.000783
+Step 1400, Total Loss: 0.879624, MSE: 0.905808, Cosine: 0.791178, LR: 0.000783
+Step 1500, Total Loss: 0.842064, MSE: 0.854416, Cosine: 0.785990, LR: 0.000783
+Step 1600, Total Loss: 0.824920, MSE: 0.830198, Cosine: 0.785497, LR: 0.000783
+Step 1700, Total Loss: 0.851547, MSE: 0.866107, Cosine: 0.790615, LR: 0.000783
+Step 1800, Total Loss: 0.807670, MSE: 0.806657, Cosine: 0.783265, LR: 0.000783
+Step 1900, Total Loss: 0.817573, MSE: 0.817243, Cosine: 0.791298, LR: 0.000783
+Step 2000, Total Loss: 0.841798, MSE: 0.850201, Cosine: 0.795896, LR: 0.000751
+Step 2100, Total Loss: 0.835737, MSE: 0.839429, Cosine: 0.801008, LR: 0.000751
+Step 2200, Total Loss: 0.903635, MSE: 0.935093, Cosine: 0.803987, LR: 0.000751
+Step 2300, Total Loss: 0.832534, MSE: 0.839233, Cosine: 0.790845, LR: 0.000751
+Step 2400, Total Loss: 0.846398, MSE: 0.859011, Cosine: 0.790893, LR: 0.000751
+Step 2500, Total Loss: 0.879132, MSE: 0.907529, Cosine: 0.787086, LR: 0.000751
+Epoch 3 Summary:
+  Average Total Loss: 0.855722
+  Average MSE Loss: 0.872574
+  Average Cosine Loss: 0.789050
+  ✓ New best model saved! Loss: 0.855722
+Enhanced Inverse Classifier Epoch 4/25
+Step 0, Total Loss: 0.833485, MSE: 0.843340, Cosine: 0.784843, LR: 0.000751
+Step 100, Total Loss: 0.830165, MSE: 0.845454, Cosine: 0.768318, LR: 0.000751
+Step 200, Total Loss: 0.833782, MSE: 0.848359, Cosine: 0.773673, LR: 0.000751
+Step 300, Total Loss: 0.823157, MSE: 0.823321, Cosine: 0.796980, LR: 0.000751
+Step 400, Total Loss: 0.877017, MSE: 0.906080, Cosine: 0.783626, LR: 0.000721
+Step 500, Total Loss: 0.860833, MSE: 0.883703, Cosine: 0.782238, LR: 0.000721
+Step 600, Total Loss: 0.857458, MSE: 0.871567, Cosine: 0.799117, LR: 0.000721
+Step 700, Total Loss: 0.865895, MSE: 0.879547, Cosine: 0.808877, LR: 0.000721
+Step 800, Total Loss: 0.881274, MSE: 0.911670, Cosine: 0.785412, LR: 0.000721
+Step 900, Total Loss: 0.844675, MSE: 0.857799, Cosine: 0.789224, LR: 0.000721
+Step 1000, Total Loss: 0.874673, MSE: 0.898897, Cosine: 0.793094, LR: 0.000721
+Step 1100, Total Loss: 0.797193, MSE: 0.802682, Cosine: 0.759635, LR: 0.000721
+Step 1200, Total Loss: 0.818331, MSE: 0.829501, Cosine: 0.767359, LR: 0.000721
+Step 1300, Total Loss: 0.836957, MSE: 0.848594, Cosine: 0.785145, LR: 0.000721
+Step 1400, Total Loss: 0.865075, MSE: 0.888481, Cosine: 0.785870, LR: 0.000693
+Step 1500, Total Loss: 0.903045, MSE: 0.943713, Cosine: 0.783827, LR: 0.000693
+Step 1600, Total Loss: 0.860683, MSE: 0.873344, Cosine: 0.806922, LR: 0.000693
+Step 1700, Total Loss: 0.889413, MSE: 0.917517, Cosine: 0.799788, LR: 0.000693
+Step 1800, Total Loss: 0.835927, MSE: 0.849839, Cosine: 0.779337, LR: 0.000693
+Step 1900, Total Loss: 0.876148, MSE: 0.902185, Cosine: 0.791350, LR: 0.000693
+Step 2000, Total Loss: 0.843375, MSE: 0.861696, Cosine: 0.776688, LR: 0.000693
+Step 2100, Total Loss: 0.888398, MSE: 0.925476, Cosine: 0.778056, LR: 0.000693
+Step 2200, Total Loss: 0.809956, MSE: 0.812461, Cosine: 0.780231, LR: 0.000693
+Step 2300, Total Loss: 0.830742, MSE: 0.846582, Cosine: 0.770132, LR: 0.000693
+Step 2400, Total Loss: 0.877555, MSE: 0.909519, Cosine: 0.779361, LR: 0.000665
+Step 2500, Total Loss: 0.850115, MSE: 0.869418, Cosine: 0.781896, LR: 0.000665
+Epoch 4 Summary:
+  Average Total Loss: 0.853435
+  Average MSE Loss: 0.871524
+  Average Cosine Loss: 0.786544
+  ✓ New best model saved! Loss: 0.853435
+Enhanced Inverse Classifier Epoch 5/25
+Step 0, Total Loss: 0.881102, MSE: 0.909573, Cosine: 0.791497, LR: 0.000665
+Step 100, Total Loss: 0.848038, MSE: 0.864940, Cosine: 0.785314, LR: 0.000665
+Step 200, Total Loss: 0.864440, MSE: 0.890355, Cosine: 0.780864, LR: 0.000665
+Step 300, Total Loss: 0.843934, MSE: 0.860092, Cosine: 0.783117, LR: 0.000665
+Step 400, Total Loss: 0.879216, MSE: 0.903886, Cosine: 0.798728, LR: 0.000665
+Step 500, Total Loss: 0.870942, MSE: 0.900903, Cosine: 0.778101, LR: 0.000665
+Step 600, Total Loss: 0.871479, MSE: 0.899969, Cosine: 0.782259, LR: 0.000665
+Step 700, Total Loss: 0.837315, MSE: 0.853755, Cosine: 0.776137, LR: 0.000665
+Step 800, Total Loss: 0.807227, MSE: 0.818816, Cosine: 0.757037, LR: 0.000665
+Step 900, Total Loss: 0.897037, MSE: 0.934010, Cosine: 0.787916, LR: 0.000638
+Step 1000, Total Loss: 0.890510, MSE: 0.920453, Cosine: 0.797937, LR: 0.000638
+Step 1100, Total Loss: 0.847511, MSE: 0.867350, Cosine: 0.778711, LR: 0.000638
+Step 1200, Total Loss: 0.872261, MSE: 0.900905, Cosine: 0.783047, LR: 0.000638
+Step 1300, Total Loss: 0.873636, MSE: 0.903432, Cosine: 0.781823, LR: 0.000638
+Step 1400, Total Loss: 0.859532, MSE: 0.881325, Cosine: 0.786715, LR: 0.000638
+Step 1500, Total Loss: 0.825361, MSE: 0.832376, Cosine: 0.787002, LR: 0.000638
+Step 1600, Total Loss: 0.835287, MSE: 0.843426, Cosine: 0.794097, LR: 0.000638
+Step 1700, Total Loss: 0.865722, MSE: 0.894802, Cosine: 0.775947, LR: 0.000638
+Step 1800, Total Loss: 0.847585, MSE: 0.866177, Cosine: 0.782330, LR: 0.000638
+Step 1900, Total Loss: 0.836666, MSE: 0.854133, Cosine: 0.774364, LR: 0.000613
+Step 2000, Total Loss: 0.864720, MSE: 0.887198, Cosine: 0.790905, LR: 0.000613
+Step 2100, Total Loss: 0.831821, MSE: 0.847587, Cosine: 0.773529, LR: 0.000613
+Step 2200, Total Loss: 0.857369, MSE: 0.891660, Cosine: 0.755960, LR: 0.000613
+Step 2300, Total Loss: 0.849924, MSE: 0.871226, Cosine: 0.779001, LR: 0.000613
+Step 2400, Total Loss: 0.858740, MSE: 0.875332, Cosine: 0.798778, LR: 0.000613
+Step 2500, Total Loss: 0.862387, MSE: 0.886404, Cosine: 0.785188, LR: 0.000613
+Epoch 5 Summary:
+  Average Total Loss: 0.851334
+  Average MSE Loss: 0.870614
+  Average Cosine Loss: 0.784073
+  ✓ New best model saved! Loss: 0.851334
+Enhanced Inverse Classifier Epoch 6/25
+Step 0, Total Loss: 0.843706, MSE: 0.852103, Cosine: 0.802931, LR: 0.000613
+Step 100, Total Loss: 0.892863, MSE: 0.930098, Cosine: 0.784673, LR: 0.000613
+Step 200, Total Loss: 0.829842, MSE: 0.844193, Cosine: 0.775125, LR: 0.000613
+Step 300, Total Loss: 0.873635, MSE: 0.898528, Cosine: 0.794357, LR: 0.000588
+Step 400, Total Loss: 0.829289, MSE: 0.831064, Cosine: 0.804026, LR: 0.000588
+Step 500, Total Loss: 0.850781, MSE: 0.870321, Cosine: 0.784370, LR: 0.000588
+Step 600, Total Loss: 0.838125, MSE: 0.847337, Cosine: 0.795880, LR: 0.000588
+Step 700, Total Loss: 0.881802, MSE: 0.910074, Cosine: 0.795358, LR: 0.000588
+Step 800, Total Loss: 0.881849, MSE: 0.911336, Cosine: 0.792645, LR: 0.000588
+Step 900, Total Loss: 0.832276, MSE: 0.842380, Cosine: 0.788121, LR: 0.000588
+Step 1000, Total Loss: 0.905249, MSE: 0.942772, Cosine: 0.797107, LR: 0.000588
+Step 1100, Total Loss: 0.822523, MSE: 0.828603, Cosine: 0.787922, LR: 0.000588
+Step 1200, Total Loss: 0.831274, MSE: 0.846936, Cosine: 0.774472, LR: 0.000588
+Step 1300, Total Loss: 0.815162, MSE: 0.816729, Cosine: 0.791324, LR: 0.000565
+Step 1400, Total Loss: 0.851861, MSE: 0.878630, Cosine: 0.769285, LR: 0.000565
+Step 1500, Total Loss: 0.818936, MSE: 0.828056, Cosine: 0.777777, LR: 0.000565
+Step 1600, Total Loss: 0.858104, MSE: 0.885425, Cosine: 0.774336, LR: 0.000565
+Step 1700, Total Loss: 0.862162, MSE: 0.881157, Cosine: 0.797970, LR: 0.000565
+Step 1800, Total Loss: 0.791268, MSE: 0.787382, Cosine: 0.780659, LR: 0.000565
+Step 1900, Total Loss: 0.770294, MSE: 0.758293, Cosine: 0.778579, LR: 0.000565
+Step 2000, Total Loss: 0.906808, MSE: 0.940748, Cosine: 0.807964, LR: 0.000565
+Step 2100, Total Loss: 0.831143, MSE: 0.840720, Cosine: 0.789152, LR: 0.000565
+Step 2200, Total Loss: 0.831705, MSE: 0.848184, Cosine: 0.773685, LR: 0.000565
+Step 2300, Total Loss: 0.901648, MSE: 0.942658, Cosine: 0.786547, LR: 0.000542
+Step 2400, Total Loss: 0.840130, MSE: 0.864135, Cosine: 0.764907, LR: 0.000542
+Step 2500, Total Loss: 0.864580, MSE: 0.891997, Cosine: 0.781282, LR: 0.000542
+Epoch 6 Summary:
+  Average Total Loss: 0.849416
+  Average MSE Loss: 0.869630
+  Average Cosine Loss: 0.782015
+  ✓ New best model saved! Loss: 0.849416
+Enhanced Inverse Classifier Epoch 7/25
+Step 0, Total Loss: 0.830830, MSE: 0.841309, Cosine: 0.787096, LR: 0.000542
+Step 100, Total Loss: 0.864879, MSE: 0.893854, Cosine: 0.777953, LR: 0.000542
+Step 200, Total Loss: 0.820870, MSE: 0.822346, Cosine: 0.798275, LR: 0.000542
+Step 300, Total Loss: 0.905029, MSE: 0.948861, Cosine: 0.783703, LR: 0.000542
+Step 400, Total Loss: 0.868059, MSE: 0.893754, Cosine: 0.789018, LR: 0.000542
+Step 500, Total Loss: 0.879825, MSE: 0.912889, Cosine: 0.783714, LR: 0.000542
+Step 600, Total Loss: 0.835674, MSE: 0.851130, Cosine: 0.780801, LR: 0.000542
+Step 700, Total Loss: 0.825485, MSE: 0.843119, Cosine: 0.765613, LR: 0.000542
+Step 800, Total Loss: 0.864607, MSE: 0.893187, Cosine: 0.779183, LR: 0.000520
+Step 900, Total Loss: 0.849349, MSE: 0.871490, Cosine: 0.779162, LR: 0.000520
+Step 1000, Total Loss: 0.912043, MSE: 0.961299, Cosine: 0.778646, LR: 0.000520
+Step 1100, Total Loss: 0.828544, MSE: 0.843510, Cosine: 0.775387, LR: 0.000520
+Step 1200, Total Loss: 0.857961, MSE: 0.890247, Cosine: 0.764296, LR: 0.000520
+Step 1300, Total Loss: 0.864377, MSE: 0.892047, Cosine: 0.781506, LR: 0.000520
+Step 1400, Total Loss: 0.894741, MSE: 0.929808, Cosine: 0.794615, LR: 0.000520
+Step 1500, Total Loss: 0.871796, MSE: 0.907438, Cosine: 0.770377, LR: 0.000520
+Step 1600, Total Loss: 0.851036, MSE: 0.874985, Cosine: 0.776994, LR: 0.000520
+Step 1700, Total Loss: 0.893643, MSE: 0.934752, Cosine: 0.779669, LR: 0.000520
+Step 1800, Total Loss: 0.849044, MSE: 0.878522, Cosine: 0.762323, LR: 0.000500
+Step 1900, Total Loss: 0.823116, MSE: 0.836559, Cosine: 0.774028, LR: 0.000500
+Step 2000, Total Loss: 0.795560, MSE: 0.794755, Cosine: 0.779822, LR: 0.000500
+Step 2100, Total Loss: 0.910235, MSE: 0.953555, Cosine: 0.791488, LR: 0.000500
+Step 2200, Total Loss: 0.837885, MSE: 0.862529, Cosine: 0.762818, LR: 0.000500
+Step 2300, Total Loss: 0.881079, MSE: 0.913405, Cosine: 0.788148, LR: 0.000500
+Step 2400, Total Loss: 0.866555, MSE: 0.899002, Cosine: 0.773485, LR: 0.000500
+Step 2500, Total Loss: 0.856535, MSE: 0.885566, Cosine: 0.771652, LR: 0.000500
+Epoch 7 Summary:
+  Average Total Loss: 0.847626
+  Average MSE Loss: 0.868788
+  Average Cosine Loss: 0.779950
+  ✓ New best model saved! Loss: 0.847626
+Enhanced Inverse Classifier Epoch 8/25
+Step 0, Total Loss: 0.819966, MSE: 0.831329, Cosine: 0.776250, LR: 0.000500
+Step 100, Total Loss: 0.856265, MSE: 0.880532, Cosine: 0.782381, LR: 0.000500
+Step 200, Total Loss: 0.912084, MSE: 0.960941, Cosine: 0.780884, LR: 0.000480
+Step 300, Total Loss: 0.844923, MSE: 0.869348, Cosine: 0.770743, LR: 0.000480
+Step 400, Total Loss: 0.851019, MSE: 0.875107, Cosine: 0.777682, LR: 0.000480
+Step 500, Total Loss: 0.834919, MSE: 0.865645, Cosine: 0.746297, LR: 0.000480
+Step 600, Total Loss: 0.841943, MSE: 0.849363, Cosine: 0.807722, LR: 0.000480
+Step 700, Total Loss: 0.842716, MSE: 0.858230, Cosine: 0.789574, LR: 0.000480
+Step 800, Total Loss: 0.866945, MSE: 0.895947, Cosine: 0.782331, LR: 0.000480
+Step 900, Total Loss: 0.883837, MSE: 0.917914, Cosine: 0.787509, LR: 0.000480
+Step 1000, Total Loss: 0.839138, MSE: 0.865856, Cosine: 0.759961, LR: 0.000480
+Step 1100, Total Loss: 0.793382, MSE: 0.792990, Cosine: 0.777424, LR: 0.000480
+Step 1200, Total Loss: 0.847306, MSE: 0.875321, Cosine: 0.765210, LR: 0.000460
+Step 1300, Total Loss: 0.874459, MSE: 0.904849, Cosine: 0.787022, LR: 0.000460
+Step 1400, Total Loss: 0.835020, MSE: 0.854325, Cosine: 0.773566, LR: 0.000460
+Step 1500, Total Loss: 0.822461, MSE: 0.836870, Cosine: 0.772566, LR: 0.000460
+Step 1600, Total Loss: 0.862937, MSE: 0.893470, Cosine: 0.775430, LR: 0.000460
+Step 1700, Total Loss: 0.877115, MSE: 0.904498, Cosine: 0.796988, LR: 0.000460
+Step 1800, Total Loss: 0.807217, MSE: 0.820711, Cosine: 0.759543, LR: 0.000460
+Step 1900, Total Loss: 0.795761, MSE: 0.804995, Cosine: 0.758085, LR: 0.000460
+Step 2000, Total Loss: 0.837641, MSE: 0.852768, Cosine: 0.786463, LR: 0.000460
+Step 2100, Total Loss: 0.854523, MSE: 0.884558, Cosine: 0.768570, LR: 0.000460
+Step 2200, Total Loss: 0.848454, MSE: 0.870779, Cosine: 0.780498, LR: 0.000442
+Step 2300, Total Loss: 0.899442, MSE: 0.932577, Cosine: 0.806370, LR: 0.000442
+Step 2400, Total Loss: 0.834799, MSE: 0.845271, Cosine: 0.794627, LR: 0.000442
+Step 2500, Total Loss: 0.851255, MSE: 0.872430, Cosine: 0.786319, LR: 0.000442
+Epoch 8 Summary:
+  Average Total Loss: 0.846056
+  Average MSE Loss: 0.868033
+  Average Cosine Loss: 0.778263
+  ✓ New best model saved! Loss: 0.846056
+Enhanced Inverse Classifier Epoch 9/25
+Step 0, Total Loss: 0.808793, MSE: 0.812273, Cosine: 0.785176, LR: 0.000442
+Step 100, Total Loss: 0.860062, MSE: 0.883721, Cosine: 0.789209, LR: 0.000442
+Step 200, Total Loss: 0.880717, MSE: 0.924416, Cosine: 0.763218, LR: 0.000442
+Step 300, Total Loss: 0.840627, MSE: 0.863670, Cosine: 0.771376, LR: 0.000442
+Step 400, Total Loss: 0.837752, MSE: 0.859404, Cosine: 0.771674, LR: 0.000442
+Step 500, Total Loss: 0.795994, MSE: 0.799265, Cosine: 0.773052, LR: 0.000442
+Step 600, Total Loss: 0.812382, MSE: 0.827391, Cosine: 0.762011, LR: 0.000442
+Step 700, Total Loss: 0.848862, MSE: 0.869232, Cosine: 0.786202, LR: 0.000424
+Step 800, Total Loss: 0.842483, MSE: 0.861828, Cosine: 0.782238, LR: 0.000424
+Step 900, Total Loss: 0.824176, MSE: 0.844118, Cosine: 0.762624, LR: 0.000424
+Step 1000, Total Loss: 0.850915, MSE: 0.882409, Cosine: 0.762324, LR: 0.000424
+Step 1100, Total Loss: 0.850134, MSE: 0.879776, Cosine: 0.765953, LR: 0.000424
+Step 1200, Total Loss: 0.864152, MSE: 0.893552, Cosine: 0.780732, LR: 0.000424
+Step 1300, Total Loss: 0.843861, MSE: 0.864127, Cosine: 0.781682, LR: 0.000424
+Step 1400, Total Loss: 0.842647, MSE: 0.868061, Cosine: 0.768564, LR: 0.000424
+Step 1500, Total Loss: 0.876245, MSE: 0.911723, Cosine: 0.778783, LR: 0.000424
+Step 1600, Total Loss: 0.893884, MSE: 0.932415, Cosine: 0.789322, LR: 0.000424
+Step 1700, Total Loss: 0.834425, MSE: 0.854641, Cosine: 0.772635, LR: 0.000407
+Step 1800, Total Loss: 0.867785, MSE: 0.901968, Cosine: 0.773494, LR: 0.000407
+Step 1900, Total Loss: 0.850599, MSE: 0.877221, Cosine: 0.774035, LR: 0.000407
+Step 2000, Total Loss: 0.865280, MSE: 0.889521, Cosine: 0.794402, LR: 0.000407
+Step 2100, Total Loss: 0.876055, MSE: 0.912514, Cosine: 0.776755, LR: 0.000407
+Step 2200, Total Loss: 0.897186, MSE: 0.939617, Cosine: 0.783957, LR: 0.000407
+Step 2300, Total Loss: 0.837875, MSE: 0.855841, Cosine: 0.781871, LR: 0.000407
+Step 2400, Total Loss: 0.802226, MSE: 0.811576, Cosine: 0.766388, LR: 0.000407
+Step 2500, Total Loss: 0.852065, MSE: 0.873230, Cosine: 0.788707, LR: 0.000407
+Epoch 9 Summary:
+  Average Total Loss: 0.844513
+  Average MSE Loss: 0.867287
+  Average Cosine Loss: 0.776530
+  ✓ New best model saved! Loss: 0.844513
+Enhanced Inverse Classifier Epoch 10/25
+Step 0, Total Loss: 0.815181, MSE: 0.823170, Cosine: 0.782577, LR: 0.000407
+Step 100, Total Loss: 0.856806, MSE: 0.888119, Cosine: 0.769690, LR: 0.000407
+Step 200, Total Loss: 0.859587, MSE: 0.887492, Cosine: 0.780525, LR: 0.000391
+Step 300, Total Loss: 0.809071, MSE: 0.821060, Cosine: 0.767249, LR: 0.000391
+Step 400, Total Loss: 0.864410, MSE: 0.907161, Cosine: 0.750833, LR: 0.000391
+Step 500, Total Loss: 0.878378, MSE: 0.920334, Cosine: 0.766757, LR: 0.000391
+Step 600, Total Loss: 0.752511, MSE: 0.746988, Cosine: 0.751761, LR: 0.000391
+Step 700, Total Loss: 0.822101, MSE: 0.832072, Cosine: 0.785242, LR: 0.000391
+Step 800, Total Loss: 0.855955, MSE: 0.888764, Cosine: 0.765800, LR: 0.000391
+Step 900, Total Loss: 0.798264, MSE: 0.812970, Cosine: 0.750337, LR: 0.000391
+Step 1000, Total Loss: 0.844363, MSE: 0.870426, Cosine: 0.769997, LR: 0.000391
+Step 1100, Total Loss: 0.833027, MSE: 0.858701, Cosine: 0.759607, LR: 0.000391
+Step 1200, Total Loss: 0.903574, MSE: 0.946189, Cosine: 0.790620, LR: 0.000375
+Step 1300, Total Loss: 0.815597, MSE: 0.832225, Cosine: 0.763432, LR: 0.000375
+Step 1400, Total Loss: 0.832934, MSE: 0.850032, Cosine: 0.779791, LR: 0.000375
+Step 1500, Total Loss: 0.813418, MSE: 0.823252, Cosine: 0.777216, LR: 0.000375
+Step 1600, Total Loss: 0.795952, MSE: 0.798722, Cosine: 0.776344, LR: 0.000375
+Step 1700, Total Loss: 0.872009, MSE: 0.912303, Cosine: 0.764863, LR: 0.000375
+Step 1800, Total Loss: 0.821384, MSE: 0.830933, Cosine: 0.786030, LR: 0.000375
+Step 1900, Total Loss: 0.856670, MSE: 0.887793, Cosine: 0.771059, LR: 0.000375
+Step 2000, Total Loss: 0.791451, MSE: 0.800006, Cosine: 0.758567, LR: 0.000375
+Step 2100, Total Loss: 0.824745, MSE: 0.847020, Cosine: 0.759842, LR: 0.000375
+Step 2200, Total Loss: 0.926078, MSE: 0.984982, Cosine: 0.775800, LR: 0.000360
+Step 2300, Total Loss: 0.841552, MSE: 0.868862, Cosine: 0.765157, LR: 0.000360
+Step 2400, Total Loss: 0.843332, MSE: 0.866455, Cosine: 0.776749, LR: 0.000360
+Step 2500, Total Loss: 0.894665, MSE: 0.937470, Cosine: 0.782304, LR: 0.000360
+Epoch 10 Summary:
+  Average Total Loss: 0.843180
+  Average MSE Loss: 0.866642
+  Average Cosine Loss: 0.775091
+  ✓ New best model saved! Loss: 0.843180
+Enhanced Inverse Classifier Epoch 11/25
+Step 0, Total Loss: 0.863396, MSE: 0.892639, Cosine: 0.782669, LR: 0.000360
+Step 100, Total Loss: 0.859692, MSE: 0.883492, Cosine: 0.791664, LR: 0.000360
+Step 200, Total Loss: 0.887527, MSE: 0.927057, Cosine: 0.782857, LR: 0.000360
+Step 300, Total Loss: 0.877381, MSE: 0.909728, Cosine: 0.789547, LR: 0.000360
+Step 400, Total Loss: 0.820606, MSE: 0.835750, Cosine: 0.772967, LR: 0.000360
+Step 500, Total Loss: 0.881347, MSE: 0.923862, Cosine: 0.769925, LR: 0.000360
+Step 600, Total Loss: 0.886675, MSE: 0.927545, Cosine: 0.779078, LR: 0.000346
+Step 700, Total Loss: 0.844559, MSE: 0.878646, Cosine: 0.752868, LR: 0.000346
+Step 800, Total Loss: 0.858818, MSE: 0.886476, Cosine: 0.782131, LR: 0.000346
+Step 900, Total Loss: 0.846645, MSE: 0.866801, Cosine: 0.787405, LR: 0.000346
+Step 1000, Total Loss: 0.803525, MSE: 0.814097, Cosine: 0.766767, LR: 0.000346
+Step 1100, Total Loss: 0.836913, MSE: 0.854890, Cosine: 0.782923, LR: 0.000346
+Step 1200, Total Loss: 0.893300, MSE: 0.933954, Cosine: 0.786456, LR: 0.000346
+Step 1300, Total Loss: 0.809419, MSE: 0.817804, Cosine: 0.777894, LR: 0.000346
+Step 1400, Total Loss: 0.863496, MSE: 0.895107, Cosine: 0.777769, LR: 0.000346
+Step 1500, Total Loss: 0.855839, MSE: 0.882641, Cosine: 0.781439, LR: 0.000346
+Step 1600, Total Loss: 0.826324, MSE: 0.848136, Cosine: 0.763662, LR: 0.000332
+Step 1700, Total Loss: 0.846108, MSE: 0.871383, Cosine: 0.775427, LR: 0.000332
+Step 1800, Total Loss: 0.824438, MSE: 0.838673, Cosine: 0.779562, LR: 0.000332
+Step 1900, Total Loss: 0.851115, MSE: 0.879414, Cosine: 0.773383, LR: 0.000332
+Step 2000, Total Loss: 0.865094, MSE: 0.898567, Cosine: 0.775418, LR: 0.000332
+Step 2100, Total Loss: 0.876973, MSE: 0.913756, Cosine: 0.779653, LR: 0.000332
+Step 2200, Total Loss: 0.808325, MSE: 0.813491, Cosine: 0.784841, LR: 0.000332
+Step 2300, Total Loss: 0.805438, MSE: 0.804517, Cosine: 0.796184, LR: 0.000332
+Step 2400, Total Loss: 0.865713, MSE: 0.894701, Cosine: 0.786687, LR: 0.000332
+Step 2500, Total Loss: 0.860135, MSE: 0.885736, Cosine: 0.789016, LR: 0.000332
+Epoch 11 Summary:
+  Average Total Loss: 0.842021
+  Average MSE Loss: 0.866139
+  Average Cosine Loss: 0.773812
+  ✓ New best model saved! Loss: 0.842021
+Enhanced Inverse Classifier Epoch 12/25
+Step 0, Total Loss: 0.837910, MSE: 0.859867, Cosine: 0.775300, LR: 0.000332
+Step 100, Total Loss: 0.852732, MSE: 0.875460, Cosine: 0.788411, LR: 0.000319
+Step 200, Total Loss: 0.806783, MSE: 0.810568, Cosine: 0.786689, LR: 0.000319
+Step 300, Total Loss: 0.807390, MSE: 0.810570, Cosine: 0.788763, LR: 0.000319
+Step 400, Total Loss: 0.878945, MSE: 0.908710, Cosine: 0.798282, LR: 0.000319
+Step 500, Total Loss: 0.871484, MSE: 0.913010, Cosine: 0.763456, LR: 0.000319
+Step 600, Total Loss: 0.817869, MSE: 0.832912, Cosine: 0.771676, LR: 0.000319
+Step 700, Total Loss: 0.805184, MSE: 0.807210, Cosine: 0.789434, LR: 0.000319
+Step 800, Total Loss: 0.810008, MSE: 0.827373, Cosine: 0.758429, LR: 0.000319
+Step 900, Total Loss: 0.865888, MSE: 0.896323, Cosine: 0.783833, LR: 0.000319
+Step 1000, Total Loss: 0.833013, MSE: 0.854051, Cosine: 0.772921, LR: 0.000319
+Step 1100, Total Loss: 0.804349, MSE: 0.815593, Cosine: 0.767154, LR: 0.000306
+Step 1200, Total Loss: 0.804356, MSE: 0.812371, Cosine: 0.774757, LR: 0.000306
+Step 1300, Total Loss: 0.859828, MSE: 0.889829, Cosine: 0.778883, LR: 0.000306
+Step 1400, Total Loss: 0.851534, MSE: 0.883595, Cosine: 0.765843, LR: 0.000306
+Step 1500, Total Loss: 0.848809, MSE: 0.880534, Cosine: 0.763918, LR: 0.000306
+Step 1600, Total Loss: 0.838804, MSE: 0.862911, Cosine: 0.771732, LR: 0.000306
+Step 1700, Total Loss: 0.865642, MSE: 0.903540, Cosine: 0.766405, LR: 0.000306
+Step 1800, Total Loss: 0.814718, MSE: 0.839725, Cosine: 0.745613, LR: 0.000306
+Step 1900, Total Loss: 0.838843, MSE: 0.860965, Cosine: 0.776455, LR: 0.000306
+Step 2000, Total Loss: 0.834346, MSE: 0.852710, Cosine: 0.780748, LR: 0.000306
+Step 2100, Total Loss: 0.835711, MSE: 0.851104, Cosine: 0.789039, LR: 0.000294
+Step 2200, Total Loss: 0.807948, MSE: 0.821864, Cosine: 0.764780, LR: 0.000294
+Step 2300, Total Loss: 0.824085, MSE: 0.842524, Cosine: 0.770504, LR: 0.000294
+Step 2400, Total Loss: 0.851045, MSE: 0.875093, Cosine: 0.784363, LR: 0.000294
+Step 2500, Total Loss: 0.846590, MSE: 0.871548, Cosine: 0.777837, LR: 0.000294
+Epoch 12 Summary:
+  Average Total Loss: 0.841317
+  Average MSE Loss: 0.865958
+  Average Cosine Loss: 0.772894
+  ✓ New best model saved! Loss: 0.841317
+Enhanced Inverse Classifier Epoch 13/25
+Step 0, Total Loss: 0.832801, MSE: 0.853694, Cosine: 0.773551, LR: 0.000294
+Step 100, Total Loss: 0.764226, MSE: 0.770123, Cosine: 0.739951, LR: 0.000294
+Step 200, Total Loss: 0.850713, MSE: 0.878098, Cosine: 0.776340, LR: 0.000294
+Step 300, Total Loss: 0.785916, MSE: 0.788581, Cosine: 0.769262, LR: 0.000294
+Step 400, Total Loss: 0.810899, MSE: 0.820062, Cosine: 0.779085, LR: 0.000294
+Step 500, Total Loss: 0.874369, MSE: 0.906352, Cosine: 0.789372, LR: 0.000282
+Step 600, Total Loss: 0.845660, MSE: 0.875379, Cosine: 0.765936, LR: 0.000282
+Step 700, Total Loss: 0.851969, MSE: 0.876311, Cosine: 0.784815, LR: 0.000282
+Step 800, Total Loss: 0.841708, MSE: 0.877492, Cosine: 0.747861, LR: 0.000282
+Step 900, Total Loss: 0.858130, MSE: 0.888857, Cosine: 0.776138, LR: 0.000282
+Step 1000, Total Loss: 0.835485, MSE: 0.857893, Cosine: 0.772897, LR: 0.000282
+Step 1100, Total Loss: 0.824392, MSE: 0.843144, Cosine: 0.770331, LR: 0.000282
+Step 1200, Total Loss: 0.848812, MSE: 0.879241, Cosine: 0.767561, LR: 0.000282
+Step 1300, Total Loss: 0.795410, MSE: 0.804948, Cosine: 0.762871, LR: 0.000282
+Step 1400, Total Loss: 0.866862, MSE: 0.901325, Cosine: 0.776187, LR: 0.000282
+Step 1500, Total Loss: 0.873485, MSE: 0.911134, Cosine: 0.775416, LR: 0.000271
+Step 1600, Total Loss: 0.854205, MSE: 0.891020, Cosine: 0.758181, LR: 0.000271
+Step 1700, Total Loss: 0.769099, MSE: 0.772081, Cosine: 0.752071, LR: 0.000271
+Step 1800, Total Loss: 0.811572, MSE: 0.823322, Cosine: 0.774082, LR: 0.000271
+Step 1900, Total Loss: 0.803670, MSE: 0.814347, Cosine: 0.768682, LR: 0.000271
+Step 2000, Total Loss: 0.877992, MSE: 0.917941, Cosine: 0.774778, LR: 0.000271
+Step 2100, Total Loss: 0.841526, MSE: 0.857930, Cosine: 0.793222, LR: 0.000271
+Step 2200, Total Loss: 0.869680, MSE: 0.906949, Cosine: 0.772726, LR: 0.000271
+Step 2300, Total Loss: 0.837696, MSE: 0.857336, Cosine: 0.781959, LR: 0.000271
+Step 2400, Total Loss: 0.892159, MSE: 0.944689, Cosine: 0.759682, LR: 0.000271
+Step 2500, Total Loss: 0.863550, MSE: 0.897609, Cosine: 0.774174, LR: 0.000260
+Epoch 13 Summary:
+  Average Total Loss: 0.840724
+  Average MSE Loss: 0.865781
+  Average Cosine Loss: 0.772038
+  ✓ New best model saved! Loss: 0.840724
+Enhanced Inverse Classifier Epoch 14/25
+Step 0, Total Loss: 0.865557, MSE: 0.896454, Cosine: 0.783595, LR: 0.000260
+Step 100, Total Loss: 0.847712, MSE: 0.875164, Cosine: 0.773783, LR: 0.000260
+Step 200, Total Loss: 0.855360, MSE: 0.883444, Cosine: 0.779985, LR: 0.000260
+Step 300, Total Loss: 0.826804, MSE: 0.850920, Cosine: 0.760727, LR: 0.000260
+Step 400, Total Loss: 0.842645, MSE: 0.878770, Cosine: 0.748531, LR: 0.000260
+Step 500, Total Loss: 0.836193, MSE: 0.862967, Cosine: 0.763925, LR: 0.000260
+Step 600, Total Loss: 0.810238, MSE: 0.824446, Cosine: 0.767336, LR: 0.000260
+Step 700, Total Loss: 0.825096, MSE: 0.840702, Cosine: 0.778924, LR: 0.000260
+Step 800, Total Loss: 0.868010, MSE: 0.907541, Cosine: 0.766029, LR: 0.000260
+Step 900, Total Loss: 0.885111, MSE: 0.922933, Cosine: 0.787122, LR: 0.000260
+Step 1000, Total Loss: 0.808519, MSE: 0.824780, Cosine: 0.760881, LR: 0.000250
+Step 1100, Total Loss: 0.783135, MSE: 0.783661, Cosine: 0.772273, LR: 0.000250
+Step 1200, Total Loss: 0.777593, MSE: 0.773619, Cosine: 0.777247, LR: 0.000250
+Step 1300, Total Loss: 0.844536, MSE: 0.862205, Cosine: 0.793693, LR: 0.000250
+Step 1400, Total Loss: 0.830874, MSE: 0.846563, Cosine: 0.784707, LR: 0.000250
+Step 1500, Total Loss: 0.833179, MSE: 0.858171, Cosine: 0.765332, LR: 0.000250
+Step 1600, Total Loss: 0.840784, MSE: 0.869747, Cosine: 0.763676, LR: 0.000250
+Step 1700, Total Loss: 0.897429, MSE: 0.938339, Cosine: 0.792461, LR: 0.000250
+Step 1800, Total Loss: 0.849173, MSE: 0.876172, Cosine: 0.776667, LR: 0.000250
+Step 1900, Total Loss: 0.822295, MSE: 0.829148, Cosine: 0.796868, LR: 0.000250
+Step 2000, Total Loss: 0.797373, MSE: 0.813451, Cosine: 0.750426, LR: 0.000240
+Step 2100, Total Loss: 0.838019, MSE: 0.860862, Cosine: 0.775321, LR: 0.000240
+Step 2200, Total Loss: 0.844532, MSE: 0.871985, Cosine: 0.771106, LR: 0.000240
+Step 2300, Total Loss: 0.862650, MSE: 0.893306, Cosine: 0.781791, LR: 0.000240
+Step 2400, Total Loss: 0.810343, MSE: 0.824448, Cosine: 0.768113, LR: 0.000240
+Step 2500, Total Loss: 0.778280, MSE: 0.785075, Cosine: 0.753173, LR: 0.000240
+Epoch 14 Summary:
+  Average Total Loss: 0.840279
+  Average MSE Loss: 0.865659
+  Average Cosine Loss: 0.771456
+  ✓ New best model saved! Loss: 0.840279
+Enhanced Inverse Classifier Epoch 15/25
+Step 0, Total Loss: 0.881799, MSE: 0.923880, Cosine: 0.774367, LR: 0.000240
+Step 100, Total Loss: 0.820121, MSE: 0.836501, Cosine: 0.772628, LR: 0.000240
+Step 200, Total Loss: 0.802430, MSE: 0.805250, Cosine: 0.786580, LR: 0.000240
+Step 300, Total Loss: 0.814460, MSE: 0.827657, Cosine: 0.774423, LR: 0.000240
+Step 400, Total Loss: 0.866354, MSE: 0.899638, Cosine: 0.779426, LR: 0.000230
+Step 500, Total Loss: 0.896740, MSE: 0.938837, Cosine: 0.789286, LR: 0.000230
+Step 600, Total Loss: 0.891319, MSE: 0.932794, Cosine: 0.785329, LR: 0.000230
+Step 700, Total Loss: 0.783220, MSE: 0.783912, Cosine: 0.772421, LR: 0.000230
+Step 800, Total Loss: 0.858802, MSE: 0.885777, Cosine: 0.786683, LR: 0.000230
+Step 900, Total Loss: 0.865127, MSE: 0.900801, Cosine: 0.772754, LR: 0.000230
+Step 1000, Total Loss: 0.884409, MSE: 0.930847, Cosine: 0.766956, LR: 0.000230
+Step 1100, Total Loss: 0.849765, MSE: 0.879948, Cosine: 0.770272, LR: 0.000230
+Step 1200, Total Loss: 0.840317, MSE: 0.867172, Cosine: 0.768619, LR: 0.000230
+Step 1300, Total Loss: 0.843251, MSE: 0.869906, Cosine: 0.772016, LR: 0.000230
+Step 1400, Total Loss: 0.819648, MSE: 0.837044, Cosine: 0.770025, LR: 0.000221
+Step 1500, Total Loss: 0.810395, MSE: 0.829050, Cosine: 0.757874, LR: 0.000221
+Step 1600, Total Loss: 0.874376, MSE: 0.913705, Cosine: 0.773636, LR: 0.000221
+Step 1700, Total Loss: 0.866066, MSE: 0.898546, Cosine: 0.781363, LR: 0.000221
+Step 1800, Total Loss: 0.829385, MSE: 0.850687, Cosine: 0.770753, LR: 0.000221
+Step 1900, Total Loss: 0.847436, MSE: 0.876186, Cosine: 0.771455, LR: 0.000221
+Step 2000, Total Loss: 0.783070, MSE: 0.781278, Cosine: 0.778376, LR: 0.000221
+Step 2100, Total Loss: 0.805998, MSE: 0.822022, Cosine: 0.759739, LR: 0.000221
+Step 2200, Total Loss: 0.844132, MSE: 0.863974, Cosine: 0.788964, LR: 0.000221
+Step 2300, Total Loss: 0.881434, MSE: 0.921241, Cosine: 0.779704, LR: 0.000221
+Step 2400, Total Loss: 0.854722, MSE: 0.885361, Cosine: 0.774400, LR: 0.000212
+Step 2500, Total Loss: 0.880045, MSE: 0.915369, Cosine: 0.788835, LR: 0.000212
+Epoch 15 Summary:
+  Average Total Loss: 0.839893
+  Average MSE Loss: 0.865593
+  Average Cosine Loss: 0.770880
+  ✓ New best model saved! Loss: 0.839893
+Enhanced Inverse Classifier Epoch 16/25
+Step 0, Total Loss: 0.815414, MSE: 0.831629, Cosine: 0.768815, LR: 0.000212
+Step 100, Total Loss: 0.856744, MSE: 0.892105, Cosine: 0.765497, LR: 0.000212
+Step 200, Total Loss: 0.894824, MSE: 0.937206, Cosine: 0.787230, LR: 0.000212
+Step 300, Total Loss: 0.844547, MSE: 0.876822, Cosine: 0.760573, LR: 0.000212
+Step 400, Total Loss: 0.813346, MSE: 0.831509, Cosine: 0.762311, LR: 0.000212
+Step 500, Total Loss: 0.852724, MSE: 0.888718, Cosine: 0.760131, LR: 0.000212
+Step 600, Total Loss: 0.891379, MSE: 0.932988, Cosine: 0.785699, LR: 0.000212
+Step 700, Total Loss: 0.791720, MSE: 0.798230, Cosine: 0.767946, LR: 0.000212
+Step 800, Total Loss: 0.875529, MSE: 0.908214, Cosine: 0.790643, LR: 0.000212
+Step 900, Total Loss: 0.879860, MSE: 0.931762, Cosine: 0.750137, LR: 0.000204
+Step 1000, Total Loss: 0.847827, MSE: 0.872109, Cosine: 0.782596, LR: 0.000204
+Step 1100, Total Loss: 0.812871, MSE: 0.832118, Cosine: 0.759435, LR: 0.000204
+Step 1200, Total Loss: 0.801443, MSE: 0.815719, Cosine: 0.759626, LR: 0.000204
+Step 1300, Total Loss: 0.852631, MSE: 0.884982, Cosine: 0.768645, LR: 0.000204
+Step 1400, Total Loss: 0.870513, MSE: 0.903152, Cosine: 0.785875, LR: 0.000204
+Step 1500, Total Loss: 0.882707, MSE: 0.918688, Cosine: 0.790295, LR: 0.000204
+Step 1600, Total Loss: 0.828936, MSE: 0.853199, Cosine: 0.763882, LR: 0.000204
+Step 1700, Total Loss: 0.879303, MSE: 0.915826, Cosine: 0.785669, LR: 0.000204
+Step 1800, Total Loss: 0.841851, MSE: 0.863650, Cosine: 0.782579, LR: 0.000204
+Step 1900, Total Loss: 0.863765, MSE: 0.893655, Cosine: 0.785637, LR: 0.000195
+Step 2000, Total Loss: 0.824473, MSE: 0.849642, Cosine: 0.757381, LR: 0.000195
+Step 2100, Total Loss: 0.830412, MSE: 0.849078, Cosine: 0.778504, LR: 0.000195
+Step 2200, Total Loss: 0.899913, MSE: 0.947935, Cosine: 0.779536, LR: 0.000195
+Step 2300, Total Loss: 0.845788, MSE: 0.875228, Cosine: 0.768796, LR: 0.000195
+Step 2400, Total Loss: 0.846066, MSE: 0.870782, Cosine: 0.780118, LR: 0.000195
+Step 2500, Total Loss: 0.850434, MSE: 0.874549, Cosine: 0.785915, LR: 0.000195
+Epoch 16 Summary:
+  Average Total Loss: 0.839448
+  Average MSE Loss: 0.865452
+  Average Cosine Loss: 0.770277
+  ✓ New best model saved! Loss: 0.839448
+Enhanced Inverse Classifier Epoch 17/25
+Step 0, Total Loss: 0.825591, MSE: 0.844713, Cosine: 0.772715, LR: 0.000195
+Step 100, Total Loss: 0.855441, MSE: 0.887478, Cosine: 0.772409, LR: 0.000195
+Step 200, Total Loss: 0.780834, MSE: 0.788240, Cosine: 0.755279, LR: 0.000195
+Step 300, Total Loss: 0.811453, MSE: 0.828194, Cosine: 0.764136, LR: 0.000188
+Step 400, Total Loss: 0.846496, MSE: 0.871964, Cosine: 0.778860, LR: 0.000188
+Step 500, Total Loss: 0.853535, MSE: 0.882699, Cosine: 0.777303, LR: 0.000188
+Step 600, Total Loss: 0.834544, MSE: 0.860392, Cosine: 0.766067, LR: 0.000188
+Step 700, Total Loss: 0.860579, MSE: 0.897204, Cosine: 0.766994, LR: 0.000188
+Step 800, Total Loss: 0.808368, MSE: 0.824475, Cosine: 0.762662, LR: 0.000188
+Step 900, Total Loss: 0.843789, MSE: 0.868736, Cosine: 0.777480, LR: 0.000188
+Step 1000, Total Loss: 0.868864, MSE: 0.911409, Cosine: 0.761496, LR: 0.000188
+Step 1100, Total Loss: 0.831997, MSE: 0.856820, Cosine: 0.765993, LR: 0.000188
+Step 1200, Total Loss: 0.847552, MSE: 0.879485, Cosine: 0.764986, LR: 0.000188
+Step 1300, Total Loss: 0.789499, MSE: 0.800588, Cosine: 0.755585, LR: 0.000180
+Step 1400, Total Loss: 0.806374, MSE: 0.819299, Cosine: 0.768211, LR: 0.000180
+Step 1500, Total Loss: 0.832155, MSE: 0.856520, Cosine: 0.767318, LR: 0.000180
+Step 1600, Total Loss: 0.806528, MSE: 0.819518, Cosine: 0.768252, LR: 0.000180
+Step 1700, Total Loss: 0.811512, MSE: 0.824627, Cosine: 0.772958, LR: 0.000180
+Step 1800, Total Loss: 0.828329, MSE: 0.848489, Cosine: 0.773345, LR: 0.000180
+Step 1900, Total Loss: 0.860992, MSE: 0.889734, Cosine: 0.785996, LR: 0.000180
+Step 2000, Total Loss: 0.842174, MSE: 0.879152, Cosine: 0.747997, LR: 0.000180
+Step 2100, Total Loss: 0.873078, MSE: 0.914354, Cosine: 0.768870, LR: 0.000180
+Step 2200, Total Loss: 0.866893, MSE: 0.907466, Cosine: 0.764351, LR: 0.000180
+Step 2300, Total Loss: 0.845677, MSE: 0.871995, Cosine: 0.776404, LR: 0.000173
+Step 2400, Total Loss: 0.816267, MSE: 0.828534, Cosine: 0.779789, LR: 0.000173
+Step 2500, Total Loss: 0.809213, MSE: 0.830920, Cosine: 0.750749, LR: 0.000173
+Epoch 17 Summary:
+  Average Total Loss: 0.839084
+  Average MSE Loss: 0.865340
+  Average Cosine Loss: 0.769778
+  ✓ New best model saved! Loss: 0.839084
+Enhanced Inverse Classifier Epoch 18/25
+Step 0, Total Loss: 0.833879, MSE: 0.852331, Cosine: 0.783015, LR: 0.000173
+Step 100, Total Loss: 0.838940, MSE: 0.863918, Cosine: 0.772864, LR: 0.000173
+Step 200, Total Loss: 0.873202, MSE: 0.915873, Cosine: 0.765881, LR: 0.000173
+Step 300, Total Loss: 0.801854, MSE: 0.814684, Cosine: 0.764180, LR: 0.000173
+Step 400, Total Loss: 0.858710, MSE: 0.895187, Cosine: 0.765872, LR: 0.000173
+Step 500, Total Loss: 0.833800, MSE: 0.862848, Cosine: 0.758315, LR: 0.000173
+Step 600, Total Loss: 0.779744, MSE: 0.778897, Cosine: 0.774018, LR: 0.000173
+Step 700, Total Loss: 0.819984, MSE: 0.839182, Cosine: 0.767501, LR: 0.000173
+Step 800, Total Loss: 0.912156, MSE: 0.971994, Cosine: 0.764840, LR: 0.000166
+Step 900, Total Loss: 0.825834, MSE: 0.854310, Cosine: 0.751723, LR: 0.000166
+Step 1000, Total Loss: 0.866838, MSE: 0.904950, Cosine: 0.770244, LR: 0.000166
+Step 1100, Total Loss: 0.820294, MSE: 0.834781, Cosine: 0.778850, LR: 0.000166
+Step 1200, Total Loss: 0.813627, MSE: 0.828994, Cosine: 0.770161, LR: 0.000166
+Step 1300, Total Loss: 0.854956, MSE: 0.886056, Cosine: 0.774791, LR: 0.000166
+Step 1400, Total Loss: 0.847964, MSE: 0.879537, Cosine: 0.766710, LR: 0.000166
+Step 1500, Total Loss: 0.870158, MSE: 0.907632, Cosine: 0.775157, LR: 0.000166
+Step 1600, Total Loss: 0.852793, MSE: 0.880561, Cosine: 0.780461, LR: 0.000166
+Step 1700, Total Loss: 0.786414, MSE: 0.785743, Cosine: 0.780431, LR: 0.000166
+Step 1800, Total Loss: 0.830464, MSE: 0.847627, Cosine: 0.782890, LR: 0.000159
+Step 1900, Total Loss: 0.852683, MSE: 0.891357, Cosine: 0.754950, LR: 0.000159
+Step 2000, Total Loss: 0.834457, MSE: 0.860767, Cosine: 0.765597, LR: 0.000159
+Step 2100, Total Loss: 0.799116, MSE: 0.817575, Cosine: 0.748592, LR: 0.000159
+Step 2200, Total Loss: 0.848659, MSE: 0.875160, Cosine: 0.779381, LR: 0.000159
+Step 2300, Total Loss: 0.824820, MSE: 0.844702, Cosine: 0.771007, LR: 0.000159
+Step 2400, Total Loss: 0.880286, MSE: 0.923331, Cosine: 0.772436, LR: 0.000159
+Step 2500, Total Loss: 0.843634, MSE: 0.864432, Cosine: 0.787720, LR: 0.000159
+Epoch 18 Summary:
+  Average Total Loss: 0.838679
+  Average MSE Loss: 0.865237
+  Average Cosine Loss: 0.769118
+  ✓ New best model saved! Loss: 0.838679
+Enhanced Inverse Classifier Epoch 19/25
+Step 0, Total Loss: 0.835587, MSE: 0.860774, Cosine: 0.769435, LR: 0.000159
+Step 100, Total Loss: 0.909146, MSE: 0.961477, Cosine: 0.779650, LR: 0.000159
+Step 200, Total Loss: 0.906722, MSE: 0.957663, Cosine: 0.780469, LR: 0.000159
+Step 300, Total Loss: 0.831393, MSE: 0.852873, Cosine: 0.773907, LR: 0.000153
+Step 400, Total Loss: 0.883442, MSE: 0.925825, Cosine: 0.777191, LR: 0.000153
+Step 500, Total Loss: 0.839304, MSE: 0.868916, Cosine: 0.762888, LR: 0.000153
+Step 600, Total Loss: 0.839667, MSE: 0.876604, Cosine: 0.746192, LR: 0.000153
+Step 700, Total Loss: 0.796482, MSE: 0.803915, Cosine: 0.771866, LR: 0.000153
+Step 800, Total Loss: 0.832117, MSE: 0.857764, Cosine: 0.765005, LR: 0.000153
+Step 900, Total Loss: 0.834938, MSE: 0.852575, Cosine: 0.786516, LR: 0.000153
+Step 1000, Total Loss: 0.816449, MSE: 0.834051, Cosine: 0.768114, LR: 0.000153
+Step 1100, Total Loss: 0.824911, MSE: 0.848432, Cosine: 0.762782, LR: 0.000153
+Step 1200, Total Loss: 0.827460, MSE: 0.846866, Cosine: 0.774959, LR: 0.000153
+Step 1300, Total Loss: 0.842437, MSE: 0.873520, Cosine: 0.762699, LR: 0.000147
+Step 1400, Total Loss: 0.797509, MSE: 0.815306, Cosine: 0.748790, LR: 0.000147
+Step 1500, Total Loss: 0.819478, MSE: 0.845460, Cosine: 0.751679, LR: 0.000147
+Step 1600, Total Loss: 0.757714, MSE: 0.751124, Cosine: 0.765938, LR: 0.000147
+Step 1700, Total Loss: 0.865339, MSE: 0.904459, Cosine: 0.766924, LR: 0.000147
+Step 1800, Total Loss: 0.805342, MSE: 0.822141, Cosine: 0.759030, LR: 0.000147
+Step 1900, Total Loss: 0.833462, MSE: 0.857787, Cosine: 0.769599, LR: 0.000147
+Step 2000, Total Loss: 0.848622, MSE: 0.874174, Cosine: 0.781908, LR: 0.000147
+Step 2100, Total Loss: 0.796889, MSE: 0.809437, Cosine: 0.760518, LR: 0.000147
+Step 2200, Total Loss: 0.817731, MSE: 0.837374, Cosine: 0.764806, LR: 0.000147
+Step 2300, Total Loss: 0.801537, MSE: 0.817175, Cosine: 0.757984, LR: 0.000141
+Step 2400, Total Loss: 0.842282, MSE: 0.871793, Cosine: 0.766383, LR: 0.000141
+Step 2500, Total Loss: 0.878895, MSE: 0.918883, Cosine: 0.778570, LR: 0.000141
+Epoch 19 Summary:
+  Average Total Loss: 0.838314
+  Average MSE Loss: 0.865161
+  Average Cosine Loss: 0.768459
+  ✓ New best model saved! Loss: 0.838314
+Enhanced Inverse Classifier Epoch 20/25
+Step 0, Total Loss: 0.781702, MSE: 0.783469, Cosine: 0.770571, LR: 0.000141
+Step 100, Total Loss: 0.885702, MSE: 0.930144, Cosine: 0.775013, LR: 0.000141
+Step 200, Total Loss: 0.856945, MSE: 0.888615, Cosine: 0.776080, LR: 0.000141
+Step 300, Total Loss: 0.819004, MSE: 0.837689, Cosine: 0.768454, LR: 0.000141
+Step 400, Total Loss: 0.822358, MSE: 0.845142, Cosine: 0.762257, LR: 0.000141
+Step 500, Total Loss: 0.866264, MSE: 0.903107, Cosine: 0.773377, LR: 0.000141
+Step 600, Total Loss: 0.796240, MSE: 0.808110, Cosine: 0.761621, LR: 0.000141
+Step 700, Total Loss: 0.828359, MSE: 0.844854, Cosine: 0.782960, LR: 0.000135
+Step 800, Total Loss: 0.889381, MSE: 0.930401, Cosine: 0.786766, LR: 0.000135
+Step 900, Total Loss: 0.810714, MSE: 0.828491, Cosine: 0.762356, LR: 0.000135
+Step 1000, Total Loss: 0.828123, MSE: 0.855710, Cosine: 0.756889, LR: 0.000135
+Step 1100, Total Loss: 0.786394, MSE: 0.801269, Cosine: 0.744825, LR: 0.000135
+Step 1200, Total Loss: 0.868944, MSE: 0.909033, Cosine: 0.768561, LR: 0.000135
+Step 1300, Total Loss: 0.840246, MSE: 0.870456, Cosine: 0.762919, LR: 0.000135
+Step 1400, Total Loss: 0.839831, MSE: 0.870874, Cosine: 0.760564, LR: 0.000135
+Step 1500, Total Loss: 0.818882, MSE: 0.837712, Cosine: 0.768122, LR: 0.000135
+Step 1600, Total Loss: 0.852763, MSE: 0.886906, Cosine: 0.766277, LR: 0.000135
+Step 1700, Total Loss: 0.843686, MSE: 0.873200, Cosine: 0.768017, LR: 0.000130
+Step 1800, Total Loss: 0.897487, MSE: 0.941356, Cosine: 0.788339, LR: 0.000130
+Step 1900, Total Loss: 0.881152, MSE: 0.914781, Cosine: 0.795914, LR: 0.000130
+Step 2000, Total Loss: 0.828726, MSE: 0.854459, Cosine: 0.761933, LR: 0.000130
+Step 2100, Total Loss: 0.789397, MSE: 0.798503, Cosine: 0.761416, LR: 0.000130
+Step 2200, Total Loss: 0.866395, MSE: 0.900119, Cosine: 0.780988, LR: 0.000130
+Step 2300, Total Loss: 0.812121, MSE: 0.839441, Cosine: 0.741672, LR: 0.000130
+Step 2400, Total Loss: 0.837719, MSE: 0.866386, Cosine: 0.764126, LR: 0.000130
+Step 2500, Total Loss: 0.875659, MSE: 0.906260, Cosine: 0.797567, LR: 0.000130
+Epoch 20 Summary:
+  Average Total Loss: 0.838010
+  Average MSE Loss: 0.865064
+  Average Cosine Loss: 0.768044
+  ✓ New best model saved! Loss: 0.838010
+Enhanced Inverse Classifier Epoch 21/25
+Step 0, Total Loss: 0.844446, MSE: 0.878333, Cosine: 0.758699, LR: 0.000130
+Step 100, Total Loss: 0.834697, MSE: 0.869976, Cosine: 0.745701, LR: 0.000130
+Step 200, Total Loss: 0.860364, MSE: 0.903270, Cosine: 0.753589, LR: 0.000125
+Step 300, Total Loss: 0.856662, MSE: 0.897011, Cosine: 0.755887, LR: 0.000125
+Step 400, Total Loss: 0.779963, MSE: 0.785379, Cosine: 0.760710, LR: 0.000125
+Step 500, Total Loss: 0.825813, MSE: 0.852699, Cosine: 0.756481, LR: 0.000125
+Step 600, Total Loss: 0.822698, MSE: 0.843995, Cosine: 0.766423, LR: 0.000125
+Step 700, Total Loss: 0.809939, MSE: 0.833077, Cosine: 0.749377, LR: 0.000125
+Step 800, Total Loss: 0.811083, MSE: 0.830932, Cosine: 0.758192, LR: 0.000125
+Step 900, Total Loss: 0.863699, MSE: 0.900383, Cosine: 0.771533, LR: 0.000125
+Step 1000, Total Loss: 0.888865, MSE: 0.941442, Cosine: 0.759628, LR: 0.000125
+Step 1100, Total Loss: 0.810975, MSE: 0.826191, Cosine: 0.768918, LR: 0.000125
+Step 1200, Total Loss: 0.845671, MSE: 0.873758, Cosine: 0.773606, LR: 0.000120
+Step 1300, Total Loss: 0.804883, MSE: 0.816292, Cosine: 0.771747, LR: 0.000120
+Step 1400, Total Loss: 0.826826, MSE: 0.846319, Cosine: 0.774839, LR: 0.000120
+Step 1500, Total Loss: 0.808958, MSE: 0.827163, Cosine: 0.759986, LR: 0.000120
+Step 1600, Total Loss: 0.818011, MSE: 0.832331, Cosine: 0.778115, LR: 0.000120
+Step 1700, Total Loss: 0.851718, MSE: 0.884094, Cosine: 0.769702, LR: 0.000120
+Step 1800, Total Loss: 0.804891, MSE: 0.820449, Cosine: 0.762138, LR: 0.000120
+Step 1900, Total Loss: 0.819236, MSE: 0.845305, Cosine: 0.751974, LR: 0.000120
+Step 2000, Total Loss: 0.880844, MSE: 0.920522, Cosine: 0.781843, LR: 0.000120
+Step 2100, Total Loss: 0.830913, MSE: 0.856861, Cosine: 0.763954, LR: 0.000120
+Step 2200, Total Loss: 0.859560, MSE: 0.896408, Cosine: 0.767181, LR: 0.000115
+Step 2300, Total Loss: 0.838813, MSE: 0.866708, Cosine: 0.767351, LR: 0.000115
+Step 2400, Total Loss: 0.788264, MSE: 0.796346, Cosine: 0.763041, LR: 0.000115
+Step 2500, Total Loss: 0.834540, MSE: 0.858711, Cosine: 0.771787, LR: 0.000115
+Epoch 21 Summary:
+  Average Total Loss: 0.837726
+  Average MSE Loss: 0.864995
+  Average Cosine Loss: 0.767579
+  ✓ New best model saved! Loss: 0.837726
+Enhanced Inverse Classifier Epoch 22/25
+Step 0, Total Loss: 0.842520, MSE: 0.868117, Cosine: 0.776449, LR: 0.000115
+Step 100, Total Loss: 0.844862, MSE: 0.871459, Cosine: 0.776455, LR: 0.000115
+Step 200, Total Loss: 0.880206, MSE: 0.921213, Cosine: 0.778193, LR: 0.000115
+Step 300, Total Loss: 0.859369, MSE: 0.903323, Cosine: 0.750493, LR: 0.000115
+Step 400, Total Loss: 0.867374, MSE: 0.908141, Cosine: 0.765935, LR: 0.000115
+Step 500, Total Loss: 0.778408, MSE: 0.785883, Cosine: 0.754653, LR: 0.000115
+Step 600, Total Loss: 0.823599, MSE: 0.843779, Cosine: 0.770224, LR: 0.000110
+Step 700, Total Loss: 0.815185, MSE: 0.830999, Cosine: 0.772007, LR: 0.000110
+Step 800, Total Loss: 0.900664, MSE: 0.956583, Cosine: 0.763908, LR: 0.000110
+Step 900, Total Loss: 0.883603, MSE: 0.929801, Cosine: 0.769542, LR: 0.000110
+Step 1000, Total Loss: 0.829415, MSE: 0.860077, Cosine: 0.751617, LR: 0.000110
+Step 1100, Total Loss: 0.857245, MSE: 0.899811, Cosine: 0.751690, LR: 0.000110
+Step 1200, Total Loss: 0.842538, MSE: 0.873367, Cosine: 0.764379, LR: 0.000110
+Step 1300, Total Loss: 0.842453, MSE: 0.871670, Cosine: 0.768061, LR: 0.000110
+Step 1400, Total Loss: 0.861475, MSE: 0.902122, Cosine: 0.760426, LR: 0.000110
+Step 1500, Total Loss: 0.860200, MSE: 0.895650, Cosine: 0.771288, LR: 0.000110
+Step 1600, Total Loss: 0.834682, MSE: 0.859576, Cosine: 0.770415, LR: 0.000106
+Step 1700, Total Loss: 0.845389, MSE: 0.880916, Cosine: 0.756331, LR: 0.000106
+Step 1800, Total Loss: 0.849191, MSE: 0.884584, Cosine: 0.760455, LR: 0.000106
+Step 1900, Total Loss: 0.835597, MSE: 0.872137, Cosine: 0.744207, LR: 0.000106
+Step 2000, Total Loss: 0.832214, MSE: 0.857720, Cosine: 0.766584, LR: 0.000106
+Step 2100, Total Loss: 0.827029, MSE: 0.848765, Cosine: 0.770203, LR: 0.000106
+Step 2200, Total Loss: 0.805052, MSE: 0.818060, Cosine: 0.768606, LR: 0.000106
+Step 2300, Total Loss: 0.820197, MSE: 0.841031, Cosine: 0.765499, LR: 0.000106
+Step 2400, Total Loss: 0.903794, MSE: 0.950800, Cosine: 0.788029, LR: 0.000106
+Step 2500, Total Loss: 0.826092, MSE: 0.844396, Cosine: 0.777309, LR: 0.000106
+Epoch 22 Summary:
+  Average Total Loss: 0.837379
+  Average MSE Loss: 0.864912
+  Average Cosine Loss: 0.766923
+  ✓ New best model saved! Loss: 0.837379
+Enhanced Inverse Classifier Epoch 23/25
+Step 0, Total Loss: 0.829009, MSE: 0.862209, Cosine: 0.745475, LR: 0.000106
+Step 100, Total Loss: 0.789926, MSE: 0.801129, Cosine: 0.757733, LR: 0.000102
+Step 200, Total Loss: 0.861982, MSE: 0.898656, Cosine: 0.770374, LR: 0.000102
+Step 300, Total Loss: 0.826321, MSE: 0.844160, Cosine: 0.778675, LR: 0.000102
+Step 400, Total Loss: 0.847279, MSE: 0.875128, Cosine: 0.776285, LR: 0.000102
+Step 500, Total Loss: 0.887752, MSE: 0.939812, Cosine: 0.760275, LR: 0.000102
+Step 600, Total Loss: 0.849080, MSE: 0.864624, Cosine: 0.806823, LR: 0.000102
+Step 700, Total Loss: 0.805665, MSE: 0.820151, Cosine: 0.765891, LR: 0.000102
+Step 800, Total Loss: 0.880214, MSE: 0.923943, Cosine: 0.772210, LR: 0.000102
+Step 900, Total Loss: 0.826496, MSE: 0.846689, Cosine: 0.773428, LR: 0.000102
+Step 1000, Total Loss: 0.828443, MSE: 0.847969, Cosine: 0.776937, LR: 0.000102
+Step 1100, Total Loss: 0.835780, MSE: 0.867875, Cosine: 0.754953, LR: 0.000098
+Step 1200, Total Loss: 0.862848, MSE: 0.902591, Cosine: 0.764194, LR: 0.000098
+Step 1300, Total Loss: 0.828857, MSE: 0.851256, Cosine: 0.770683, LR: 0.000098
+Step 1400, Total Loss: 0.859750, MSE: 0.899125, Cosine: 0.761974, LR: 0.000098
+Step 1500, Total Loss: 0.825379, MSE: 0.851837, Cosine: 0.757756, LR: 0.000098
+Step 1600, Total Loss: 0.792847, MSE: 0.804617, Cosine: 0.759506, LR: 0.000098
+Step 1700, Total Loss: 0.854373, MSE: 0.887642, Cosine: 0.770874, LR: 0.000098
+Step 1800, Total Loss: 0.841409, MSE: 0.873356, Cosine: 0.761000, LR: 0.000098
+Step 1900, Total Loss: 0.846405, MSE: 0.869356, Cosine: 0.786997, LR: 0.000098
+Step 2000, Total Loss: 0.822768, MSE: 0.842847, Cosine: 0.770074, LR: 0.000098
+Step 2100, Total Loss: 0.814324, MSE: 0.834610, Cosine: 0.761152, LR: 0.000094
+Step 2200, Total Loss: 0.847122, MSE: 0.874698, Cosine: 0.776947, LR: 0.000094
+Step 2300, Total Loss: 0.819045, MSE: 0.841651, Cosine: 0.760478, LR: 0.000094
+Step 2400, Total Loss: 0.858603, MSE: 0.895235, Cosine: 0.767327, LR: 0.000094
+Step 2500, Total Loss: 0.834610, MSE: 0.860588, Cosine: 0.768203, LR: 0.000094
+Epoch 23 Summary:
+  Average Total Loss: 0.837088
+  Average MSE Loss: 0.864846
+  Average Cosine Loss: 0.766401
+  ✓ New best model saved! Loss: 0.837088
+Enhanced Inverse Classifier Epoch 24/25
+Step 0, Total Loss: 0.831732, MSE: 0.853953, Cosine: 0.774091, LR: 0.000094
+Step 100, Total Loss: 0.843112, MSE: 0.888188, Cosine: 0.732148, LR: 0.000094
+Step 200, Total Loss: 0.779855, MSE: 0.789062, Cosine: 0.752596, LR: 0.000094
+Step 300, Total Loss: 0.799243, MSE: 0.809198, Cosine: 0.770245, LR: 0.000094
+Step 400, Total Loss: 0.861735, MSE: 0.897946, Cosine: 0.771476, LR: 0.000094
+Step 500, Total Loss: 0.841313, MSE: 0.874045, Cosine: 0.759180, LR: 0.000090
+Step 600, Total Loss: 0.860683, MSE: 0.898428, Cosine: 0.766865, LR: 0.000090
+Step 700, Total Loss: 0.831024, MSE: 0.859782, Cosine: 0.758191, LR: 0.000090
+Step 800, Total Loss: 0.878026, MSE: 0.922608, Cosine: 0.768283, LR: 0.000090
+Step 900, Total Loss: 0.853405, MSE: 0.888582, Cosine: 0.765614, LR: 0.000090
+Step 1000, Total Loss: 0.860096, MSE: 0.897262, Cosine: 0.767669, LR: 0.000090
+Step 1100, Total Loss: 0.896131, MSE: 0.948042, Cosine: 0.769312, LR: 0.000090
+Step 1200, Total Loss: 0.855085, MSE: 0.899395, Cosine: 0.746010, LR: 0.000090
+Step 1300, Total Loss: 0.816909, MSE: 0.844484, Cosine: 0.746884, LR: 0.000090
+Step 1400, Total Loss: 0.832317, MSE: 0.854082, Cosine: 0.775862, LR: 0.000090
+Step 1500, Total Loss: 0.895305, MSE: 0.938629, Cosine: 0.788552, LR: 0.000086
+Step 1600, Total Loss: 0.812809, MSE: 0.829349, Cosine: 0.768567, LR: 0.000086
+Step 1700, Total Loss: 0.826955, MSE: 0.853826, Cosine: 0.758621, LR: 0.000086
+Step 1800, Total Loss: 0.845873, MSE: 0.875214, Cosine: 0.771787, LR: 0.000086
+Step 1900, Total Loss: 0.859204, MSE: 0.893093, Cosine: 0.774512, LR: 0.000086
+Step 2000, Total Loss: 0.840426, MSE: 0.869792, Cosine: 0.766296, LR: 0.000086
+Step 2100, Total Loss: 0.854020, MSE: 0.889116, Cosine: 0.766529, LR: 0.000086
+Step 2200, Total Loss: 0.850303, MSE: 0.883794, Cosine: 0.766567, LR: 0.000086
+Step 2300, Total Loss: 0.847378, MSE: 0.874831, Cosine: 0.777736, LR: 0.000086
+Step 2400, Total Loss: 0.824167, MSE: 0.849018, Cosine: 0.760605, LR: 0.000086
+Step 2500, Total Loss: 0.850139, MSE: 0.880317, Cosine: 0.774156, LR: 0.000083
+Epoch 24 Summary:
+  Average Total Loss: 0.836887
+  Average MSE Loss: 0.864809
+  Average Cosine Loss: 0.766057
+  ✓ New best model saved! Loss: 0.836887
+Enhanced Inverse Classifier Epoch 25/25
+Step 0, Total Loss: 0.830911, MSE: 0.858675, Cosine: 0.760569, LR: 0.000083
+Step 100, Total Loss: 0.858829, MSE: 0.894783, Cosine: 0.769388, LR: 0.000083
+Step 200, Total Loss: 0.850782, MSE: 0.877929, Cosine: 0.781898, LR: 0.000083
+Step 300, Total Loss: 0.831592, MSE: 0.860032, Cosine: 0.759706, LR: 0.000083
+Step 400, Total Loss: 0.790619, MSE: 0.802674, Cosine: 0.756975, LR: 0.000083
+Step 500, Total Loss: 0.858015, MSE: 0.896769, Cosine: 0.762076, LR: 0.000083
+Step 600, Total Loss: 0.832516, MSE: 0.858953, Cosine: 0.765336, LR: 0.000083
+Step 700, Total Loss: 0.804280, MSE: 0.819966, Cosine: 0.762196, LR: 0.000083
+Step 800, Total Loss: 0.854195, MSE: 0.888868, Cosine: 0.767814, LR: 0.000083
+Step 900, Total Loss: 0.836908, MSE: 0.859398, Cosine: 0.778960, LR: 0.000083
+Step 1000, Total Loss: 0.854361, MSE: 0.890839, Cosine: 0.763783, LR: 0.000080
+Step 1100, Total Loss: 0.846674, MSE: 0.882451, Cosine: 0.757737, LR: 0.000080
+Step 1200, Total Loss: 0.805630, MSE: 0.831345, Cosine: 0.740184, LR: 0.000080
+Step 1300, Total Loss: 0.793444, MSE: 0.811037, Cosine: 0.746963, LR: 0.000080
+Step 1400, Total Loss: 0.836994, MSE: 0.866333, Cosine: 0.763115, LR: 0.000080
+Step 1500, Total Loss: 0.808522, MSE: 0.821459, Cosine: 0.772921, LR: 0.000080
+Step 1600, Total Loss: 0.812046, MSE: 0.832914, Cosine: 0.757945, LR: 0.000080
+Step 1700, Total Loss: 0.848112, MSE: 0.879158, Cosine: 0.770273, LR: 0.000080
+Step 1800, Total Loss: 0.827856, MSE: 0.850252, Cosine: 0.770209, LR: 0.000080
+Step 1900, Total Loss: 0.813288, MSE: 0.834924, Cosine: 0.757423, LR: 0.000080
+Step 2000, Total Loss: 0.851360, MSE: 0.883062, Cosine: 0.772020, LR: 0.000076
+Step 2100, Total Loss: 0.881153, MSE: 0.930288, Cosine: 0.761145, LR: 0.000076
+Step 2200, Total Loss: 0.855784, MSE: 0.884273, Cosine: 0.783961, LR: 0.000076
+Step 2300, Total Loss: 0.847814, MSE: 0.876329, Cosine: 0.775939, LR: 0.000076
+Step 2400, Total Loss: 0.849793, MSE: 0.880177, Cosine: 0.773565, LR: 0.000076
+Step 2500, Total Loss: 0.756828, MSE: 0.754652, Cosine: 0.756585, LR: 0.000076
+Epoch 25 Summary:
+  Average Total Loss: 0.836584
+  Average MSE Loss: 0.864691
+  Average Cosine Loss: 0.765567
+  ✓ New best model saved! Loss: 0.836584
+Enhanced inverse classifier training completed. Best loss: 0.836584
+Classifier Epoch 1/25
+Step 0, Total Loss: 0.440449, BCE Loss: 0.427057
+Step 100, Total Loss: 0.404908, BCE Loss: 0.391076
+Step 200, Total Loss: 0.384843, BCE Loss: 0.370947
+Traceback (most recent call last):
+  File "/home/user/Desktop/VAE/main.py", line 705, in <module>
+    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+  File "/home/user/Desktop/VAE/main.py", line 120, in train_classifier
+    epoch_total_loss += total_loss.numpy()
+                        ^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/ops.py", line 440, in numpy
+    maybe_arr = self._numpy()  # pylint: disable=protected-access
+                ^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/ops.py", line 406, in _numpy
+    return self._numpy_internal()
+           ^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

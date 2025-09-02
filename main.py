@@ -4,10 +4,26 @@ from tensorflow.keras import Model
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow_datasets as tfds
+import wandb
+import io
 
 # check if GPU is available
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 print("TensorFlow version:", tf.__version__)
+
+# Initialize wandb
+wandb.init(
+    project="VAE",
+    config={
+        "latent_dim": 256,
+        "batch_size": 64,
+        "epochs": 25,
+        "learning_rate_vae": 0.0002,
+        "learning_rate_classifier": 0.001,
+        "learning_rate_inverse": 0.001,
+        "architecture": "enhanced_inverse_classifier"
+    }
+)
 
 
 # 1. Load the dataset and metadata
@@ -86,7 +102,11 @@ def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent
         return total_loss, loss
 
     for epoch in range(epochs):
-        print(f"Epoch {epoch + 1}/{epochs}")
+        print(f"Classifier Epoch {epoch + 1}/{epochs}")
+        epoch_total_loss = 0
+        epoch_bce_loss = 0
+        step_count = 0
+        
         for step, batch in enumerate(data):
             images = tf.cast(batch['image'], tf.float32) / 255.0
             
@@ -97,8 +117,31 @@ def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent
             attributes = tf.stack(attr_list, axis=1)  # Shape: (batch_size, 40)
             
             total_loss, loss = train_step(images, attributes)
+            epoch_total_loss += total_loss.numpy()
+            epoch_bce_loss += loss.numpy()
+            step_count += 1
+            
             if step % 100 == 0:
                 print(f"Step {step}, Total Loss: {total_loss.numpy():.6f}, BCE Loss: {loss.numpy():.6f}")
+                
+                # Log to wandb
+                wandb.log({
+                    "classifier/step_total_loss": total_loss.numpy(),
+                    "classifier/step_bce_loss": loss.numpy(),
+                    "classifier/epoch": epoch + 1,
+                    "classifier/step": step
+                })
+        
+        # Log epoch averages
+        avg_total_loss = epoch_total_loss / step_count
+        avg_bce_loss = epoch_bce_loss / step_count
+        
+        wandb.log({
+            "classifier/epoch_avg_total_loss": avg_total_loss,
+            "classifier/epoch_avg_bce_loss": avg_bce_loss,
+            "classifier/epoch_completed": epoch + 1
+        })
+        
         # Save model checkpoints
         classifier.save_weights(f"classifier.weights.h5")
     print("Classifier training completed.")
@@ -149,6 +192,8 @@ def vae_loss(x, x_decoded_mean, z_mean, z_log_var):
 def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.5)
     global_step = tf.Variable(0, trainable=False, dtype=tf.int64)
+
+    best_loss = float('inf')
     
     @tf.function
     def train_step(x, step):
@@ -180,8 +225,10 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
         return total_loss, reconstruction_loss, kl_loss
 
     for epoch in range(epochs):
-        print(f"Epoch {epoch + 1}/{epochs}")
+        print(f"VAE Epoch {epoch + 1}/{epochs}")
         epoch_loss = 0
+        epoch_recon_loss = 0
+        epoch_kl_loss = 0
         step_count = 0
         
         for step, batch in enumerate(data):
@@ -195,18 +242,45 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
             
             loss, recon_loss, kl_loss = train_step(images, global_step)
             epoch_loss += loss
+            epoch_recon_loss += recon_loss
+            epoch_kl_loss += kl_loss
             step_count += 1
             global_step.assign_add(1)
             
             if step % 100 == 0:
                 print(f"Step {step}, Total: {loss.numpy():.4f}, Recon: {recon_loss.numpy():.4f}, KL: {kl_loss.numpy():.4f}")
+                
+                # Log to wandb
+                wandb.log({
+                    "vae/step_total_loss": loss.numpy(),
+                    "vae/step_recon_loss": recon_loss.numpy(),
+                    "vae/step_kl_loss": kl_loss.numpy(),
+                    "vae/epoch": epoch + 1,
+                    "vae/step": step,
+                    "vae/global_step": global_step.numpy()
+                })
         
         avg_loss = epoch_loss / step_count
+        avg_recon_loss = epoch_recon_loss / step_count
+        avg_kl_loss = epoch_kl_loss / step_count
+        
         print(f"Epoch {epoch + 1} Average Loss: {avg_loss:.4f}")
         
-        # Save model checkpoints
-        encoder.save_weights(f"encoder.weights.h5")
-        decoder.save_weights(f"decoder.weights.h5")
+        # Log epoch averages
+        wandb.log({
+            "vae/epoch_avg_total_loss": avg_loss.numpy(),
+            "vae/epoch_avg_recon_loss": avg_recon_loss.numpy(),
+            "vae/epoch_avg_kl_loss": avg_kl_loss.numpy(),
+            "vae/epoch_completed": epoch + 1
+        })
+        
+        if avg_loss < best_loss:
+            best_loss = avg_loss
+            print(f"  ✓ New best model saved! Loss: {best_loss:.6f}")
+            wandb.log({
+                "vae/new_best_loss": best_loss.numpy(),
+                "vae/best_epoch": epoch + 1
+            })
     
     print("Training completed.")
 
@@ -355,6 +429,16 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
                 print(f"Step {step}, Total Loss: {total_loss.numpy():.6f}, "
                       f"MSE: {mse_loss.numpy():.6f}, Cosine: {cosine_loss.numpy():.6f}, "
                       f"LR: {optimizer.learning_rate.numpy():.6f}")
+                
+                # Log to wandb
+                wandb.log({
+                    "inverse_classifier/step_total_loss": total_loss.numpy(),
+                    "inverse_classifier/step_mse_loss": mse_loss.numpy(),
+                    "inverse_classifier/step_cosine_loss": cosine_loss.numpy(),
+                    "inverse_classifier/learning_rate": optimizer.learning_rate.numpy(),
+                    "inverse_classifier/epoch": epoch + 1,
+                    "inverse_classifier/step": step
+                })
         
         # Calculate epoch average loss
         epoch_avg_loss = train_loss_metric.result().numpy()
@@ -365,11 +449,26 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
         print(f"  Average MSE Loss: {mse_metric.result():.6f}")
         print(f"  Average Cosine Loss: {cosine_metric.result():.6f}")
         
+        # Log epoch metrics to wandb
+        wandb.log({
+            "inverse_classifier/epoch_avg_total_loss": epoch_avg_loss,
+            "inverse_classifier/epoch_avg_mse_loss": mse_metric.result().numpy(),
+            "inverse_classifier/epoch_avg_cosine_loss": cosine_metric.result().numpy(),
+            "inverse_classifier/epoch_completed": epoch + 1,
+            "inverse_classifier/best_loss": best_loss
+        })
+        
         # Save only if this is the best model so far
         if epoch_avg_loss < best_loss:
             best_loss = epoch_avg_loss
             inverse_classifier.save_weights("inverse_classifier.weights.h5")
-            print(f"  New best model saved! Loss: {best_loss:.6f}")
+            print(f"  ✓ New best model saved! Loss: {best_loss:.6f}")
+            
+            # Log best model update to wandb
+            wandb.log({
+                "inverse_classifier/new_best_loss": best_loss,
+                "inverse_classifier/best_epoch": epoch + 1
+            })
         else:
             print(f"  Current best loss: {best_loss:.6f}")
     
@@ -479,11 +578,43 @@ def create_feature_vector_from_descriptions(descriptions, attribute_names=None, 
     
     return feature_vector
 
+def log_generated_images_to_wandb(inverse_classifier, decoder, epoch_prefix=""):
+    """Generate and log sample images to wandb"""
+    try:
+        # Generate different types of images
+        test_cases = [
+            (['Young', 'Smiling', 'Attractive'], [0.8, 0.9, 0.8], "Young_Smiling_Attractive"),
+            (['Male', 'Mustache', 'Young'], [0.9, 0.7, 0.8], "Male_Mustache_Young"),
+            (['Blond_Hair', 'Young', 'Smiling'], [0.8, 0.7, 0.6], "Blond_Smiling_Young"),
+            (['Eyeglasses', 'Young', 'Male'], [0.9, 0.8, 0.9], "Glasses_Young_Male")
+        ]
+        
+        images_to_log = {}
+        
+        for features, intensities, name in test_cases:
+            feature_vector = create_feature_vector_from_descriptions(features, intensities=intensities)
+            generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
+            
+            # Convert to PIL Image for wandb
+            generated_image_clipped = np.clip(generated_image, 0, 1)
+            images_to_log[f"{epoch_prefix}generated_{name}"] = wandb.Image(generated_image_clipped, caption=f"{name}: {', '.join(features)}")
+        
+        wandb.log(images_to_log)
+        
+    except Exception as e:
+        print(f"Warning: Could not log images to wandb: {e}")
+
 if __name__ == "__main__":
     latent_dim = 256  # Increased latent dimension
     batch_size = 64   # Reduced batch size for better gradients
     epochs = 25       # More epochs
 
+    # Update wandb config with actual values
+    wandb.config.update({
+        "latent_dim": latent_dim,
+        "batch_size": batch_size,
+        "epochs": epochs
+    })
 
     # Prepare the dataset - keep attributes in the data
     ds_train = ds_train.map(lambda x: {
@@ -520,8 +651,32 @@ if __name__ == "__main__":
         print("Loading existing inverse classifier weights...")
         inverse_classifier.load_weights("inverse_classifier.weights.h5")
     
-    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
-    intensities = [0.8, 0.9, 0.7, 0.8]
+    desired_features = ['Young', 'Smiling', 'Attractive', 'Male']
+    intensities = [1.0, 1.0, 1.0, 0.0]
+    feature_vector = create_feature_vector_from_descriptions(desired_features, intensities=intensities)
+    generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
+
+    # Log initial generation to wandb
+    text = ''
+    for feat, inten in zip(desired_features, intensities):
+        text += f"{feat}: {inten:.2f}, "
+    text = text.strip().rstrip(',')
+    wandb.log({
+        "initial_generation": wandb.Image(np.clip(generated_image, 0, 1), 
+                                         caption=f"Initial: {text}")
+    })
+
+    plt.figure(figsize=(15, 8))
+    
+    plt.subplot(2, 3, 1)
+    plt.imshow(np.clip(generated_image, 0, 1))
+    plt.title(f"Strong: {', '.join(desired_features)}")
+    plt.axis('off')
+
+    plt.show()
+
+    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive', 'Male']
+    intensities = [0.1, 0.21, 0.95, 0.8, 0.9]
     feature_vector = create_feature_vector_from_descriptions(desired_features)
     generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
 
@@ -534,22 +689,19 @@ if __name__ == "__main__":
 
     plt.show()
 
-    desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive']
-    intensities = [0.1, 0.21, 0.95, 0.8]
-    feature_vector = create_feature_vector_from_descriptions(desired_features)
-    generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
-
-    plt.figure(figsize=(15, 8))
+    # Training with wandb logging
+    print("Starting training with wandb logging...")
     
-    plt.subplot(2, 3, 1)
-    plt.imshow(np.clip(generated_image, 0, 1))
-    plt.title(f"Strong: {', '.join(desired_features)}")
-    plt.axis('off')
-
-    plt.show()
-
     train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    
+    # Log sample reconstructions after VAE training
+    log_generated_images_to_wandb(inverse_classifier, decoder, "post_vae_")
+    
     train_inverse_classifier(ds_train, encoder, inverse_classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    
+    # Log sample generations after inverse classifier training
+    log_generated_images_to_wandb(inverse_classifier, decoder, "post_inverse_")
+    
     train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
 
@@ -606,3 +758,9 @@ if __name__ == "__main__":
     
     # Display some reconstructions
     display_reconstructions(encoder, decoder, ds_train, num_images=1)
+    
+    # Log final results
+    log_generated_images_to_wandb(inverse_classifier, decoder, "final_")
+    
+    # Finish wandb run
+    wandb.finish()

@@ -1,0 +1,218 @@
+tfds.core.DatasetInfo(
+    name='celeb_a',
+    full_name='celeb_a/2.1.0',
+    description="""
+    CelebFaces Attributes Dataset (CelebA) is a large-scale face attributes dataset
+    with more than 200K celebrity images, each with 40 attribute annotations. The
+    images in this dataset cover large pose variations and background clutter.
+    CelebA has large diversities, large quantities, and rich annotations,
+    including - 10,177 number of identities, - 202,599 number of face images, and -
+    5 landmark locations, 40 binary attributes annotations per image.
+
+    The dataset can be employed as the training and test sets for the following
+    computer vision tasks: face attribute recognition, face detection, and landmark
+    (or facial part) localization.
+
+    Note: CelebA dataset may contain potential bias. The fairness indicators
+    [example](https://www.tensorflow.org/responsible_ai/fairness_indicators/tutorials/Fairness_Indicators_TFCO_CelebA_Case_Study)
+    goes into detail about several considerations to keep in mind while using the
+    CelebA dataset.
+    """,
+    homepage='http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html',
+    data_dir='/home/user/tensorflow_datasets/celeb_a/2.1.0',
+    file_format=tfrecord,
+    download_size=1.39 GiB,
+    dataset_size=1.63 GiB,
+    features=FeaturesDict({
+        'attributes': FeaturesDict({
+            '5_o_Clock_Shadow': bool,
+            'Arched_Eyebrows': bool,
+            'Attractive': bool,
+            'Bags_Under_Eyes': bool,
+            'Bald': bool,
+            'Bangs': bool,
+            'Big_Lips': bool,
+            'Big_Nose': bool,
+            'Black_Hair': bool,
+            'Blond_Hair': bool,
+            'Blurry': bool,
+            'Brown_Hair': bool,
+            'Bushy_Eyebrows': bool,
+            'Chubby': bool,
+            'Double_Chin': bool,
+            'Eyeglasses': bool,
+            'Goatee': bool,
+            'Gray_Hair': bool,
+            'Heavy_Makeup': bool,
+            'High_Cheekbones': bool,
+            'Male': bool,
+            'Mouth_Slightly_Open': bool,
+            'Mustache': bool,
+            'Narrow_Eyes': bool,
+            'No_Beard': bool,
+            'Oval_Face': bool,
+            'Pale_Skin': bool,
+            'Pointy_Nose': bool,
+            'Receding_Hairline': bool,
+            'Rosy_Cheeks': bool,
+            'Sideburns': bool,
+            'Smiling': bool,
+            'Straight_Hair': bool,
+            'Wavy_Hair': bool,
+            'Wearing_Earrings': bool,
+            'Wearing_Hat': bool,
+            'Wearing_Lipstick': bool,
+            'Wearing_Necklace': bool,
+            'Wearing_Necktie': bool,
+            'Young': bool,
+        }),
+        'identity': FeaturesDict({
+            'Identity_No': int64,
+        }),
+        'image': Image(shape=(218, 178, 3), dtype=uint8),
+        'landmarks': FeaturesDict({
+            'lefteye_x': int64,
+            'lefteye_y': int64,
+            'leftmouth_x': int64,
+            'leftmouth_y': int64,
+            'nose_x': int64,
+            'nose_y': int64,
+            'righteye_x': int64,
+            'righteye_y': int64,
+            'rightmouth_x': int64,
+            'rightmouth_y': int64,
+        }),
+    }),
+    supervised_keys=None,
+    disable_shuffling=False,
+    nondeterministic_order=False,
+    splits={
+        'test': <SplitInfo num_examples=19962, num_shards=2>,
+        'train': <SplitInfo num_examples=162770, num_shards=16>,
+        'validation': <SplitInfo num_examples=19867, num_shards=2>,
+    },
+    citation="""@inproceedings{conf/iccv/LiuLWT15,
+      added-at = {2018-10-09T00:00:00.000+0200},
+      author = {Liu, Ziwei and Luo, Ping and Wang, Xiaogang and Tang, Xiaoou},
+      biburl = {https://www.bibsonomy.org/bibtex/250e4959be61db325d2f02c1d8cd7bfbb/dblp},
+      booktitle = {ICCV},
+      crossref = {conf/iccv/2015},
+      ee = {http://doi.ieeecomputersociety.org/10.1109/ICCV.2015.425},
+      interhash = {3f735aaa11957e73914bbe2ca9d5e702},
+      intrahash = {50e4959be61db325d2f02c1d8cd7bfbb},
+      isbn = {978-1-4673-8391-2},
+      keywords = {dblp},
+      pages = {3730-3738},
+      publisher = {IEEE Computer Society},
+      timestamp = {2018-10-11T11:43:28.000+0200},
+      title = {Deep Learning Face Attributes in the Wild.},
+      url = {http://dblp.uni-trier.de/db/conf/iccv/iccv2015.html#LiuLWT15},
+      year = 2015
+    }""",
+)
+FeaturesDict({
+    'attributes': FeaturesDict({
+        '5_o_Clock_Shadow': bool,
+        'Arched_Eyebrows': bool,
+        'Attractive': bool,
+        'Bags_Under_Eyes': bool,
+        'Bald': bool,
+        'Bangs': bool,
+        'Big_Lips': bool,
+        'Big_Nose': bool,
+        'Black_Hair': bool,
+        'Blond_Hair': bool,
+        'Blurry': bool,
+        'Brown_Hair': bool,
+        'Bushy_Eyebrows': bool,
+        'Chubby': bool,
+        'Double_Chin': bool,
+        'Eyeglasses': bool,
+        'Goatee': bool,
+        'Gray_Hair': bool,
+        'Heavy_Makeup': bool,
+        'High_Cheekbones': bool,
+        'Male': bool,
+        'Mouth_Slightly_Open': bool,
+        'Mustache': bool,
+        'Narrow_Eyes': bool,
+        'No_Beard': bool,
+        'Oval_Face': bool,
+        'Pale_Skin': bool,
+        'Pointy_Nose': bool,
+        'Receding_Hairline': bool,
+        'Rosy_Cheeks': bool,
+        'Sideburns': bool,
+        'Smiling': bool,
+        'Straight_Hair': bool,
+        'Wavy_Hair': bool,
+        'Wearing_Earrings': bool,
+        'Wearing_Hat': bool,
+        'Wearing_Lipstick': bool,
+        'Wearing_Necklace': bool,
+        'Wearing_Necktie': bool,
+        'Young': bool,
+    }),
+    'identity': FeaturesDict({
+        'Identity_No': int64,
+    }),
+    'image': Image(shape=(218, 178, 3), dtype=uint8),
+    'landmarks': FeaturesDict({
+        'lefteye_x': int64,
+        'lefteye_y': int64,
+        'leftmouth_x': int64,
+        'leftmouth_y': int64,
+        'nose_x': int64,
+        'nose_y': int64,
+        'righteye_x': int64,
+        'righteye_y': int64,
+        'rightmouth_x': int64,
+        'rightmouth_y': int64,
+    }),
+})
+Loading existing model weights...
+Display - Image shape: (64, 256, 256, 3)
+Display - Image min/max: 0.0000 / 1.0000
+Loading existing classifier weights...
+Loading existing inverse classifier weights...
+Starting training with wandb logging...
+VAE Epoch 1/25
+Step 0, Total: 67070.0000, Recon: 67070.0000, KL: 818.6431
+Step 100, Total: 98773.2188, Recon: 98762.4609, KL: 1075.7209
+Traceback (most recent call last):
+  File "/home/user/Desktop/VAE/main.py", line 685, in <module>
+    train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+  File "/home/user/Desktop/VAE/main.py", line 233, in train
+    images = tf.cast(batch['image'], tf.float32) / 255.0
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/override_binary_operator.py", line 113, in binary_op_wrapper
+    return func(x, y, name=name)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/tensor_math_operator_overrides.py", line 100, in _truediv_factory
+    return math_ops.truediv(x, y, name=name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/dispatch.py", line 1264, in op_dispatch_handler
+    return dispatch_target(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/math_ops.py", line 1529, in truediv
+    return _truediv_python3(x, y, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/weak_tensor_ops.py", line 142, in wrapper
+    return op(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/math_ops.py", line 1446, in _truediv_python3
+    return gen_math_ops.real_div(x, y, name=name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/weak_tensor_ops.py", line 142, in wrapper
+    return op(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/gen_math_ops.py", line 8162, in real_div
+    _result = pywrap_tfe.TFE_Py_FastPathExecute(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

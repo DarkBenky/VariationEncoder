@@ -1,0 +1,288 @@
+tfds.core.DatasetInfo(
+    name='celeb_a',
+    full_name='celeb_a/2.1.0',
+    description="""
+    CelebFaces Attributes Dataset (CelebA) is a large-scale face attributes dataset
+    with more than 200K celebrity images, each with 40 attribute annotations. The
+    images in this dataset cover large pose variations and background clutter.
+    CelebA has large diversities, large quantities, and rich annotations,
+    including - 10,177 number of identities, - 202,599 number of face images, and -
+    5 landmark locations, 40 binary attributes annotations per image.
+
+    The dataset can be employed as the training and test sets for the following
+    computer vision tasks: face attribute recognition, face detection, and landmark
+    (or facial part) localization.
+
+    Note: CelebA dataset may contain potential bias. The fairness indicators
+    [example](https://www.tensorflow.org/responsible_ai/fairness_indicators/tutorials/Fairness_Indicators_TFCO_CelebA_Case_Study)
+    goes into detail about several considerations to keep in mind while using the
+    CelebA dataset.
+    """,
+    homepage='http://mmlab.ie.cuhk.edu.hk/projects/CelebA.html',
+    data_dir='/home/user/tensorflow_datasets/celeb_a/2.1.0',
+    file_format=tfrecord,
+    download_size=1.39 GiB,
+    dataset_size=1.63 GiB,
+    features=FeaturesDict({
+        'attributes': FeaturesDict({
+            '5_o_Clock_Shadow': bool,
+            'Arched_Eyebrows': bool,
+            'Attractive': bool,
+            'Bags_Under_Eyes': bool,
+            'Bald': bool,
+            'Bangs': bool,
+            'Big_Lips': bool,
+            'Big_Nose': bool,
+            'Black_Hair': bool,
+            'Blond_Hair': bool,
+            'Blurry': bool,
+            'Brown_Hair': bool,
+            'Bushy_Eyebrows': bool,
+            'Chubby': bool,
+            'Double_Chin': bool,
+            'Eyeglasses': bool,
+            'Goatee': bool,
+            'Gray_Hair': bool,
+            'Heavy_Makeup': bool,
+            'High_Cheekbones': bool,
+            'Male': bool,
+            'Mouth_Slightly_Open': bool,
+            'Mustache': bool,
+            'Narrow_Eyes': bool,
+            'No_Beard': bool,
+            'Oval_Face': bool,
+            'Pale_Skin': bool,
+            'Pointy_Nose': bool,
+            'Receding_Hairline': bool,
+            'Rosy_Cheeks': bool,
+            'Sideburns': bool,
+            'Smiling': bool,
+            'Straight_Hair': bool,
+            'Wavy_Hair': bool,
+            'Wearing_Earrings': bool,
+            'Wearing_Hat': bool,
+            'Wearing_Lipstick': bool,
+            'Wearing_Necklace': bool,
+            'Wearing_Necktie': bool,
+            'Young': bool,
+        }),
+        'identity': FeaturesDict({
+            'Identity_No': int64,
+        }),
+        'image': Image(shape=(218, 178, 3), dtype=uint8),
+        'landmarks': FeaturesDict({
+            'lefteye_x': int64,
+            'lefteye_y': int64,
+            'leftmouth_x': int64,
+            'leftmouth_y': int64,
+            'nose_x': int64,
+            'nose_y': int64,
+            'righteye_x': int64,
+            'righteye_y': int64,
+            'rightmouth_x': int64,
+            'rightmouth_y': int64,
+        }),
+    }),
+    supervised_keys=None,
+    disable_shuffling=False,
+    nondeterministic_order=False,
+    splits={
+        'test': <SplitInfo num_examples=19962, num_shards=2>,
+        'train': <SplitInfo num_examples=162770, num_shards=16>,
+        'validation': <SplitInfo num_examples=19867, num_shards=2>,
+    },
+    citation="""@inproceedings{conf/iccv/LiuLWT15,
+      added-at = {2018-10-09T00:00:00.000+0200},
+      author = {Liu, Ziwei and Luo, Ping and Wang, Xiaogang and Tang, Xiaoou},
+      biburl = {https://www.bibsonomy.org/bibtex/250e4959be61db325d2f02c1d8cd7bfbb/dblp},
+      booktitle = {ICCV},
+      crossref = {conf/iccv/2015},
+      ee = {http://doi.ieeecomputersociety.org/10.1109/ICCV.2015.425},
+      interhash = {3f735aaa11957e73914bbe2ca9d5e702},
+      intrahash = {50e4959be61db325d2f02c1d8cd7bfbb},
+      isbn = {978-1-4673-8391-2},
+      keywords = {dblp},
+      pages = {3730-3738},
+      publisher = {IEEE Computer Society},
+      timestamp = {2018-10-11T11:43:28.000+0200},
+      title = {Deep Learning Face Attributes in the Wild.},
+      url = {http://dblp.uni-trier.de/db/conf/iccv/iccv2015.html#LiuLWT15},
+      year = 2015
+    }""",
+)
+FeaturesDict({
+    'attributes': FeaturesDict({
+        '5_o_Clock_Shadow': bool,
+        'Arched_Eyebrows': bool,
+        'Attractive': bool,
+        'Bags_Under_Eyes': bool,
+        'Bald': bool,
+        'Bangs': bool,
+        'Big_Lips': bool,
+        'Big_Nose': bool,
+        'Black_Hair': bool,
+        'Blond_Hair': bool,
+        'Blurry': bool,
+        'Brown_Hair': bool,
+        'Bushy_Eyebrows': bool,
+        'Chubby': bool,
+        'Double_Chin': bool,
+        'Eyeglasses': bool,
+        'Goatee': bool,
+        'Gray_Hair': bool,
+        'Heavy_Makeup': bool,
+        'High_Cheekbones': bool,
+        'Male': bool,
+        'Mouth_Slightly_Open': bool,
+        'Mustache': bool,
+        'Narrow_Eyes': bool,
+        'No_Beard': bool,
+        'Oval_Face': bool,
+        'Pale_Skin': bool,
+        'Pointy_Nose': bool,
+        'Receding_Hairline': bool,
+        'Rosy_Cheeks': bool,
+        'Sideburns': bool,
+        'Smiling': bool,
+        'Straight_Hair': bool,
+        'Wavy_Hair': bool,
+        'Wearing_Earrings': bool,
+        'Wearing_Hat': bool,
+        'Wearing_Lipstick': bool,
+        'Wearing_Necklace': bool,
+        'Wearing_Necktie': bool,
+        'Young': bool,
+    }),
+    'identity': FeaturesDict({
+        'Identity_No': int64,
+    }),
+    'image': Image(shape=(218, 178, 3), dtype=uint8),
+    'landmarks': FeaturesDict({
+        'lefteye_x': int64,
+        'lefteye_y': int64,
+        'leftmouth_x': int64,
+        'leftmouth_y': int64,
+        'nose_x': int64,
+        'nose_y': int64,
+        'righteye_x': int64,
+        'righteye_y': int64,
+        'rightmouth_x': int64,
+        'rightmouth_y': int64,
+    }),
+})
+Loading existing model weights...
+Display - Image shape: (64, 256, 256, 3)
+Display - Image min/max: 0.0000 / 1.0000
+Loading existing classifier weights...
+Loading existing inverse classifier weights...
+Starting training with wandb logging...
+VAE Epoch 1/25
+Traceback (most recent call last):
+  File "/home/user/Desktop/VAE/main.py", line 685, in <module>
+    train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+  File "/home/user/Desktop/VAE/main.py", line 241, in train
+    loss, recon_loss, kl_loss = train_step(images, global_step)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 833, in __call__
+    result = self._call(*args, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 906, in _call
+    return tracing_compilation.call_function(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py", line 132, in call_function
+    function = trace_function(
+               ^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py", line 178, in trace_function
+    concrete_function = _maybe_define_function(
+                        ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py", line 283, in _maybe_define_function
+    concrete_function = _create_concrete_function(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/tracing_compilation.py", line 310, in _create_concrete_function
+    traced_func_graph = func_graph_module.func_graph_from_py_func(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/func_graph.py", line 1060, in func_graph_from_py_func
+    func_outputs = python_func(*func_args, **func_kwargs)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/polymorphic_function.py", line 599, in wrapped_fn
+    out = weak_wrapped_fn().__wrapped__(*args, **kwds)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/polymorphic_function/autograph_util.py", line 41, in autograph_handler
+    return api.converted_call(
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/autograph/impl/api.py", line 439, in converted_call
+    result = converted_f(*effective_args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/__autograph_generated_filewtboojl4.py", line 20, in tf__train_step
+    grads = ag__.converted_call(ag__.ld(tape).gradient, (ag__.ld(total_loss), ag__.ld(encoder).trainable_weights + ag__.ld(decoder).trainable_weights), None, fscope)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/autograph/impl/api.py", line 331, in converted_call
+    return _call_unconverted(f, args, kwargs, options, False)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/autograph/impl/api.py", line 460, in _call_unconverted
+    return f(*args)
+           ^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/backprop.py", line 1066, in gradient
+    flat_grad = imperative_grad.imperative_grad(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/imperative_grad.py", line 67, in imperative_grad
+    return pywrap_tfe.TFE_Py_TapeGradient(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/eager/backprop.py", line 148, in _gradient_function
+    return grad_fn(mock_op, *out_grads)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/math_grad.py", line 1435, in _MulGrad
+    return _ReduceGradientArgs(x, y, gx, gy)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/math_grad.py", line 142, in _ReduceGradientArgs
+    bx, by = SmartBroadcastGradientArgs(x, y)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/math_grad.py", line 76, in SmartBroadcastGradientArgs
+    y_shape = array_ops.shape(y)
+              ^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/dispatch.py", line 1264, in op_dispatch_handler
+    return dispatch_target(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/array_ops.py", line 687, in shape
+    return shape_internal(input, name, optimize=True, out_type=out_type)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/ops/array_ops.py", line 725, in shape_internal
+    return constant(input_shape.as_list(), out_type, name=name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/constant_op.py", line 276, in constant
+    return _constant_impl(value, dtype, shape, name, verify_shape=False,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/constant_op.py", line 291, in _constant_impl
+    const_tensor = ops._create_graph_constant(  # pylint: disable=protected-access
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/ops.py", line 289, in _create_graph_constant
+    const_tensor = g._create_op_internal(  # pylint: disable=protected-access
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/func_graph.py", line 614, in _create_op_internal
+    return super()._create_op_internal(  # pylint: disable=protected-access
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/ops.py", line 2726, in _create_op_internal
+    ret = Operation.from_node_def(
+          ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/ops.py", line 1221, in from_node_def
+    c_op = _create_c_op(g, node_def, inputs, control_input_ops, op_def=op_def)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/traceback_utils.py", line 150, in error_handler
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/framework/ops.py", line 1053, in _create_c_op
+    compat.as_str(node_def.name))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/compat.py", line 127, in as_str
+    return as_text(bytes_or_text, encoding)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/user/miniconda3/envs/myenv/lib/python3.11/site-packages/tensorflow/python/util/compat.py", line 102, in as_text
+    encoding = codecs.lookup(encoding).name
+               ^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

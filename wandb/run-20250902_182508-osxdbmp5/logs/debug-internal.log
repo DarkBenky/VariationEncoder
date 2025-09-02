@@ -1,0 +1,11 @@
+{"time":"2025-09-02T18:25:08.343481832+02:00","level":"INFO","msg":"stream: starting","core version":"0.21.3"}
+{"time":"2025-09-02T18:25:08.645085927+02:00","level":"INFO","msg":"stream: created new stream","id":"osxdbmp5"}
+{"time":"2025-09-02T18:25:08.645116399+02:00","level":"INFO","msg":"stream: started","id":"osxdbmp5"}
+{"time":"2025-09-02T18:25:08.64514761+02:00","level":"INFO","msg":"handler: started","stream_id":"osxdbmp5"}
+{"time":"2025-09-02T18:25:08.645173661+02:00","level":"INFO","msg":"sender: started","stream_id":"osxdbmp5"}
+{"time":"2025-09-02T18:25:08.64515808+02:00","level":"INFO","msg":"writer: started","stream_id":"osxdbmp5"}
+{"time":"2025-09-02T20:09:41.943846859+02:00","level":"INFO","msg":"stream: closing","id":"osxdbmp5"}
+{"time":"2025-09-02T20:09:42.849629222+02:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-09-02T20:09:43.157977413+02:00","level":"INFO","msg":"handler: closed","stream_id":"osxdbmp5"}
+{"time":"2025-09-02T20:09:43.158065061+02:00","level":"INFO","msg":"sender: closed","stream_id":"osxdbmp5"}
+{"time":"2025-09-02T20:09:43.158083181+02:00","level":"INFO","msg":"stream: closed","id":"osxdbmp5"}

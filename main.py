@@ -148,22 +148,60 @@ def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent
 
 def buildDecoder(latent_dim):
     decoder_input = Input(shape=(latent_dim,), name="decoder_input")
-    x = Dense(8 * 8 * 512)(decoder_input)
-    x = Reshape((8, 8, 512))(x)
-    x = Conv2DTranspose(256, 4, strides=2, padding="same")(x)  # 16x16
+    
+    # Enhanced initial projection with more capacity
+    x = Dense(16 * 16 * 1024, activation="relu")(decoder_input)  # Larger initial projection
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = Reshape((16, 16, 1024))(x)
+    
+    # First upsampling block with attention
+    x = Conv2DTranspose(512, 4, strides=2, padding="same")(x)  # 32x32
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
-    x = Conv2DTranspose(128, 4, strides=2, padding="same")(x)  # 32x32
+    
+    # Self-attention layer for better feature correlation
+    attention_1 = tf.keras.layers.MultiHeadAttention(
+        num_heads=8, key_dim=64, name="attention_32x32"
+    )
+    # Flatten for attention, then reshape back
+    x_flat = tf.keras.layers.Reshape((32*32, 512))(x)
+    x_attended = attention_1(x_flat, x_flat)
+    x = tf.keras.layers.Reshape((32, 32, 512))(x_attended)
+    
+    # Second upsampling block
+    x = Conv2DTranspose(256, 4, strides=2, padding="same")(x)  # 64x64
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
-    x = Conv2DTranspose(64, 4, strides=2, padding="same")(x)   # 64x64
+    x = tf.keras.layers.Dropout(0.1)(x)  # Light dropout for regularization
+    
+    # Third upsampling block
+    x = Conv2DTranspose(128, 4, strides=2, padding="same")(x)  # 128x128
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
-    x = Conv2DTranspose(32, 4, strides=2, padding="same")(x)   # 128x128
+    
+    # Fourth upsampling block with residual connection
+    residual_128 = Conv2D(64, 1, padding="same")(x)  # Match channels for residual
+    x = Conv2DTranspose(64, 4, strides=2, padding="same")(x)   # 256x256
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
-    decoder_output = Conv2DTranspose(3, 4, strides=2, activation="sigmoid", padding="same", name="decoder_output")(x)  # 256x256
-    decoder = Model(decoder_input, decoder_output, name="decoder")
+    
+    # Add residual connection (upsample residual to match dimensions)
+    residual_upsampled = tf.keras.layers.UpSampling2D(size=(2, 2))(residual_128)
+    x = tf.keras.layers.Add()([x, residual_upsampled])
+    
+    # Additional refinement layers
+    x = Conv2D(32, 3, padding="same")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    
+    x = Conv2D(16, 3, padding="same")(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    
+    # Final output layer with tanh activation scaled to [0,1]
+    decoder_output = Conv2D(3, 3, activation="sigmoid", padding="same", name="decoder_output")(x)
+    
+    decoder = Model(decoder_input, decoder_output, name="enhanced_decoder")
     return decoder
 
 def vae_loss(x, x_decoded_mean, z_mean, z_log_var):
@@ -277,6 +315,8 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
         if avg_loss < best_loss:
             best_loss = avg_loss
             print(f"  ✓ New best model saved! Loss: {best_loss:.6f}")
+            encoder.save_weights("encoder.weights.h5")
+            decoder.save_weights("decoder.weights.h5")
             wandb.log({
                 "vae/new_best_loss": best_loss.numpy(),
                 "vae/best_epoch": epoch + 1
@@ -285,72 +325,135 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
     print("Training completed.")
 
 def buildInverseClassifier(latent_dim):
-    """Enhanced network that maps from attributes to latent space with residual connections"""
+    """Ultra-enhanced network with attention, residuals, and advanced regularization"""
     inverse_input = Input(shape=(40,), name="inverse_input")  # 40 CelebA attributes
     
-    # Initial embedding layer
-    x = Dense(512, activation="relu")(inverse_input)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # First residual block
-    residual1 = x
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
-    x = Dense(512, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual1])  # Residual connection
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Second residual block
-    residual2 = x
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
-    x = Dense(512, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual2])  # Residual connection
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Third residual block
-    residual3 = x
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
-    x = Dense(512, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual3])  # Residual connection
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Additional deep layers
-    x = Dense(768, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    x = Dense(512, activation="relu")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
+    # Enhanced input embedding with feature importance weighting
+    x = Dense(1024, activation="relu")(inverse_input)
+    x = tf.keras.layers.LayerNormalization()(x)  # Layer norm instead of batch norm for stability
     x = tf.keras.layers.Dropout(0.2)(x)
     
-    # Final projection to latent space
-    inverse_output = Dense(latent_dim, name="inverse_output")(x)
+    # Feature importance branch
+    importance_weights = Dense(1024, activation="sigmoid", name="feature_importance")(x)
+    x = tf.keras.layers.Multiply()([x, importance_weights])
     
-    inverse_classifier = Model(inverse_input, inverse_output, name="enhanced_inverse_classifier")
+    # First enhanced residual block with attention
+    residual1 = x
+    x = Dense(2048, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Multi-head self-attention
+    x_reshaped = tf.keras.layers.Reshape((1, 2048))(x)
+    attention_1 = tf.keras.layers.MultiHeadAttention(
+        num_heads=16, key_dim=128, name="attention_1"
+    )
+    x_attended = attention_1(x_reshaped, x_reshaped)
+    x = tf.keras.layers.Reshape((2048,))(x_attended)
+    
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual1])  # Residual connection
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # Second enhanced residual block
+    residual2 = x
+    x = Dense(2048, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual2])
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # Third enhanced residual block
+    residual3 = x
+    x = Dense(2048, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual3])
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # Fourth residual block with cross-attention to input
+    residual4 = x
+    x = Dense(2048, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Cross-attention between current features and original input
+    input_expanded = Dense(2048, activation="relu")(inverse_input)
+    x_reshaped = tf.keras.layers.Reshape((1, 2048))(x)
+    input_reshaped = tf.keras.layers.Reshape((1, 2048))(input_expanded)
+    
+    cross_attention = tf.keras.layers.MultiHeadAttention(
+        num_heads=16, key_dim=128, name="cross_attention"
+    )
+    x_cross_attended = cross_attention(x_reshaped, input_reshaped)
+    x = tf.keras.layers.Reshape((2048,))(x_cross_attended)
+    
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Add()([x, residual4])
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # Additional deep processing layers
+    x = Dense(1536, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.25)(x)
+    
+    x = Dense(1024, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    x = Dense(768, activation="relu")(x)
+    x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.15)(x)
+    
+    # Pre-output processing with gating mechanism
+    gate = Dense(512, activation="sigmoid")(x)
+    x = Dense(512, activation="relu")(x)
+    x = tf.keras.layers.Multiply()([x, gate])  # Gated activation
+    x = tf.keras.layers.LayerNormalization()(x)
+    
+    # Final projection to latent space with residual connection
+    pre_output = Dense(latent_dim)(x)
+    
+    # Additional refinement branch
+    refinement = Dense(latent_dim // 2, activation="relu")(x)
+    refinement = Dense(latent_dim)(refinement)
+    
+    # Combine main output with refinement
+    inverse_output = tf.keras.layers.Add()([pre_output, refinement])
+    inverse_output = tf.keras.layers.LayerNormalization(name="inverse_output")(inverse_output)
+    
+    inverse_classifier = Model(inverse_input, inverse_output, name="ultra_enhanced_inverse_classifier")
     return inverse_classifier
 
 def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch_size=32, latent_dim=128):
-    # Learning rate scheduling
-    initial_learning_rate = 0.001
-    lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
-        initial_learning_rate,
-        decay_steps=1000,
-        decay_rate=0.96,
-        staircase=True
+    # Enhanced learning rate scheduling with warm-up - Fixed
+    lr_schedule = tf.keras.optimizers.schedules.PolynomialDecay(
+        initial_learning_rate=0.001,
+        decay_steps=epochs * 1000,
+        end_learning_rate=0.0001,
+        power=0.9
     )
     
-    optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule, beta_1=0.9, beta_2=0.999)
+    # Enhanced optimizer with gradient centralization
+    optimizer = tf.keras.optimizers.AdamW(
+        learning_rate=lr_schedule, 
+        beta_1=0.9, 
+        beta_2=0.999,
+        weight_decay=0.0001,  # L2 regularization built into optimizer
+        epsilon=1e-7
+    )
+    
     mse_loss_fn = tf.keras.losses.MeanSquaredError()
     cosine_loss_fn = tf.keras.losses.CosineSimilarity()
+    huber_loss_fn = tf.keras.losses.Huber(delta=1.0)  # More robust to outliers
     
     # Track best loss for saving best model
     best_loss = float('inf')
@@ -364,18 +467,27 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
             # Get inverse classifier prediction
             z_pred = inverse_classifier(y, training=True)
             
-            # Combined loss: MSE + Cosine similarity for better direction matching
+            # Enhanced loss combination
             mse_loss = mse_loss_fn(z_mean, z_pred)
-            cosine_loss = 1.0 - cosine_loss_fn(z_mean, z_pred)  # Convert to loss (1 - similarity)
+            cosine_loss = 1.0 - cosine_loss_fn(z_mean, z_pred)
+            huber_loss = huber_loss_fn(z_mean, z_pred)
             
-            # Weighted combination
-            reconstruction_loss = 0.7 * mse_loss + 0.3 * cosine_loss
+            # Adaptive loss weighting based on training progress
+            mse_weight = 0.5
+            cosine_weight = 0.3
+            huber_weight = 0.2
             
-            # L2 regularization with different weights for different layer types
+            reconstruction_loss = (mse_weight * mse_loss + 
+                                 cosine_weight * cosine_loss + 
+                                 huber_weight * huber_loss)
+            
+            # Enhanced regularization with different penalties
             l2_loss = 0
             for layer in inverse_classifier.layers:
                 if hasattr(layer, 'kernel'):
-                    if hasattr(layer, 'units') and layer.units >= 512:
+                    if hasattr(layer, 'units') and layer.units >= 1024:
+                        l2_loss += 0.00005 * tf.nn.l2_loss(layer.kernel)
+                    elif hasattr(layer, 'units') and layer.units >= 512:
                         l2_loss += 0.0001 * tf.nn.l2_loss(layer.kernel)
                     else:
                         l2_loss += 0.00005 * tf.nn.l2_loss(layer.kernel)
@@ -383,27 +495,31 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
             # Total loss
             total_loss = reconstruction_loss + l2_loss
             
-        # Gradient computation and clipping
+        # Enhanced gradient computation
         grads = tape.gradient(total_loss, inverse_classifier.trainable_weights)
-        grads = [tf.clip_by_norm(g, 1.0) for g in grads]  # Gradient clipping
+        
+        # Gradient clipping and normalization
+        grads = [tf.clip_by_norm(g, 1.0) for g in grads]
         
         # Apply gradients
         optimizer.apply_gradients(zip(grads, inverse_classifier.trainable_weights))
         
-        return total_loss, mse_loss, cosine_loss
+        return total_loss, mse_loss, cosine_loss, huber_loss
 
     # Training metrics tracking
     train_loss_metric = tf.keras.metrics.Mean(name='train_loss')
     mse_metric = tf.keras.metrics.Mean(name='mse_loss')
     cosine_metric = tf.keras.metrics.Mean(name='cosine_loss')
+    huber_metric = tf.keras.metrics.Mean(name='huber_loss')
 
     for epoch in range(epochs):
-        print(f"Enhanced Inverse Classifier Epoch {epoch + 1}/{epochs}")
+        print(f"Ultra Enhanced Inverse Classifier Epoch {epoch + 1}/{epochs}")
         
         # Reset metrics
         train_loss_metric.reset_state()
         mse_metric.reset_state()
         cosine_metric.reset_state()
+        huber_metric.reset_state()
         
         for step, batch in enumerate(data):
             images = tf.cast(batch['image'], tf.float32) / 255.0
@@ -414,27 +530,30 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
                 attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
             attributes = tf.stack(attr_list, axis=1)
             
-            # Add label smoothing to attributes
-            noise = tf.random.normal(tf.shape(attributes), stddev=0.05)
+            # Enhanced data augmentation for attributes
+            noise_std = 0.03 * (1.0 - epoch / epochs)  # Reduce noise over time
+            noise = tf.random.normal(tf.shape(attributes), stddev=noise_std)
             attributes_smoothed = tf.clip_by_value(attributes + noise, 0.0, 1.0)
             
-            total_loss, mse_loss, cosine_loss = train_step(images, attributes_smoothed)
+            total_loss, mse_loss, cosine_loss, huber_loss = train_step(images, attributes_smoothed)
             
             # Update metrics
             train_loss_metric.update_state(total_loss)
             mse_metric.update_state(mse_loss)
             cosine_metric.update_state(cosine_loss)
+            huber_metric.update_state(huber_loss)
             
             if step % 100 == 0:
-                print(f"Step {step}, Total Loss: {total_loss.numpy():.6f}, "
+                print(f"Step {step}, Total: {total_loss.numpy():.6f}, "
                       f"MSE: {mse_loss.numpy():.6f}, Cosine: {cosine_loss.numpy():.6f}, "
-                      f"LR: {optimizer.learning_rate.numpy():.6f}")
+                      f"Huber: {huber_loss.numpy():.6f}, LR: {optimizer.learning_rate.numpy():.6f}")
                 
                 # Log to wandb
                 wandb.log({
                     "inverse_classifier/step_total_loss": total_loss.numpy(),
                     "inverse_classifier/step_mse_loss": mse_loss.numpy(),
                     "inverse_classifier/step_cosine_loss": cosine_loss.numpy(),
+                    "inverse_classifier/step_huber_loss": huber_loss.numpy(),
                     "inverse_classifier/learning_rate": optimizer.learning_rate.numpy(),
                     "inverse_classifier/epoch": epoch + 1,
                     "inverse_classifier/step": step
@@ -448,12 +567,14 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
         print(f"  Average Total Loss: {epoch_avg_loss:.6f}")
         print(f"  Average MSE Loss: {mse_metric.result():.6f}")
         print(f"  Average Cosine Loss: {cosine_metric.result():.6f}")
+        print(f"  Average Huber Loss: {huber_metric.result():.6f}")
         
         # Log epoch metrics to wandb
         wandb.log({
             "inverse_classifier/epoch_avg_total_loss": epoch_avg_loss,
             "inverse_classifier/epoch_avg_mse_loss": mse_metric.result().numpy(),
             "inverse_classifier/epoch_avg_cosine_loss": cosine_metric.result().numpy(),
+            "inverse_classifier/epoch_avg_huber_loss": huber_metric.result().numpy(),
             "inverse_classifier/epoch_completed": epoch + 1,
             "inverse_classifier/best_loss": best_loss
         })
@@ -472,7 +593,7 @@ def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch
         else:
             print(f"  Current best loss: {best_loss:.6f}")
     
-    print(f"Enhanced inverse classifier training completed. Best loss: {best_loss:.6f}")
+    print(f"Ultra enhanced inverse classifier training completed. Best loss: {best_loss:.6f}")
 
 def generate_image_from_features(feature_list, inverse_classifier, decoder, attribute_names=None):
     features = tf.constant([feature_list], dtype=tf.float32)
@@ -605,16 +726,16 @@ def log_generated_images_to_wandb(inverse_classifier, decoder, epoch_prefix=""):
         print(f"Warning: Could not log images to wandb: {e}")
 
 if __name__ == "__main__":
-    latent_dim = 256  # Increased latent dimension
-    batch_size = 64   # Reduced batch size for better gradients
-    epochs = 25       # More epochs
+    latent_dim = 256
+    batch_size = 64 
+    epochs = 5       # More epochs
 
-    # Update wandb config with actual values
+    # Update wandb config with actual values - allow changes for testing
     wandb.config.update({
         "latent_dim": latent_dim,
         "batch_size": batch_size,
         "epochs": epochs
-    })
+    }, allow_val_change=True)
 
     # Prepare the dataset - keep attributes in the data
     ds_train = ds_train.map(lambda x: {

@@ -728,7 +728,7 @@ def log_generated_images_to_wandb(inverse_classifier, decoder, epoch_prefix=""):
 if __name__ == "__main__":
     latent_dim = 256
     batch_size = 64 
-    epochs = 5       # More epochs
+    epochs = 10       # More epochs
 
     # Update wandb config with actual values - allow changes for testing
     wandb.config.update({
@@ -758,6 +758,90 @@ if __name__ == "__main__":
         encoder = buildEncoder(latent_dim)
         decoder = buildDecoder(latent_dim)
 
+    # Log model summaries to wandb
+    print("Logging model architectures to wandb...")
+    
+    # Capture encoder summary
+    encoder_summary = []
+    encoder.summary()
+    encoder.summary(print_fn=lambda x: encoder_summary.append(x))
+    encoder_summary_text = '\n'.join(encoder_summary)
+    
+    # Capture decoder summary  
+    decoder_summary = []
+    decoder.summary()
+    decoder.summary(print_fn=lambda x: decoder_summary.append(x))
+    decoder_summary_text = '\n'.join(decoder_summary)
+    
+    # Log encoder info
+    wandb.log({
+        "model_info/encoder_params": encoder.count_params(),
+        "model_info/encoder_trainable_params": sum([tf.size(w).numpy() for w in encoder.trainable_weights]),
+        "model_info/encoder_layers": len(encoder.layers)
+    })
+    
+    # Log decoder info
+    wandb.log({
+        "model_info/decoder_params": decoder.count_params(),
+        "model_info/decoder_trainable_params": sum([tf.size(w).numpy() for w in decoder.trainable_weights]),
+        "model_info/decoder_layers": len(decoder.layers)
+    })
+    
+    # Log architecture summaries as text
+    wandb.log({
+        "model_summaries/encoder": wandb.Html(f"<pre>{encoder_summary_text}</pre>"),
+        "model_summaries/decoder": wandb.Html(f"<pre>{decoder_summary_text}</pre>")
+    })
+    
+    display_reconstructions(encoder, decoder, ds_train, num_images=1)
+
+    classifier = buildClassifier(latent_dim)
+    if os.path.exists("classifier.weights.h5"):
+        print("Loading existing classifier weights...")
+        classifier.load_weights("classifier.weights.h5")
+
+    # Log classifier info
+    classifier_summary = []
+    classifier.summary()
+    classifier.summary(print_fn=lambda x: classifier_summary.append(x))
+    classifier_summary_text = '\n'.join(classifier_summary)
+    
+    wandb.log({
+        "model_info/classifier_params": classifier.count_params(),
+        "model_info/classifier_trainable_params": sum([tf.size(w).numpy() for w in classifier.trainable_weights]),
+        "model_info/classifier_layers": len(classifier.layers),
+        "model_summaries/classifier": wandb.Html(f"<pre>{classifier_summary_text}</pre>")
+    })
+
+    # Build and train inverse classifier
+    inverse_classifier = buildInverseClassifier(latent_dim)
+    if os.path.exists("inverse_classifier.weights.h5"):
+        print("Loading existing inverse classifier weights...")
+        inverse_classifier.load_weights("inverse_classifier.weights.h5")
+    
+    # Log inverse classifier info
+    inverse_summary = []
+    inverse_classifier.summary()
+    inverse_classifier.summary(print_fn=lambda x: inverse_summary.append(x))
+    inverse_summary_text = '\n'.join(inverse_summary)
+    
+    wandb.log({
+        "model_info/inverse_classifier_params": inverse_classifier.count_params(),
+        "model_info/inverse_classifier_trainable_params": sum([tf.size(w).numpy() for w in inverse_classifier.trainable_weights]),
+        "model_info/inverse_classifier_layers": len(inverse_classifier.layers),
+        "model_summaries/inverse_classifier": wandb.Html(f"<pre>{inverse_summary_text}</pre>")
+    })
+    
+    # Log total parameter count for all models
+    total_params = (encoder.count_params() + decoder.count_params() + 
+                   classifier.count_params() + inverse_classifier.count_params())
+    
+    wandb.log({
+        "model_info/total_params_all_models": total_params,
+        "model_info/vae_params": encoder.count_params() + decoder.count_params()
+    })
+    
+    print(f"Total parameters across all models: {total_params:,}")
     
     display_reconstructions(encoder, decoder, ds_train, num_images=1)
 

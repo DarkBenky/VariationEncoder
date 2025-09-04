@@ -11,6 +11,16 @@ import io
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 print("TensorFlow version:", tf.__version__)
 
+# Configure GPU memory growth to avoid OOM
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        print("GPU memory growth enabled")
+    except RuntimeError as e:
+        print(f"GPU memory configuration error: {e}")
+
 # Initialize wandb
 wandb.init(
     project="VAE",
@@ -754,13 +764,13 @@ def buildRealFakeClassifier():
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
     
-    # Self-attention mechanism at 32x32 resolution
-    attention_32 = tf.keras.layers.MultiHeadAttention(
-        num_heads=8, key_dim=32, name="attention_32x32"
-    )
-    x_flat = tf.keras.layers.Reshape((32*32, 256))(x)
-    x_attended = attention_32(x_flat, x_flat)
-    x = tf.keras.layers.Reshape((32, 32, 256))(x_attended)
+    # Simplified attention mechanism to reduce memory usage
+    # Use channel attention instead of spatial attention
+    attention_weights = tf.keras.layers.GlobalAveragePooling2D()(x)
+    attention_weights = Dense(256 // 8, activation='relu')(attention_weights)
+    attention_weights = Dense(256, activation='sigmoid')(attention_weights)
+    attention_weights = tf.keras.layers.Reshape((1, 1, 256))(attention_weights)
+    x = tf.keras.layers.Multiply()([x, attention_weights])
     x = tf.keras.layers.Dropout(0.2)(x)
     
     # Fourth conv block with residual
@@ -1064,6 +1074,10 @@ def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10
     """
     print("Starting GAN training...")
     
+    # Reduce batch size for GAN training to avoid OOM
+    gan_batch_size = batch_size // 4  # Use quarter of the original batch size
+    print(f"Using reduced batch size for GAN training: {gan_batch_size}")
+    
     # Optimizers for generator (inverse + decoder) and discriminator
     generator_optimizer = tf.keras.optimizers.Adam(
         learning_rate=wandb.config.gan_generator_lr,
@@ -1080,62 +1094,107 @@ def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10
     # Loss functions
     bce_loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
     
-    # Training step for discriminator
+    # Training step for discriminator with gradient accumulation
     @tf.function
     def train_discriminator_step(real_images, fake_images):
-        # Combine real and fake images
-        batch_size = tf.shape(real_images)[0]
-        images = tf.concat([real_images, fake_images], axis=0)
+        # Use smaller batch to avoid OOM
+        real_batch_size = tf.shape(real_images)[0]
+        fake_batch_size = tf.shape(fake_images)[0]
         
-        # Labels: 1 for real, 0 for fake
-        real_labels = tf.ones((batch_size, 1), dtype=tf.float32) * 0.9  # Label smoothing
-        fake_labels = tf.zeros((batch_size, 1), dtype=tf.float32) + 0.1  # Label smoothing
-        labels = tf.concat([real_labels, fake_labels], axis=0)
+        # Split into smaller chunks if needed
+        chunk_size = gan_batch_size // 2
+        total_loss = 0.0
+        num_chunks = 0
         
-        with tf.GradientTape() as tape:
-            predictions = real_fake_classifier(images, training=True)
-            d_loss = bce_loss(labels, predictions)
+        # Process real images in chunks
+        for i in range(0, real_batch_size, chunk_size):
+            end_idx = tf.minimum(i + chunk_size, real_batch_size)
+            real_chunk = real_images[i:end_idx]
+            
+            # Process corresponding fake images
+            fake_end_idx = tf.minimum(i + chunk_size, fake_batch_size)
+            fake_chunk = fake_images[i:fake_end_idx]
+            
+            # Combine real and fake chunks
+            chunk_batch_size = tf.shape(real_chunk)[0]
+            images = tf.concat([real_chunk, fake_chunk], axis=0)
+            
+            # Labels: 1 for real, 0 for fake
+            real_labels = tf.ones((chunk_batch_size, 1), dtype=tf.float32) * 0.9  # Label smoothing
+            fake_labels = tf.zeros((chunk_batch_size, 1), dtype=tf.float32) + 0.1  # Label smoothing
+            labels = tf.concat([real_labels, fake_labels], axis=0)
+            
+            with tf.GradientTape() as tape:
+                predictions = real_fake_classifier(images, training=True)
+                chunk_loss = bce_loss(labels, predictions)
+            
+            gradients = tape.gradient(chunk_loss, real_fake_classifier.trainable_weights)
+            gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
+            discriminator_optimizer.apply_gradients(zip(gradients, real_fake_classifier.trainable_weights))
+            
+            total_loss += chunk_loss
+            num_chunks += 1
         
-        gradients = tape.gradient(d_loss, real_fake_classifier.trainable_weights)
-        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
-        discriminator_optimizer.apply_gradients(zip(gradients, real_fake_classifier.trainable_weights))
-        
-        return d_loss
+        return total_loss / tf.cast(num_chunks, tf.float32)
     
     # Training step for generator (inverse classifier + decoder)
     @tf.function
     def train_generator_step(attributes):
-        with tf.GradientTape() as tape:
-            # Generate latent codes from attributes
-            latent_codes = inverse_classifier(attributes, training=True)
-            
-            # Generate images from latent codes
-            fake_images = decoder(latent_codes, training=True)
-            
-            # Try to fool discriminator (want discriminator to classify as real)
-            fake_predictions = real_fake_classifier(fake_images, training=False)
-            real_labels = tf.ones_like(fake_predictions)  # Want to be classified as real
-            
-            # Generator loss: fooling discriminator + perceptual loss
-            adversarial_loss = bce_loss(real_labels, fake_predictions)
-            
-            # Perceptual loss to maintain image quality (compare with a moving average of real features)
-            # For simplicity, we'll use a structural loss instead
-            structural_loss = tf.reduce_mean(tf.abs(fake_images - 0.5))  # Encourage natural image distribution
-            
-            # Feature matching loss
-            feature_matching_loss = tf.reduce_mean(tf.abs(tf.reduce_mean(fake_predictions) - 0.5))
-            
-            # Total generator loss
-            g_loss = adversarial_loss + 0.1 * structural_loss + 0.01 * feature_matching_loss
+        # Use smaller batch for generator training
+        batch_size_tensor = tf.shape(attributes)[0]
+        chunk_size = gan_batch_size // 2
         
-        # Update both inverse classifier and decoder
-        trainable_vars = inverse_classifier.trainable_weights + decoder.trainable_weights
-        gradients = tape.gradient(g_loss, trainable_vars)
-        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
-        generator_optimizer.apply_gradients(zip(gradients, trainable_vars))
+        total_loss = 0.0
+        total_adv_loss = 0.0
+        total_struct_loss = 0.0
+        total_fm_loss = 0.0
+        num_chunks = 0
         
-        return g_loss, adversarial_loss, structural_loss, feature_matching_loss
+        for i in range(0, batch_size_tensor, chunk_size):
+            end_idx = tf.minimum(i + chunk_size, batch_size_tensor)
+            attr_chunk = attributes[i:end_idx]
+            
+            with tf.GradientTape() as tape:
+                # Generate latent codes from attributes
+                latent_codes = inverse_classifier(attr_chunk, training=True)
+                
+                # Generate images from latent codes
+                fake_images = decoder(latent_codes, training=True)
+                
+                # Try to fool discriminator (want discriminator to classify as real)
+                fake_predictions = real_fake_classifier(fake_images, training=False)
+                real_labels = tf.ones_like(fake_predictions)  # Want to be classified as real
+                
+                # Generator loss: fooling discriminator + perceptual loss
+                adversarial_loss = bce_loss(real_labels, fake_predictions)
+                
+                # Perceptual loss to maintain image quality (compare with a moving average of real features)
+                # For simplicity, we'll use a structural loss instead
+                structural_loss = tf.reduce_mean(tf.abs(fake_images - 0.5))  # Encourage natural image distribution
+                
+                # Feature matching loss
+                feature_matching_loss = tf.reduce_mean(tf.abs(tf.reduce_mean(fake_predictions) - 0.5))
+                
+                # Total generator loss
+                chunk_loss = adversarial_loss + 0.1 * structural_loss + 0.01 * feature_matching_loss
+            
+            # Update both inverse classifier and decoder
+            trainable_vars = inverse_classifier.trainable_weights + decoder.trainable_weights
+            gradients = tape.gradient(chunk_loss, trainable_vars)
+            gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
+            generator_optimizer.apply_gradients(zip(gradients, trainable_vars))
+            
+            total_loss += chunk_loss
+            total_adv_loss += adversarial_loss
+            total_struct_loss += structural_loss
+            total_fm_loss += feature_matching_loss
+            num_chunks += 1
+        
+        num_chunks_float = tf.cast(num_chunks, tf.float32)
+        return (total_loss / num_chunks_float, 
+                total_adv_loss / num_chunks_float, 
+                total_struct_loss / num_chunks_float, 
+                total_fm_loss / num_chunks_float)
     
     # Training metrics
     d_loss_metric = tf.keras.metrics.Mean(name='discriminator_loss')
@@ -1150,13 +1209,24 @@ def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10
         g_loss_metric.reset_state()
         adv_loss_metric.reset_state()
         
+        step_count = 0
         for step, batch in enumerate(data):
+            # Take only part of the batch to reduce memory usage
             real_images = tf.cast(batch['image'], tf.float32) / 255.0
+            current_batch_size = tf.shape(real_images)[0]
+            
+            # Only process if we have enough samples
+            if current_batch_size < gan_batch_size:
+                continue
+                
+            # Take only the reduced batch size
+            real_images = real_images[:gan_batch_size]
             
             # Convert nested attributes dict to tensor array
             attr_list = []
             for attr_name in sorted(batch['attributes'].keys()):
-                attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
+                attr_values = tf.cast(batch['attributes'][attr_name], tf.float32)
+                attr_list.append(attr_values[:gan_batch_size])  # Take only reduced batch
             attributes = tf.stack(attr_list, axis=1)
             
             # Add noise to attributes for diversity
@@ -1164,30 +1234,41 @@ def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10
             attributes_noisy = tf.clip_by_value(attributes + noise, 0.0, 1.0)
             
             # Generate fake images
-            latent_codes = inverse_classifier(attributes_noisy, training=False)
-            fake_images = decoder(latent_codes, training=False)
-            
-            # Train discriminator every step
-            d_loss = train_discriminator_step(real_images, fake_images)
-            d_loss_metric.update_state(d_loss)
-            
-            # Train generator every 2 steps (slower generator training)
-            if step % 2 == 0:
-                g_loss, adv_loss, struct_loss, fm_loss = train_generator_step(attributes_noisy)
-                g_loss_metric.update_state(g_loss)
-                adv_loss_metric.update_state(adv_loss)
-            
-            if step % 100 == 0:
-                print(f"  Step {step}: D_Loss={d_loss:.4f}, G_Loss={g_loss_metric.result():.4f}")
+            try:
+                latent_codes = inverse_classifier(attributes_noisy, training=False)
+                fake_images = decoder(latent_codes, training=False)
                 
-                # Log to wandb
-                wandb.log({
-                    "gan/step_discriminator_loss": d_loss.numpy(),
-                    "gan/step_generator_loss": g_loss_metric.result().numpy(),
-                    "gan/step_adversarial_loss": adv_loss_metric.result().numpy(),
-                    "gan/epoch": epoch + 1,
-                    "gan/step": step
-                })
+                # Train discriminator every step
+                d_loss = train_discriminator_step(real_images, fake_images)
+                d_loss_metric.update_state(d_loss)
+                
+                # Train generator every 2 steps (slower generator training)
+                if step % 2 == 0:
+                    g_loss, adv_loss, struct_loss, fm_loss = train_generator_step(attributes_noisy)
+                    g_loss_metric.update_state(g_loss)
+                    adv_loss_metric.update_state(adv_loss)
+                
+                step_count += 1
+                
+                if step % 100 == 0:
+                    print(f"  Step {step}: D_Loss={d_loss:.4f}, G_Loss={g_loss_metric.result():.4f}")
+                    
+                    # Log to wandb
+                    wandb.log({
+                        "gan/step_discriminator_loss": d_loss.numpy(),
+                        "gan/step_generator_loss": g_loss_metric.result().numpy(),
+                        "gan/step_adversarial_loss": adv_loss_metric.result().numpy(),
+                        "gan/epoch": epoch + 1,
+                        "gan/step": step
+                    })
+                    
+            except tf.errors.ResourceExhaustedError as e:
+                print(f"OOM error at step {step}, skipping batch...")
+                continue
+                
+            # Break after processing enough steps to avoid memory buildup
+            if step_count >= 500:  # Limit steps per epoch
+                break
         
         # Epoch summary
         print(f"GAN Epoch {epoch + 1} Summary:")
@@ -1205,9 +1286,9 @@ def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10
         
         # Save models every few epochs
         if (epoch + 1) % 5 == 0:
-            inverse_classifier.save_weights(f"inverse_classifier_gan.weights.h5")
-            decoder.save_weights(f"decoder_gan.weights.h5")
-            real_fake_classifier.save_weights(f"real_fake_classifier_gan.weights.h5")
+            inverse_classifier.save_weights("inverse_classifier.weights.h5")
+            decoder.save_weights("decoder.weights.h5")
+            real_fake_classifier.save_weights("real_fake_classifier.weights.h5")
             print(f"  ✓ GAN models saved at epoch {epoch + 1}")
         
         # Generate sample images and log to wandb
@@ -1217,9 +1298,9 @@ def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10
     print("GAN training completed!")
     
     # Save final models
-    inverse_classifier.save_weights("inverse_classifier_gan_final.weights.h5")
-    decoder.save_weights("decoder_gan_final.weights.h5")
-    real_fake_classifier.save_weights("real_fake_classifier_gan_final.weights.h5")
+    inverse_classifier.save_weights("inverse_classifier.weights.h5")
+    decoder.save_weights("decoder.weights.h5")
+    real_fake_classifier.save_weights("real_fake_classifier.weights.h5")
 
 if __name__ == "__main__":
     latent_dim = 256
@@ -1378,7 +1459,7 @@ if __name__ == "__main__":
 
     desired_features = ['Young', 'Smiling', 'Blond_Hair', 'Attractive', 'Male']
     intensities = [0.1, 0.21, 0.95, 0.8, 0.9]
-    feature_vector = create_feature_vector_from_descriptions(desired_features)
+    feature_vector = create_feature_vector_from_descriptions(desired_features, intensities=intensities)
     generated_image = generate_image_from_features(feature_vector, inverse_classifier, decoder)
 
     plt.figure(figsize=(15, 8))
@@ -1432,7 +1513,9 @@ if __name__ == "__main__":
     # GAN Training: Use real/fake classifier to improve generator (inverse classifier + decoder)
     print("\n=== Starting GAN Training ===")
     gan_epochs = wandb.config.gan_epochs
-    train_gan(ds_train, inverse_classifier, decoder, real_fake_classifier, epochs=gan_epochs, batch_size=batch_size, latent_dim=latent_dim)
+    # Use smaller batch size for GAN training to avoid OOM
+    gan_batch_size = 16  # Reduced from original batch_size
+    train_gan(ds_train, inverse_classifier, decoder, real_fake_classifier, epochs=gan_epochs, batch_size=gan_batch_size, latent_dim=latent_dim)
     
     # Log post-GAN generations
     log_generated_images_to_wandb(inverse_classifier, decoder, "post_gan_")

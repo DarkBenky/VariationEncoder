@@ -21,11 +21,13 @@ wandb.init(
         "learning_rate_vae": 0.0002,
         "learning_rate_classifier": 0.001,
         "learning_rate_inverse": 0.001,
-        "architecture": "enhanced_inverse_classifier"
+        "learning_rate_gan": 0.0001,
+        "architecture": "enhanced_inverse_classifier",
+        "gan_epochs": 10,
+        "gan_generator_lr": 0.0002,
+        "gan_discriminator_lr": 0.0001
     }
 )
-
-
 # 1. Load the dataset and metadata
 ds_train, ds_info = tfds.load(
     "celeb_a",
@@ -725,10 +727,504 @@ def log_generated_images_to_wandb(inverse_classifier, decoder, epoch_prefix=""):
     except Exception as e:
         print(f"Warning: Could not log images to wandb: {e}")
 
+
+def buildRealFakeClassifier():
+    """Enhanced real/fake classifier with attention, residual connections, and advanced regularization"""
+    input_layer = Input(shape=(256, 256, 3), name="real_fake_input")
+    
+    # Initial normalization and preprocessing
+    x = tf.keras.layers.BatchNormalization()(input_layer)
+    
+    # First conv block with residual connection preparation
+    x = Conv2D(64, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 128x128
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Dropout(0.1)(x)
+    
+    # Second conv block with residual
+    residual_64 = Conv2D(128, 1, strides=2, padding="same")(x)  # Match dimensions for residual
+    x = Conv2D(128, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 64x64
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Add()([x, residual_64])  # Residual connection
+    x = tf.keras.layers.Dropout(0.15)(x)
+    
+    # Third conv block with attention
+    x = Conv2D(256, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 32x32
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    
+    # Self-attention mechanism at 32x32 resolution
+    attention_32 = tf.keras.layers.MultiHeadAttention(
+        num_heads=8, key_dim=32, name="attention_32x32"
+    )
+    x_flat = tf.keras.layers.Reshape((32*32, 256))(x)
+    x_attended = attention_32(x_flat, x_flat)
+    x = tf.keras.layers.Reshape((32, 32, 256))(x_attended)
+    x = tf.keras.layers.Dropout(0.2)(x)
+    
+    # Fourth conv block with residual
+    residual_256 = Conv2D(512, 1, strides=2, padding="same")(x)
+    x = Conv2D(512, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 16x16
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Add()([x, residual_256])
+    x = tf.keras.layers.Dropout(0.25)(x)
+    
+    # Fifth conv block with squeeze-and-excitation
+    x = Conv2D(512, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 8x8
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    
+    # Squeeze-and-Excitation block
+    se_ratio = 16
+    se = tf.keras.layers.GlobalAveragePooling2D()(x)
+    se = Dense(512 // se_ratio, activation='relu')(se)
+    se = Dense(512, activation='sigmoid')(se)
+    se = tf.keras.layers.Reshape((1, 1, 512))(se)
+    x = tf.keras.layers.Multiply()([x, se])
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Additional conv block for more capacity
+    x = Conv2D(1024, 3, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 4x4
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Dropout(0.3)(x)
+    
+    # Global pooling with both average and max
+    gap = tf.keras.layers.GlobalAveragePooling2D()(x)
+    gmp = tf.keras.layers.GlobalMaxPooling2D()(x)
+    x = tf.keras.layers.Concatenate()([gap, gmp])  # Combine both pooling methods
+    
+    # Enhanced dense layers with residual connections
+    x = Dense(2048, kernel_initializer='he_normal')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Dropout(0.4)(x)
+    
+    # Residual dense block
+    residual_dense = Dense(1024, kernel_initializer='he_normal')(x)
+    x = Dense(1024, kernel_initializer='he_normal')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Add()([x, residual_dense])
+    x = tf.keras.layers.Dropout(0.4)(x)
+    
+    # Feature importance weighting
+    importance = Dense(1024, activation='sigmoid')(x)
+    x = tf.keras.layers.Multiply()([x, importance])
+    
+    # Final classification layers
+    x = Dense(512, kernel_initializer='he_normal')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+    
+    x = Dense(256, kernel_initializer='he_normal')(x)
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+    x = tf.keras.layers.Dropout(0.5)(x)
+    
+    # Output with label smoothing preparation
+    output = Dense(1, activation="sigmoid", name="real_fake_output")(x)
+    
+    model = Model(input_layer, output, name="enhanced_real_fake_classifier")
+    return model
+
+def train_real_fake_classifier(real_data, encoder, decoder, classifier, epochs=15, batch_size=32):
+    """Enhanced training function for the real/fake classifier"""
+    
+    # Learning rate schedule with warmup
+    def lr_schedule(epoch):
+        if epoch < 2:
+            return 0.0001 * (epoch + 1) / 2  # Warmup
+        elif epoch < 10:
+            return 0.001
+        else:
+            return 0.001 * tf.math.exp(0.1 * (10 - epoch))
+    
+    optimizer = tf.keras.optimizers.Adam(
+        learning_rate=0.001,
+        beta_1=0.9,
+        beta_2=0.999,
+        epsilon=1e-7
+    )
+    
+    # Enhanced loss with label smoothing
+    bce_loss_fn = tf.keras.losses.BinaryCrossentropy(
+        label_smoothing=0.1,  # Prevents overconfident predictions
+        from_logits=False
+    )
+    
+    # Focal loss for handling class imbalance
+    def focal_loss(y_true, y_pred, alpha=0.25, gamma=2.0):
+        alpha_t = y_true * alpha + (1 - y_true) * (1 - alpha)
+        p_t = y_true * y_pred + (1 - y_true) * (1 - y_pred)
+        fl = alpha_t * tf.pow(1 - p_t, gamma) * bce_loss_fn(y_true, y_pred)
+        return tf.reduce_mean(fl)
+    
+    # Metrics
+    train_accuracy = tf.keras.metrics.BinaryAccuracy()
+    train_precision = tf.keras.metrics.Precision()
+    train_recall = tf.keras.metrics.Recall()
+    
+    @tf.function
+    def train_step(real_images, fake_images):
+        # Combine real and fake images
+        batch_size = tf.shape(real_images)[0]
+        images = tf.concat([real_images, fake_images], axis=0)
+        
+        # Create labels (1 for real, 0 for fake)
+        real_labels = tf.ones((batch_size, 1), dtype=tf.float32)
+        fake_labels = tf.zeros((batch_size, 1), dtype=tf.float32)
+        labels = tf.concat([real_labels, fake_labels], axis=0)
+        
+        # Add noise to labels for robustness (flip small percentage)
+        noise_factor = 0.05
+        random_mask = tf.random.uniform(tf.shape(labels)) < noise_factor
+        noisy_labels = tf.where(random_mask, 1.0 - labels, labels)
+        
+        with tf.GradientTape() as tape:
+            predictions = classifier(images, training=True)
+            
+            # Combine focal loss and BCE loss
+            bce_loss = bce_loss_fn(noisy_labels, predictions)
+            focal_loss_val = focal_loss(noisy_labels, predictions)
+            
+            # L2 regularization
+            l2_loss = tf.add_n([tf.nn.l2_loss(w) for w in classifier.trainable_weights])
+            
+            total_loss = 0.7 * bce_loss + 0.3 * focal_loss_val + 0.0001 * l2_loss
+        
+        gradients = tape.gradient(total_loss, classifier.trainable_weights)
+        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]  # Gradient clipping
+        optimizer.apply_gradients(zip(gradients, classifier.trainable_weights))
+        
+        # Update metrics
+        train_accuracy.update_state(noisy_labels, predictions)
+        train_precision.update_state(noisy_labels, predictions)
+        train_recall.update_state(noisy_labels, predictions)
+        
+        return total_loss, bce_loss, focal_loss_val
+    
+    print("Training Enhanced Real/Fake Classifier...")
+    
+    for epoch in range(epochs):
+        print(f"Epoch {epoch + 1}/{epochs}")
+        
+        # Update learning rate
+        current_lr = lr_schedule(epoch)
+        optimizer.learning_rate.assign(current_lr)
+        
+        # Reset metrics
+        train_accuracy.reset_state()
+        train_precision.reset_state()
+        train_recall.reset_state()
+        
+        epoch_loss = 0
+        epoch_bce_loss = 0
+        epoch_focal_loss = 0
+        step_count = 0
+        
+        for step, batch in enumerate(real_data):
+            real_images = tf.cast(batch['image'], tf.float32) / 255.0
+            
+            # Generate fake images
+            batch_size = tf.shape(real_images)[0]
+            random_z = tf.random.normal((batch_size, 256))
+            fake_images = decoder(random_z, training=False)
+            
+            # Add data augmentation
+            if tf.random.uniform([]) > 0.5:
+                real_images = tf.image.flip_left_right(real_images)
+                fake_images = tf.image.flip_left_right(fake_images)
+            
+            real_images = tf.image.random_brightness(real_images, 0.1)
+            fake_images = tf.image.random_brightness(fake_images, 0.1)
+            
+            total_loss, bce_loss, focal_loss_val = train_step(real_images, fake_images)
+            
+            epoch_loss += total_loss
+            epoch_bce_loss += bce_loss
+            epoch_focal_loss += focal_loss_val
+            step_count += 1
+            
+            if step % 50 == 0:
+                print(f"  Step {step}: Loss={total_loss.numpy():.4f}, "
+                      f"Acc={train_accuracy.result():.4f}, "
+                      f"Prec={train_precision.result():.4f}, "
+                      f"Rec={train_recall.result():.4f}")
+                
+                # Log to wandb
+                wandb.log({
+                    "real_fake_classifier/step_total_loss": total_loss.numpy(),
+                    "real_fake_classifier/step_bce_loss": bce_loss.numpy(),
+                    "real_fake_classifier/step_focal_loss": focal_loss_val.numpy(),
+                    "real_fake_classifier/step_accuracy": train_accuracy.result().numpy(),
+                    "real_fake_classifier/step_precision": train_precision.result().numpy(),
+                    "real_fake_classifier/step_recall": train_recall.result().numpy(),
+                    "real_fake_classifier/learning_rate": current_lr,
+                    "real_fake_classifier/epoch": epoch + 1,
+                    "real_fake_classifier/step": step
+                })
+        
+        # Calculate F1 score
+        precision = train_precision.result()
+        recall = train_recall.result()
+        f1_score = 2 * (precision * recall) / (precision + recall + 1e-7)
+        
+        # Epoch summary
+        avg_loss = epoch_loss / step_count
+        print(f"Epoch {epoch + 1} Summary:")
+        print(f"  Average Loss: {avg_loss:.4f}")
+        print(f"  Accuracy: {train_accuracy.result():.4f}")
+        print(f"  Precision: {precision:.4f}")
+        print(f"  Recall: {recall:.4f}")
+        print(f"  F1 Score: {f1_score:.4f}")
+        
+        # Log epoch metrics
+        wandb.log({
+            "real_fake_classifier/epoch_avg_loss": avg_loss.numpy(),
+            "real_fake_classifier/epoch_avg_bce_loss": (epoch_bce_loss / step_count).numpy(),
+            "real_fake_classifier/epoch_avg_focal_loss": (epoch_focal_loss / step_count).numpy(),
+            "real_fake_classifier/epoch_accuracy": train_accuracy.result().numpy(),
+            "real_fake_classifier/epoch_precision": precision.numpy(),
+            "real_fake_classifier/epoch_recall": recall.numpy(),
+            "real_fake_classifier/epoch_f1_score": f1_score.numpy(),
+            "real_fake_classifier/epoch_completed": epoch + 1
+        })
+        
+        # Save best model
+        if epoch == 0 or avg_loss < getattr(train_real_fake_classifier, 'best_loss', float('inf')):
+            train_real_fake_classifier.best_loss = avg_loss
+            classifier.save_weights("real_fake_classifier.weights.h5")
+            print(f"  ✓ Best model saved! Loss: {avg_loss:.6f}")
+    
+    print("Real/Fake Classifier training completed!")
+
+def evaluate_real_fake_classifier(real_data, encoder, decoder, classifier, num_samples=1000):
+    """Evaluate the real/fake classifier performance"""
+    print("Evaluating Real/Fake Classifier...")
+    
+    real_predictions = []
+    fake_predictions = []
+    
+    samples_processed = 0
+    for batch in real_data:
+        if samples_processed >= num_samples:
+            break
+            
+        real_images = tf.cast(batch['image'], tf.float32) / 255.0
+        batch_size = min(tf.shape(real_images)[0], num_samples - samples_processed)
+        real_images = real_images[:batch_size]
+        
+        # Generate fake images
+        random_z = tf.random.normal((batch_size, 256))
+        fake_images = decoder(random_z, training=False)
+        
+        # Get predictions
+        real_pred = classifier(real_images, training=False)
+        fake_pred = classifier(fake_images, training=False)
+        
+        real_predictions.extend(real_pred.numpy())
+        fake_predictions.extend(fake_pred.numpy())
+        
+        samples_processed += batch_size
+    
+    real_predictions = np.array(real_predictions)
+    fake_predictions = np.array(fake_predictions)
+    
+    # Calculate metrics
+    real_accuracy = np.mean(real_predictions > 0.5)
+    fake_accuracy = np.mean(fake_predictions < 0.5)
+    overall_accuracy = (real_accuracy + fake_accuracy) / 2
+    
+    print(f"Real Image Accuracy: {real_accuracy:.4f}")
+    print(f"Fake Image Accuracy: {fake_accuracy:.4f}")
+    print(f"Overall Accuracy: {overall_accuracy:.4f}")
+    print(f"Real Predictions Mean: {np.mean(real_predictions):.4f}")
+    print(f"Fake Predictions Mean: {np.mean(fake_predictions):.4f}")
+    
+    # Log to wandb
+    wandb.log({
+        "real_fake_classifier/eval_real_accuracy": real_accuracy,
+        "real_fake_classifier/eval_fake_accuracy": fake_accuracy,
+        "real_fake_classifier/eval_overall_accuracy": overall_accuracy,
+        "real_fake_classifier/eval_real_pred_mean": np.mean(real_predictions),
+        "real_fake_classifier/eval_fake_pred_mean": np.mean(fake_predictions)
+    })
+    
+    return overall_accuracy
+
+def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10, batch_size=32, latent_dim=256):
+    """
+    GAN training: Train inverse classifier and decoder to fool the real/fake classifier
+    Generator: inverse_classifier + decoder
+    Discriminator: real_fake_classifier
+    """
+    print("Starting GAN training...")
+    
+    # Optimizers for generator (inverse + decoder) and discriminator
+    generator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=wandb.config.gan_generator_lr,
+        beta_1=0.5,
+        beta_2=0.999
+    )
+    
+    discriminator_optimizer = tf.keras.optimizers.Adam(
+        learning_rate=wandb.config.gan_discriminator_lr,
+        beta_1=0.5,
+        beta_2=0.999
+    )
+    
+    # Loss functions
+    bce_loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
+    
+    # Training step for discriminator
+    @tf.function
+    def train_discriminator_step(real_images, fake_images):
+        # Combine real and fake images
+        batch_size = tf.shape(real_images)[0]
+        images = tf.concat([real_images, fake_images], axis=0)
+        
+        # Labels: 1 for real, 0 for fake
+        real_labels = tf.ones((batch_size, 1), dtype=tf.float32) * 0.9  # Label smoothing
+        fake_labels = tf.zeros((batch_size, 1), dtype=tf.float32) + 0.1  # Label smoothing
+        labels = tf.concat([real_labels, fake_labels], axis=0)
+        
+        with tf.GradientTape() as tape:
+            predictions = real_fake_classifier(images, training=True)
+            d_loss = bce_loss(labels, predictions)
+        
+        gradients = tape.gradient(d_loss, real_fake_classifier.trainable_weights)
+        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
+        discriminator_optimizer.apply_gradients(zip(gradients, real_fake_classifier.trainable_weights))
+        
+        return d_loss
+    
+    # Training step for generator (inverse classifier + decoder)
+    @tf.function
+    def train_generator_step(attributes):
+        with tf.GradientTape() as tape:
+            # Generate latent codes from attributes
+            latent_codes = inverse_classifier(attributes, training=True)
+            
+            # Generate images from latent codes
+            fake_images = decoder(latent_codes, training=True)
+            
+            # Try to fool discriminator (want discriminator to classify as real)
+            fake_predictions = real_fake_classifier(fake_images, training=False)
+            real_labels = tf.ones_like(fake_predictions)  # Want to be classified as real
+            
+            # Generator loss: fooling discriminator + perceptual loss
+            adversarial_loss = bce_loss(real_labels, fake_predictions)
+            
+            # Perceptual loss to maintain image quality (compare with a moving average of real features)
+            # For simplicity, we'll use a structural loss instead
+            structural_loss = tf.reduce_mean(tf.abs(fake_images - 0.5))  # Encourage natural image distribution
+            
+            # Feature matching loss
+            feature_matching_loss = tf.reduce_mean(tf.abs(tf.reduce_mean(fake_predictions) - 0.5))
+            
+            # Total generator loss
+            g_loss = adversarial_loss + 0.1 * structural_loss + 0.01 * feature_matching_loss
+        
+        # Update both inverse classifier and decoder
+        trainable_vars = inverse_classifier.trainable_weights + decoder.trainable_weights
+        gradients = tape.gradient(g_loss, trainable_vars)
+        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
+        generator_optimizer.apply_gradients(zip(gradients, trainable_vars))
+        
+        return g_loss, adversarial_loss, structural_loss, feature_matching_loss
+    
+    # Training metrics
+    d_loss_metric = tf.keras.metrics.Mean(name='discriminator_loss')
+    g_loss_metric = tf.keras.metrics.Mean(name='generator_loss')
+    adv_loss_metric = tf.keras.metrics.Mean(name='adversarial_loss')
+    
+    for epoch in range(epochs):
+        print(f"GAN Epoch {epoch + 1}/{epochs}")
+        
+        # Reset metrics
+        d_loss_metric.reset_state()
+        g_loss_metric.reset_state()
+        adv_loss_metric.reset_state()
+        
+        for step, batch in enumerate(data):
+            real_images = tf.cast(batch['image'], tf.float32) / 255.0
+            
+            # Convert nested attributes dict to tensor array
+            attr_list = []
+            for attr_name in sorted(batch['attributes'].keys()):
+                attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
+            attributes = tf.stack(attr_list, axis=1)
+            
+            # Add noise to attributes for diversity
+            noise = tf.random.normal(tf.shape(attributes), stddev=0.1)
+            attributes_noisy = tf.clip_by_value(attributes + noise, 0.0, 1.0)
+            
+            # Generate fake images
+            latent_codes = inverse_classifier(attributes_noisy, training=False)
+            fake_images = decoder(latent_codes, training=False)
+            
+            # Train discriminator every step
+            d_loss = train_discriminator_step(real_images, fake_images)
+            d_loss_metric.update_state(d_loss)
+            
+            # Train generator every 2 steps (slower generator training)
+            if step % 2 == 0:
+                g_loss, adv_loss, struct_loss, fm_loss = train_generator_step(attributes_noisy)
+                g_loss_metric.update_state(g_loss)
+                adv_loss_metric.update_state(adv_loss)
+            
+            if step % 100 == 0:
+                print(f"  Step {step}: D_Loss={d_loss:.4f}, G_Loss={g_loss_metric.result():.4f}")
+                
+                # Log to wandb
+                wandb.log({
+                    "gan/step_discriminator_loss": d_loss.numpy(),
+                    "gan/step_generator_loss": g_loss_metric.result().numpy(),
+                    "gan/step_adversarial_loss": adv_loss_metric.result().numpy(),
+                    "gan/epoch": epoch + 1,
+                    "gan/step": step
+                })
+        
+        # Epoch summary
+        print(f"GAN Epoch {epoch + 1} Summary:")
+        print(f"  Discriminator Loss: {d_loss_metric.result():.4f}")
+        print(f"  Generator Loss: {g_loss_metric.result():.4f}")
+        print(f"  Adversarial Loss: {adv_loss_metric.result():.4f}")
+        
+        # Log epoch metrics
+        wandb.log({
+            "gan/epoch_discriminator_loss": d_loss_metric.result().numpy(),
+            "gan/epoch_generator_loss": g_loss_metric.result().numpy(),
+            "gan/epoch_adversarial_loss": adv_loss_metric.result().numpy(),
+            "gan/epoch_completed": epoch + 1
+        })
+        
+        # Save models every few epochs
+        if (epoch + 1) % 5 == 0:
+            inverse_classifier.save_weights(f"inverse_classifier_gan.weights.h5")
+            decoder.save_weights(f"decoder_gan.weights.h5")
+            real_fake_classifier.save_weights(f"real_fake_classifier_gan.weights.h5")
+            print(f"  ✓ GAN models saved at epoch {epoch + 1}")
+        
+        # Generate sample images and log to wandb
+        if (epoch + 1) % 2 == 0:
+            log_generated_images_to_wandb(inverse_classifier, decoder, f"gan_epoch_{epoch+1}_")
+    
+    print("GAN training completed!")
+    
+    # Save final models
+    inverse_classifier.save_weights("inverse_classifier_gan_final.weights.h5")
+    decoder.save_weights("decoder_gan_final.weights.h5")
+    real_fake_classifier.save_weights("real_fake_classifier_gan_final.weights.h5")
+
 if __name__ == "__main__":
     latent_dim = 256
     batch_size = 64 
-    epochs = 10       # More epochs
+    epochs = 1      # More epochs
 
     # Update wandb config with actual values - allow changes for testing
     wandb.config.update({
@@ -897,7 +1393,7 @@ if __name__ == "__main__":
     # Training with wandb logging
     print("Starting training with wandb logging...")
     
-    train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    # train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
     # Log sample reconstructions after VAE training
     log_generated_images_to_wandb(inverse_classifier, decoder, "post_vae_")
@@ -909,6 +1405,37 @@ if __name__ == "__main__":
     
     train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
+    # Build and train real/fake classifier
+    print("\n=== Training Real/Fake Classifier ===")
+    real_fake_classifier = buildRealFakeClassifier()
+    if os.path.exists("real_fake_classifier.weights.h5"):
+        print("Loading existing real/fake classifier weights...")
+        real_fake_classifier.load_weights("real_fake_classifier.weights.h5")
+    else:
+        train_real_fake_classifier(ds_train, encoder, decoder, real_fake_classifier, epochs=1, batch_size=batch_size)
+    
+    real_fake_classifier.summary()
+    real_fake_classifier_summary = []
+    real_fake_classifier.summary(print_fn=lambda x: real_fake_classifier_summary.append(x))
+    real_fake_classifier_summary_text = '\n'.join(real_fake_classifier_summary)
+    wandb.log({
+        "model_info/real_fake_classifier_params": real_fake_classifier.count_params(),
+        "model_info/real_fake_classifier_trainable_params": sum([tf.size(w).numpy() for w in real_fake_classifier.trainable_weights]),
+        "model_info/real_fake_classifier_layers": len(real_fake_classifier.layers),
+        "model_summaries/real_fake_classifier": wandb.Html(f"<pre>{real_fake_classifier_summary_text}</pre>")
+    })
+
+    # Evaluate real/fake classifier
+    accuracy = evaluate_real_fake_classifier(ds_train, encoder, decoder, real_fake_classifier, num_samples=1000)
+    print(f"Real/Fake Classifier Accuracy: {accuracy:.4f}")
+    
+    # GAN Training: Use real/fake classifier to improve generator (inverse classifier + decoder)
+    print("\n=== Starting GAN Training ===")
+    gan_epochs = wandb.config.gan_epochs
+    train_gan(ds_train, inverse_classifier, decoder, real_fake_classifier, epochs=gan_epochs, batch_size=batch_size, latent_dim=latent_dim)
+    
+    # Log post-GAN generations
+    log_generated_images_to_wandb(inverse_classifier, decoder, "post_gan_")
 
     print("\n=== Generating Images from Features ===")
     

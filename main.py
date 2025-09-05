@@ -33,7 +33,7 @@ wandb.init(
         "learning_rate_inverse": 0.001,
         "learning_rate_gan": 0.0001,
         "architecture": "enhanced_inverse_classifier",
-        "gan_epochs": 10,
+        "gan_epochs": 30,
         "gan_generator_lr": 0.0002,
         "gan_discriminator_lr": 0.0001
     }
@@ -161,59 +161,36 @@ def train_classifier(data, encoder, classifier, epochs=10, batch_size=32, latent
 def buildDecoder(latent_dim):
     decoder_input = Input(shape=(latent_dim,), name="decoder_input")
     
-    # Enhanced initial projection with more capacity
-    x = Dense(16 * 16 * 1024, activation="relu")(decoder_input)  # Larger initial projection
+    # Simpler initial projection
+    x = Dense(8 * 8 * 512, activation="relu")(decoder_input)
     x = tf.keras.layers.BatchNormalization()(x)
-    x = Reshape((16, 16, 1024))(x)
+    x = Reshape((8, 8, 512))(x)
     
-    # First upsampling block with attention
-    x = Conv2DTranspose(512, 4, strides=2, padding="same")(x)  # 32x32
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    
-    # Self-attention layer for better feature correlation
-    attention_1 = tf.keras.layers.MultiHeadAttention(
-        num_heads=8, key_dim=64, name="attention_32x32"
-    )
-    # Flatten for attention, then reshape back
-    x_flat = tf.keras.layers.Reshape((32*32, 512))(x)
-    x_attended = attention_1(x_flat, x_flat)
-    x = tf.keras.layers.Reshape((32, 32, 512))(x_attended)
-    
-    # Second upsampling block
-    x = Conv2DTranspose(256, 4, strides=2, padding="same")(x)  # 64x64
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Dropout(0.1)(x)  # Light dropout for regularization
-    
-    # Third upsampling block
-    x = Conv2DTranspose(128, 4, strides=2, padding="same")(x)  # 128x128
+    # Upsampling blocks
+    x = Conv2DTranspose(256, 4, strides=2, padding="same")(x)  # 16x16
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
     
-    # Fourth upsampling block with residual connection
-    residual_128 = Conv2D(64, 1, padding="same")(x)  # Match channels for residual
-    x = Conv2DTranspose(64, 4, strides=2, padding="same")(x)   # 256x256
+    x = Conv2DTranspose(128, 4, strides=2, padding="same")(x)  # 32x32
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
     
-    # Add residual connection (upsample residual to match dimensions)
-    residual_upsampled = tf.keras.layers.UpSampling2D(size=(2, 2))(residual_128)
-    x = tf.keras.layers.Add()([x, residual_upsampled])
-    
-    # Additional refinement layers
-    x = Conv2D(32, 3, padding="same")(x)
+    x = Conv2DTranspose(64, 4, strides=2, padding="same")(x)  # 64x64
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+
+    x = Conv2DTranspose(32, 4, strides=2, padding="same")(x)  # 128x128
+    x = tf.keras.layers.BatchNormalization()(x)
+    x = LeakyReLU(0.2)(x)
+
+    x = Conv2DTranspose(16, 4, strides=2, padding="same")(x)  # 256x256
     x = tf.keras.layers.BatchNormalization()(x)
     x = LeakyReLU(0.2)(x)
     
-    x = Conv2D(16, 3, padding="same")(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    
-    # Final output layer with tanh activation scaled to [0,1]
+    # Final output layer
     decoder_output = Conv2D(3, 3, activation="sigmoid", padding="same", name="decoder_output")(x)
     
-    decoder = Model(decoder_input, decoder_output, name="enhanced_decoder")
+    decoder = Model(decoder_input, decoder_output, name="simplified_decoder")
     return decoder
 
 def vae_loss(x, x_decoded_mean, z_mean, z_log_var):
@@ -324,6 +301,11 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
             "vae/epoch_completed": epoch + 1
         })
         
+        # Log reconstruction images every few epochs
+        if (epoch + 1) % 5 == 0:
+            print(f"  Logging reconstruction images for epoch {epoch + 1}")
+            log_reconstruction_images_to_wandb(encoder, decoder, data, f"vae_epoch_{epoch+1}_")
+        
         if avg_loss < best_loss:
             best_loss = avg_loss
             print(f"  ✓ New best model saved! Loss: {best_loss:.6f}")
@@ -334,115 +316,35 @@ def train(data, encoder, decoder, epochs=10, batch_size=32, latent_dim=128):
                 "vae/best_epoch": epoch + 1
             })
     
-    print("Training completed.")
+    print("VAE training completed.")
+    
+    # Log final reconstruction images
+    print("Logging final VAE reconstruction images...")
+    log_reconstruction_images_to_wandb(encoder, decoder, data, "vae_final_")
 
 def buildInverseClassifier(latent_dim):
-    """Ultra-enhanced network with attention, residuals, and advanced regularization"""
+    """Simplified network"""
     inverse_input = Input(shape=(40,), name="inverse_input")  # 40 CelebA attributes
     
-    # Enhanced input embedding with feature importance weighting
-    x = Dense(1024, activation="relu")(inverse_input)
-    x = tf.keras.layers.LayerNormalization()(x)  # Layer norm instead of batch norm for stability
+    x = Dense(512, activation="relu")(inverse_input)
+    x = tf.keras.layers.LayerNormalization()(x)
     x = tf.keras.layers.Dropout(0.2)(x)
-    
-    # Feature importance branch
-    importance_weights = Dense(1024, activation="sigmoid", name="feature_importance")(x)
-    x = tf.keras.layers.Multiply()([x, importance_weights])
-    
-    # First enhanced residual block with attention
-    residual1 = x
-    x = Dense(2048, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Multi-head self-attention
-    x_reshaped = tf.keras.layers.Reshape((1, 2048))(x)
-    attention_1 = tf.keras.layers.MultiHeadAttention(
-        num_heads=16, key_dim=128, name="attention_1"
-    )
-    x_attended = attention_1(x_reshaped, x_reshaped)
-    x = tf.keras.layers.Reshape((2048,))(x_attended)
-    
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual1])  # Residual connection
-    x = tf.keras.layers.Dropout(0.2)(x)
-    
-    # Second enhanced residual block
-    residual2 = x
-    x = Dense(2048, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual2])
-    x = tf.keras.layers.Dropout(0.2)(x)
-    
-    # Third enhanced residual block
-    residual3 = x
-    x = Dense(2048, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual3])
-    x = tf.keras.layers.Dropout(0.2)(x)
-    
-    # Fourth residual block with cross-attention to input
-    residual4 = x
-    x = Dense(2048, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Cross-attention between current features and original input
-    input_expanded = Dense(2048, activation="relu")(inverse_input)
-    x_reshaped = tf.keras.layers.Reshape((1, 2048))(x)
-    input_reshaped = tf.keras.layers.Reshape((1, 2048))(input_expanded)
-    
-    cross_attention = tf.keras.layers.MultiHeadAttention(
-        num_heads=16, key_dim=128, name="cross_attention"
-    )
-    x_cross_attended = cross_attention(x_reshaped, input_reshaped)
-    x = tf.keras.layers.Reshape((2048,))(x_cross_attended)
-    
-    x = Dense(1024, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Add()([x, residual4])
-    x = tf.keras.layers.Dropout(0.2)(x)
-    
-    # Additional deep processing layers
-    x = Dense(1536, activation="relu")(x)
-    x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Dropout(0.25)(x)
     
     x = Dense(1024, activation="relu")(x)
     x = tf.keras.layers.LayerNormalization()(x)
     x = tf.keras.layers.Dropout(0.2)(x)
-    
-    x = Dense(768, activation="relu")(x)
+
+    x = Dense(1024, activation="relu")(x)
     x = tf.keras.layers.LayerNormalization()(x)
-    x = tf.keras.layers.Dropout(0.15)(x)
-    
-    # Pre-output processing with gating mechanism
-    gate = Dense(512, activation="sigmoid")(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
+
     x = Dense(512, activation="relu")(x)
-    x = tf.keras.layers.Multiply()([x, gate])  # Gated activation
     x = tf.keras.layers.LayerNormalization()(x)
+    x = tf.keras.layers.Dropout(0.2)(x)
     
-    # Final projection to latent space with residual connection
-    pre_output = Dense(latent_dim)(x)
+    inverse_output = Dense(latent_dim)(x)
     
-    # Additional refinement branch
-    refinement = Dense(latent_dim // 2, activation="relu")(x)
-    refinement = Dense(latent_dim)(refinement)
-    
-    # Combine main output with refinement
-    inverse_output = tf.keras.layers.Add()([pre_output, refinement])
-    inverse_output = tf.keras.layers.LayerNormalization(name="inverse_output")(inverse_output)
-    
-    inverse_classifier = Model(inverse_input, inverse_output, name="ultra_enhanced_inverse_classifier")
+    inverse_classifier = Model(inverse_input, inverse_output, name="simplified_inverse_classifier")
     return inverse_classifier
 
 def train_inverse_classifier(data, encoder, inverse_classifier, epochs=10, batch_size=32, latent_dim=128):
@@ -737,108 +639,64 @@ def log_generated_images_to_wandb(inverse_classifier, decoder, epoch_prefix=""):
     except Exception as e:
         print(f"Warning: Could not log images to wandb: {e}")
 
+def log_reconstruction_images_to_wandb(encoder, decoder, data, epoch_prefix="", num_images=4):
+    """Log encoder-decoder reconstruction images to wandb"""
+    try:
+        # Get a batch of real images
+        sample_batch = next(iter(data.take(1)))
+        real_images = tf.cast(sample_batch['image'], tf.float32) / 255.0
+        real_images = real_images[:num_images]
+        
+        # Get reconstructions
+        z_mean, z_log_var, z = encoder(real_images, training=False)
+        reconstructions = decoder(z, training=False)
+        
+        # Prepare images for logging
+        images_to_log = {}
+        
+        for i in range(num_images):
+            # Original image
+            original = np.clip(real_images[i].numpy(), 0, 1)
+            # Reconstructed image
+            reconstructed = np.clip(reconstructions[i].numpy(), 0, 1)
+            
+            # Log both as separate images
+            images_to_log[f"{epoch_prefix}original_{i}"] = wandb.Image(original, caption=f"Original {i}")
+            images_to_log[f"{epoch_prefix}reconstruction_{i}"] = wandb.Image(reconstructed, caption=f"Reconstruction {i}")
+            
+            # Create side-by-side comparison
+            comparison = np.concatenate([original, reconstructed], axis=1)
+            images_to_log[f"{epoch_prefix}comparison_{i}"] = wandb.Image(comparison, caption=f"Original vs Reconstruction {i}")
+        
+        wandb.log(images_to_log)
+        
+    except Exception as e:
+        print(f"Warning: Could not log reconstruction images to wandb: {e}")
+
 
 def buildRealFakeClassifier():
-    """Enhanced real/fake classifier with attention, residual connections, and advanced regularization"""
+    """Simplified real/fake classifier"""
     input_layer = Input(shape=(256, 256, 3), name="real_fake_input")
     
-    # Initial normalization and preprocessing
-    x = tf.keras.layers.BatchNormalization()(input_layer)
-    
-    # First conv block with residual connection preparation
-    x = Conv2D(64, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 128x128
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
-    
-    # Second conv block with residual
-    residual_64 = Conv2D(128, 1, strides=2, padding="same")(x)  # Match dimensions for residual
-    x = Conv2D(128, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 64x64
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Add()([x, residual_64])  # Residual connection
-    x = tf.keras.layers.Dropout(0.15)(x)
-    
-    # Third conv block with attention
-    x = Conv2D(256, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 32x32
-    x = tf.keras.layers.BatchNormalization()(x)
+    x = Conv2D(32, 4, strides=2, padding="same")(input_layer)  # 128x128
     x = LeakyReLU(0.2)(x)
     
-    # Simplified attention mechanism to reduce memory usage
-    # Use channel attention instead of spatial attention
-    attention_weights = tf.keras.layers.GlobalAveragePooling2D()(x)
-    attention_weights = Dense(256 // 8, activation='relu')(attention_weights)
-    attention_weights = Dense(256, activation='sigmoid')(attention_weights)
-    attention_weights = tf.keras.layers.Reshape((1, 1, 256))(attention_weights)
-    x = tf.keras.layers.Multiply()([x, attention_weights])
-    x = tf.keras.layers.Dropout(0.2)(x)
-    
-    # Fourth conv block with residual
-    residual_256 = Conv2D(512, 1, strides=2, padding="same")(x)
-    x = Conv2D(512, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 16x16
-    x = tf.keras.layers.BatchNormalization()(x)
+    x = Conv2D(64, 4, strides=2, padding="same")(x)  # 64x64
     x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Add()([x, residual_256])
-    x = tf.keras.layers.Dropout(0.25)(x)
-    
-    # Fifth conv block with squeeze-and-excitation
-    x = Conv2D(512, 4, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 8x8
     x = tf.keras.layers.BatchNormalization()(x)
+    
+    x = Conv2D(128, 4, strides=2, padding="same")(x)  # 32x32
     x = LeakyReLU(0.2)(x)
-    
-    # Squeeze-and-Excitation block
-    se_ratio = 16
-    se = tf.keras.layers.GlobalAveragePooling2D()(x)
-    se = Dense(512 // se_ratio, activation='relu')(se)
-    se = Dense(512, activation='sigmoid')(se)
-    se = tf.keras.layers.Reshape((1, 1, 512))(se)
-    x = tf.keras.layers.Multiply()([x, se])
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Additional conv block for more capacity
-    x = Conv2D(1024, 3, strides=2, padding="same", kernel_initializer='he_normal')(x)  # 4x4
     x = tf.keras.layers.BatchNormalization()(x)
+    
+    x = Conv2D(256, 4, strides=2, padding="same")(x)  # 16x16
     x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Dropout(0.3)(x)
-    
-    # Global pooling with both average and max
-    gap = tf.keras.layers.GlobalAveragePooling2D()(x)
-    gmp = tf.keras.layers.GlobalMaxPooling2D()(x)
-    x = tf.keras.layers.Concatenate()([gap, gmp])  # Combine both pooling methods
-    
-    # Enhanced dense layers with residual connections
-    x = Dense(2048, kernel_initializer='he_normal')(x)
     x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Dropout(0.4)(x)
     
-    # Residual dense block
-    residual_dense = Dense(1024, kernel_initializer='he_normal')(x)
-    x = Dense(1024, kernel_initializer='he_normal')(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Add()([x, residual_dense])
-    x = tf.keras.layers.Dropout(0.4)(x)
+    x = Flatten()(x)
+    x = Dense(1, activation="sigmoid")(x)
     
-    # Feature importance weighting
-    importance = Dense(1024, activation='sigmoid')(x)
-    x = tf.keras.layers.Multiply()([x, importance])
-    
-    # Final classification layers
-    x = Dense(512, kernel_initializer='he_normal')(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
-    
-    x = Dense(256, kernel_initializer='he_normal')(x)
-    x = tf.keras.layers.BatchNormalization()(x)
-    x = LeakyReLU(0.2)(x)
-    x = tf.keras.layers.Dropout(0.5)(x)
-    
-    # Output with label smoothing preparation
-    output = Dense(1, activation="sigmoid", name="real_fake_output")(x)
-    
-    model = Model(input_layer, output, name="enhanced_real_fake_classifier")
+    model = Model(input_layer, x, name="simplified_real_fake_classifier")
     return model
 
 def train_real_fake_classifier(real_data, encoder, decoder, classifier, epochs=15, batch_size=32):
@@ -1066,246 +924,404 @@ def evaluate_real_fake_classifier(real_data, encoder, decoder, classifier, num_s
     
     return overall_accuracy
 
-def train_gan(data, inverse_classifier, decoder, real_fake_classifier, epochs=10, batch_size=32, latent_dim=256):
-    """
-    GAN training: Train inverse classifier and decoder to fool the real/fake classifier
-    Generator: inverse_classifier + decoder
-    Discriminator: real_fake_classifier
-    """
-    print("Starting GAN training...")
+def evaluate_reconstruction_quality(encoder, decoder, data, num_samples=100):
+    """Evaluate reconstruction quality with multiple metrics"""
+    ssim_values = []
+    psnr_values = []
+    recon_losses = []
     
-    # Reduce batch size for GAN training to avoid OOM
-    gan_batch_size = batch_size // 4  # Use quarter of the original batch size
+    samples_processed = 0
+    for batch in data:
+        if samples_processed >= num_samples:
+            break
+            
+        real_images = tf.cast(batch['image'], tf.float32) / 255.0
+        batch_size = min(tf.shape(real_images)[0], num_samples - samples_processed)
+        real_images = real_images[:batch_size]
+        
+        # Get reconstructions
+        z_mean, z_log_var, z = encoder(real_images, training=False)
+        reconstructions = decoder(z, training=False)
+        
+        # Compute metrics
+        ssim_batch = tf.image.ssim(real_images, reconstructions, max_val=1.0)
+        ssim_values.extend(ssim_batch.numpy())
+        
+        mse_batch = tf.reduce_mean(tf.square(real_images - reconstructions), axis=[1,2,3])
+        psnr_batch = 20 * tf.math.log(1.0 / tf.sqrt(mse_batch + 1e-8)) / tf.math.log(10.0)
+        psnr_values.extend(psnr_batch.numpy())
+        
+        recon_loss_batch = tf.reduce_mean(tf.abs(real_images - reconstructions), axis=[1,2,3])
+        recon_losses.extend(recon_loss_batch.numpy())
+        
+        samples_processed += batch_size
+    
+    return {
+        'ssim': np.mean(ssim_values),
+        'psnr': np.mean(psnr_values),
+        'recon_loss': np.mean(recon_losses),
+        'ssim_std': np.std(ssim_values),
+        'psnr_std': np.std(psnr_values)
+    }
+
+def train_gan(data, inverse_classifier, decoder, real_fake_classifier, encoder, epochs=10, batch_size=32, latent_dim=256):
+    """
+    Enhanced GAN training with stronger quality preservation
+    """
+    print("Starting Enhanced GAN training...")
+    
+    gan_batch_size = batch_size // 4
     print(f"Using reduced batch size for GAN training: {gan_batch_size}")
     
-    # Optimizers for generator (inverse + decoder) and discriminator
+    # Optimizers
     generator_optimizer = tf.keras.optimizers.Adam(
-        learning_rate=wandb.config.gan_generator_lr,
-        beta_1=0.5,
-        beta_2=0.999
+        learning_rate=0.0002, beta_1=0.5, beta_2=0.999
     )
-    
     discriminator_optimizer = tf.keras.optimizers.Adam(
-        learning_rate=wandb.config.gan_discriminator_lr,
-        beta_1=0.5,
-        beta_2=0.999
+        learning_rate=0.0001, beta_1=0.5, beta_2=0.999
     )
     
-    # Loss functions
     bce_loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
     
-    # Training step for discriminator with gradient accumulation
+    # VGG for perceptual loss
+    vgg = tf.keras.applications.VGG16(weights='imagenet', include_top=False, input_shape=(256, 256, 3))
+    vgg.trainable = False
+    
+    # Quality metrics
+    ssim_metric = tf.keras.metrics.Mean(name='ssim')
+    psnr_metric = tf.keras.metrics.Mean(name='psnr')
+    reconstruction_metric = tf.keras.metrics.Mean(name='reconstruction_loss')
+
+    # Best model tracking for periodic saving
+    best_combined_score = -float('inf')  # Combined SSIM + Generator performance
+    best_epoch = 0
+    patience = 8  # Early stopping patience
+    no_improvement_count = 0
+    save_frequency = 3  # Save best model every N epochs
+
+    @tf.function
+    def compute_perceptual_loss(real_imgs, fake_imgs):
+        real_features = vgg(real_imgs * 255.0)
+        fake_features = vgg(fake_imgs * 255.0)
+        return tf.reduce_mean(tf.abs(real_features - fake_features))
+
+    @tf.function
+    def compute_quality_metrics(real_imgs, recon_imgs):
+        # SSIM
+        ssim_val = tf.reduce_mean(tf.image.ssim(real_imgs, recon_imgs, max_val=1.0))
+        
+        # PSNR
+        mse = tf.reduce_mean(tf.square(real_imgs - recon_imgs))
+        psnr_val = tf.constant(20.0) * tf.math.log(tf.constant(1.0) / tf.sqrt(mse + 1e-8)) / tf.math.log(tf.constant(10.0))
+        
+        return ssim_val, psnr_val
+
     @tf.function
     def train_discriminator_step(real_images, fake_images):
-        # Use smaller batch to avoid OOM
-        real_batch_size = tf.shape(real_images)[0]
-        fake_batch_size = tf.shape(fake_images)[0]
-        
-        # Split into smaller chunks if needed
-        chunk_size = gan_batch_size // 2
-        total_loss = 0.0
-        num_chunks = 0
-        
-        # Process real images in chunks
-        for i in range(0, real_batch_size, chunk_size):
-            end_idx = tf.minimum(i + chunk_size, real_batch_size)
-            real_chunk = real_images[i:end_idx]
+        with tf.GradientTape() as tape:
+            real_output = real_fake_classifier(real_images, training=True)
+            fake_output = real_fake_classifier(fake_images, training=True)
             
-            # Process corresponding fake images
-            fake_end_idx = tf.minimum(i + chunk_size, fake_batch_size)
-            fake_chunk = fake_images[i:fake_end_idx]
+            real_loss = bce_loss(tf.ones_like(real_output) * 0.9, real_output)
+            fake_loss = bce_loss(tf.zeros_like(fake_output) + 0.1, fake_output)
+            total_loss = real_loss + fake_loss
             
-            # Combine real and fake chunks
-            chunk_batch_size = tf.shape(real_chunk)[0]
-            images = tf.concat([real_chunk, fake_chunk], axis=0)
-            
-            # Labels: 1 for real, 0 for fake
-            real_labels = tf.ones((chunk_batch_size, 1), dtype=tf.float32) * 0.9  # Label smoothing
-            fake_labels = tf.zeros((chunk_batch_size, 1), dtype=tf.float32) + 0.1  # Label smoothing
-            labels = tf.concat([real_labels, fake_labels], axis=0)
-            
-            with tf.GradientTape() as tape:
-                predictions = real_fake_classifier(images, training=True)
-                chunk_loss = bce_loss(labels, predictions)
-            
-            gradients = tape.gradient(chunk_loss, real_fake_classifier.trainable_weights)
-            gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
-            discriminator_optimizer.apply_gradients(zip(gradients, real_fake_classifier.trainable_weights))
-            
-            total_loss += chunk_loss
-            num_chunks += 1
-        
-        return total_loss / tf.cast(num_chunks, tf.float32)
-    
-    # Training step for generator (inverse classifier + decoder)
+        gradients = tape.gradient(total_loss, real_fake_classifier.trainable_weights)
+        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
+        discriminator_optimizer.apply_gradients(zip(gradients, real_fake_classifier.trainable_weights))
+        return total_loss
+
     @tf.function
-    def train_generator_step(attributes):
-        # Use smaller batch for generator training
-        batch_size_tensor = tf.shape(attributes)[0]
-        chunk_size = gan_batch_size // 2
-        
-        total_loss = 0.0
-        total_adv_loss = 0.0
-        total_struct_loss = 0.0
-        total_fm_loss = 0.0
-        num_chunks = 0
-        
-        for i in range(0, batch_size_tensor, chunk_size):
-            end_idx = tf.minimum(i + chunk_size, batch_size_tensor)
-            attr_chunk = attributes[i:end_idx]
+    def train_generator_step(attributes, real_images):
+        with tf.GradientTape() as tape:
+            # Generate fake images
+            latent_codes = inverse_classifier(attributes, training=True)
+            fake_images = decoder(latent_codes, training=True)  # Now train decoder too!
             
-            with tf.GradientTape() as tape:
-                # Generate latent codes from attributes
-                latent_codes = inverse_classifier(attr_chunk, training=True)
-                
-                # Generate images from latent codes
-                fake_images = decoder(latent_codes, training=True)
-                
-                # Try to fool discriminator (want discriminator to classify as real)
-                fake_predictions = real_fake_classifier(fake_images, training=False)
-                real_labels = tf.ones_like(fake_predictions)  # Want to be classified as real
-                
-                # Generator loss: fooling discriminator + perceptual loss
-                adversarial_loss = bce_loss(real_labels, fake_predictions)
-                
-                # Perceptual loss to maintain image quality (compare with a moving average of real features)
-                # For simplicity, we'll use a structural loss instead
-                structural_loss = tf.reduce_mean(tf.abs(fake_images - 0.5))  # Encourage natural image distribution
-                
-                # Feature matching loss
-                feature_matching_loss = tf.reduce_mean(tf.abs(tf.reduce_mean(fake_predictions) - 0.5))
-                
-                # Total generator loss
-                chunk_loss = adversarial_loss + 0.1 * structural_loss + 0.01 * feature_matching_loss
+            # Adversarial loss
+            fake_predictions = real_fake_classifier(fake_images, training=False)
+            adversarial_loss = bce_loss(tf.ones_like(fake_predictions), fake_predictions)
             
-            # Update both inverse classifier and decoder
-            trainable_vars = inverse_classifier.trainable_weights + decoder.trainable_weights
-            gradients = tape.gradient(chunk_loss, trainable_vars)
-            gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
-            generator_optimizer.apply_gradients(zip(gradients, trainable_vars))
+            # Enhanced reconstruction losses
+            z_mean, z_log_var, z_real = encoder(real_images, training=False)
             
-            total_loss += chunk_loss
-            total_adv_loss += adversarial_loss
-            total_struct_loss += structural_loss
-            total_fm_loss += feature_matching_loss
-            num_chunks += 1
+            # 1. Latent space consistency
+            latent_consistency_loss = tf.reduce_mean(tf.abs(latent_codes - z_mean))
+            
+            # 2. Image reconstruction loss (L1 + L2)
+            l1_loss = tf.reduce_mean(tf.abs(fake_images - real_images))
+            l2_loss = tf.reduce_mean(tf.square(fake_images - real_images))
+            pixel_loss = 0.7 * l1_loss + 0.3 * l2_loss
+            
+            # 3. Perceptual loss
+            perceptual_loss = compute_perceptual_loss(real_images, fake_images)
+            
+            # 4. Round-trip consistency (encoder -> decoder -> encoder)
+            z_fake_mean, _, _ = encoder(fake_images, training=False)
+            cycle_loss = tf.reduce_mean(tf.abs(z_fake_mean - latent_codes))
+            
+            # Combined loss with adaptive weights
+            total_loss = (adversarial_loss + 
+                         1.75 * latent_consistency_loss +  # High weight for latent consistency
+                         2.25 * pixel_loss +              # Image quality
+                         0.35 * perceptual_loss +         # Perceptual quality
+                         1.0 * cycle_loss)               # Cycle consistency
+            
+        # Train both inverse classifier AND decoder
+        trainable_vars = inverse_classifier.trainable_weights + decoder.trainable_weights
+        gradients = tape.gradient(total_loss, trainable_vars)
+        gradients = [tf.clip_by_norm(g, 1.0) for g in gradients]
+        generator_optimizer.apply_gradients(zip(gradients, trainable_vars))
         
-        num_chunks_float = tf.cast(num_chunks, tf.float32)
-        return (total_loss / num_chunks_float, 
-                total_adv_loss / num_chunks_float, 
-                total_struct_loss / num_chunks_float, 
-                total_fm_loss / num_chunks_float)
-    
-    # Training metrics
-    d_loss_metric = tf.keras.metrics.Mean(name='discriminator_loss')
-    g_loss_metric = tf.keras.metrics.Mean(name='generator_loss')
-    adv_loss_metric = tf.keras.metrics.Mean(name='adversarial_loss')
-    
+        return total_loss, adversarial_loss, latent_consistency_loss, pixel_loss, perceptual_loss, cycle_loss
+
+    # Track initial quality
+    print("Computing initial reconstruction quality...")
+    initial_quality = evaluate_reconstruction_quality(encoder, decoder, data, num_samples=100)
+    wandb.log({
+        "gan/initial_ssim": initial_quality['ssim'],
+        "gan/initial_psnr": initial_quality['psnr'],
+        "gan/initial_reconstruction_loss": initial_quality['recon_loss']
+    })
+
     for epoch in range(epochs):
         print(f"GAN Epoch {epoch + 1}/{epochs}")
         
         # Reset metrics
-        d_loss_metric.reset_state()
-        g_loss_metric.reset_state()
-        adv_loss_metric.reset_state()
+        ssim_metric.reset_state()
+        psnr_metric.reset_state()
+        reconstruction_metric.reset_state()
         
-        step_count = 0
+        d_loss_metric = tf.keras.metrics.Mean(name='d_loss')
+        g_loss_metric = tf.keras.metrics.Mean(name='g_loss')
+        
+        epoch_adv_loss = tf.keras.metrics.Mean(name='adv_loss')
+        epoch_latent_loss = tf.keras.metrics.Mean(name='latent_loss')
+        epoch_pixel_loss = tf.keras.metrics.Mean(name='pixel_loss')
+        epoch_perceptual_loss = tf.keras.metrics.Mean(name='perceptual_loss')
+        epoch_cycle_loss = tf.keras.metrics.Mean(name='cycle_loss')
+
         for step, batch in enumerate(data):
-            # Take only part of the batch to reduce memory usage
             real_images = tf.cast(batch['image'], tf.float32) / 255.0
-            current_batch_size = tf.shape(real_images)[0]
             
-            # Only process if we have enough samples
-            if current_batch_size < gan_batch_size:
-                continue
-                
-            # Take only the reduced batch size
-            real_images = real_images[:gan_batch_size]
-            
-            # Convert nested attributes dict to tensor array
             attr_list = []
             for attr_name in sorted(batch['attributes'].keys()):
-                attr_values = tf.cast(batch['attributes'][attr_name], tf.float32)
-                attr_list.append(attr_values[:gan_batch_size])  # Take only reduced batch
+                attr_list.append(tf.cast(batch['attributes'][attr_name], tf.float32))
             attributes = tf.stack(attr_list, axis=1)
             
             # Add noise to attributes for diversity
-            noise = tf.random.normal(tf.shape(attributes), stddev=0.1)
-            attributes_noisy = tf.clip_by_value(attributes + noise, 0.0, 1.0)
+            attributes_noisy = tf.clip_by_value(
+                attributes + tf.random.normal(tf.shape(attributes), stddev=0.05), 
+                0.0, 1.0
+            )
+
+            # Train generator
+            g_loss, adv_loss, latent_loss, pixel_loss, perc_loss, cycle_loss = train_generator_step(
+                attributes_noisy, real_images
+            )
             
-            # Generate fake images
-            try:
-                latent_codes = inverse_classifier(attributes_noisy, training=False)
-                fake_images = decoder(latent_codes, training=False)
-                
-                # Train discriminator every step
+            # Update loss metrics
+            g_loss_metric.update_state(g_loss)
+            epoch_adv_loss.update_state(adv_loss)
+            epoch_latent_loss.update_state(latent_loss)
+            epoch_pixel_loss.update_state(pixel_loss)
+            epoch_perceptual_loss.update_state(perc_loss)
+            epoch_cycle_loss.update_state(cycle_loss)
+            
+            # Compute quality metrics
+            latent_codes = inverse_classifier(attributes_noisy, training=False)
+            fake_images = decoder(latent_codes, training=False)
+            
+            ssim_val, psnr_val = compute_quality_metrics(real_images, fake_images)
+            recon_loss_val = tf.reduce_mean(tf.abs(real_images - fake_images))
+            
+            ssim_metric.update_state(ssim_val)
+            psnr_metric.update_state(psnr_val)
+            reconstruction_metric.update_state(recon_loss_val)
+            
+            # Train discriminator every 2 steps
+            if step % 2 == 0:
                 d_loss = train_discriminator_step(real_images, fake_images)
                 d_loss_metric.update_state(d_loss)
+            
+            if step % 50 == 0:
+                print(f"  Step {step}: D_Loss={d_loss_metric.result():.4f}, "
+                      f"G_Loss={g_loss_metric.result():.4f}, "
+                      f"SSIM={ssim_metric.result():.4f}, "
+                      f"PSNR={psnr_metric.result():.2f}")
                 
-                # Train generator every 2 steps (slower generator training)
-                if step % 2 == 0:
-                    g_loss, adv_loss, struct_loss, fm_loss = train_generator_step(attributes_noisy)
-                    g_loss_metric.update_state(g_loss)
-                    adv_loss_metric.update_state(adv_loss)
-                
-                step_count += 1
-                
-                if step % 100 == 0:
-                    print(f"  Step {step}: D_Loss={d_loss:.4f}, G_Loss={g_loss_metric.result():.4f}")
-                    
-                    # Log to wandb
-                    wandb.log({
-                        "gan/step_discriminator_loss": d_loss.numpy(),
-                        "gan/step_generator_loss": g_loss_metric.result().numpy(),
-                        "gan/step_adversarial_loss": adv_loss_metric.result().numpy(),
-                        "gan/epoch": epoch + 1,
-                        "gan/step": step
-                    })
-                    
-            except tf.errors.ResourceExhaustedError as e:
-                print(f"OOM error at step {step}, skipping batch...")
-                continue
-                
-            # Break after processing enough steps to avoid memory buildup
-            if step_count >= 500:  # Limit steps per epoch
-                break
-        
+                wandb.log({
+                    "gan/step_discriminator_loss": d_loss_metric.result(),
+                    "gan/step_generator_loss": g_loss_metric.result(),
+                    "gan/step_adversarial_loss": epoch_adv_loss.result(),
+                    "gan/step_latent_consistency_loss": epoch_latent_loss.result(),
+                    "gan/step_pixel_loss": epoch_pixel_loss.result(),
+                    "gan/step_perceptual_loss": epoch_perceptual_loss.result(),
+                    "gan/step_cycle_loss": epoch_cycle_loss.result(),
+                    "gan/step_ssim": ssim_metric.result(),
+                    "gan/step_psnr": psnr_metric.result(),
+                    "gan/step_reconstruction_loss": reconstruction_metric.result(),
+                    "gan/epoch": epoch + 1,
+                    "gan/step": step
+                })
+
         # Epoch summary
         print(f"GAN Epoch {epoch + 1} Summary:")
-        print(f"  Discriminator Loss: {d_loss_metric.result():.4f}")
-        print(f"  Generator Loss: {g_loss_metric.result():.4f}")
-        print(f"  Adversarial Loss: {adv_loss_metric.result():.4f}")
+        print(f"  D_Loss: {d_loss_metric.result():.4f}")
+        print(f"  G_Loss: {g_loss_metric.result():.4f}")
+        print(f"  SSIM: {ssim_metric.result():.4f}")
+        print(f"  PSNR: {psnr_metric.result():.2f}")
+        print(f"  Reconstruction Loss: {reconstruction_metric.result():.6f}")
         
-        # Log epoch metrics
+        # Check for quality degradation
+        if epoch > 0:
+            current_ssim = ssim_metric.result().numpy()
+            if hasattr(train_gan, 'best_ssim'):
+                if current_ssim < train_gan.best_ssim - 0.1:  # Significant drop
+                    print(f"  WARNING: SSIM dropped from {train_gan.best_ssim:.4f} to {current_ssim:.4f}")
+                train_gan.best_ssim = max(train_gan.best_ssim, current_ssim)
+            else:
+                train_gan.best_ssim = current_ssim
+        else:
+            train_gan.best_ssim = ssim_metric.result().numpy()
+
         wandb.log({
-            "gan/epoch_discriminator_loss": d_loss_metric.result().numpy(),
-            "gan/epoch_generator_loss": g_loss_metric.result().numpy(),
-            "gan/epoch_adversarial_loss": adv_loss_metric.result().numpy(),
+            "gan/epoch_discriminator_loss": d_loss_metric.result(),
+            "gan/epoch_generator_loss": g_loss_metric.result(),
+            "gan/epoch_adversarial_loss": epoch_adv_loss.result(),
+            "gan/epoch_latent_consistency_loss": epoch_latent_loss.result(),
+            "gan/epoch_pixel_loss": epoch_pixel_loss.result(),
+            "gan/epoch_perceptual_loss": epoch_perceptual_loss.result(),
+            "gan/epoch_cycle_loss": epoch_cycle_loss.result(),
+            "gan/epoch_ssim": ssim_metric.result(),
+            "gan/epoch_psnr": psnr_metric.result(),
+            "gan/epoch_reconstruction_loss": reconstruction_metric.result(),
             "gan/epoch_completed": epoch + 1
         })
         
-        # Save models every few epochs
-        if (epoch + 1) % 5 == 0:
-            inverse_classifier.save_weights("inverse_classifier.weights.h5")
-            decoder.save_weights("decoder.weights.h5")
-            real_fake_classifier.save_weights("real_fake_classifier.weights.h5")
-            print(f"  ✓ GAN models saved at epoch {epoch + 1}")
+        # Best model tracking and periodic saving
+        current_ssim = ssim_metric.result().numpy()
+        current_g_loss = g_loss_metric.result().numpy()
         
-        # Generate sample images and log to wandb
+        # Combined score: Higher SSIM is better, Lower G_loss is better
+        # Weight SSIM more heavily as we care about quality
+        combined_score = current_ssim * 2.0 - current_g_loss * 0.1
+        
+        if combined_score > best_combined_score:
+            best_combined_score = combined_score
+            best_epoch = epoch + 1
+            no_improvement_count = 0
+            
+            print(f"  NEW BEST MODEL! Combined Score: {combined_score:.4f} (SSIM: {current_ssim:.4f}, G_Loss: {current_g_loss:.4f})")
+            
+            # Save best models immediately
+            print("  Saving best GAN models...")
+            inverse_classifier.save_weights("best_gan_inverse_classifier.weights.h5")
+            decoder.save_weights("best_gan_decoder.weights.h5")
+            real_fake_classifier.save_weights("best_gan_real_fake_classifier.weights.h5")
+            
+            wandb.log({
+                "gan/best_combined_score": best_combined_score,
+                "gan/best_epoch": best_epoch,
+                "gan/best_ssim": current_ssim,
+                "gan/best_g_loss": current_g_loss
+            })
+        else:
+            no_improvement_count += 1
+            print(f"  No improvement for {no_improvement_count} epochs (Best: Epoch {best_epoch}, Score: {best_combined_score:.4f})")
+        
+        # Periodic checkpoint saving (every N epochs regardless of performance)
+        if (epoch + 1) % save_frequency == 0:
+            print(f"  Periodic checkpoint save at epoch {epoch + 1}...")
+            inverse_classifier.save_weights(f"gan_checkpoint_epoch_{epoch+1}_inverse_classifier.weights.h5")
+            decoder.save_weights(f"gan_checkpoint_epoch_{epoch+1}_decoder.weights.h5")
+            real_fake_classifier.save_weights(f"gan_checkpoint_epoch_{epoch+1}_real_fake_classifier.weights.h5")
+        
+        # Early stopping check
+        if no_improvement_count >= patience:
+            print(f"  Early stopping triggered! No improvement for {patience} epochs.")
+            print(f"  Best model was at epoch {best_epoch} with combined score {best_combined_score:.4f}")
+            break
+        
+        # Comprehensive quality evaluation every few epochs
+        if (epoch + 1) % 3 == 0:
+            print(f"  Performing comprehensive quality evaluation...")
+            quality_metrics = evaluate_reconstruction_quality(encoder, decoder, data, num_samples=200)
+            
+            print(f"  Comprehensive Quality Metrics:")
+            print(f"    SSIM: {quality_metrics['ssim']:.4f}")
+            print(f"    PSNR: {quality_metrics['psnr']:.2f}")
+            print(f"    Reconstruction Loss: {quality_metrics['recon_loss']:.6f}")
+            
+            wandb.log({
+                f"gan/comprehensive_ssim_epoch_{epoch+1}": quality_metrics['ssim'],
+                f"gan/comprehensive_psnr_epoch_{epoch+1}": quality_metrics['psnr'],
+                f"gan/comprehensive_recon_loss_epoch_{epoch+1}": quality_metrics['recon_loss']
+            })
+            
+            log_reconstruction_images_to_wandb(encoder, decoder, data, f"gan_quality_epoch_{epoch+1}_")
+
         if (epoch + 1) % 2 == 0:
             log_generated_images_to_wandb(inverse_classifier, decoder, f"gan_epoch_{epoch+1}_")
+
+    # Final quality evaluation
+    print("Performing final quality evaluation...")
+    final_quality = evaluate_reconstruction_quality(encoder, decoder, data, num_samples=500)
     
-    print("GAN training completed!")
+    print(f"Final Quality Metrics:")
+    print(f"  SSIM: {final_quality['ssim']:.4f}")
+    print(f"  PSNR: {final_quality['psnr']:.2f}")
+    print(f"  Reconstruction Loss: {final_quality['recon_loss']:.6f}")
     
-    # Save final models
-    inverse_classifier.save_weights("inverse_classifier.weights.h5")
-    decoder.save_weights("decoder.weights.h5")
-    real_fake_classifier.save_weights("real_fake_classifier.weights.h5")
+    wandb.log({
+        "gan/final_ssim": final_quality['ssim'],
+        "gan/final_psnr": final_quality['psnr'],
+        "gan/final_reconstruction_loss": final_quality['recon_loss'],
+        "gan/ssim_improvement": final_quality['ssim'] - initial_quality['ssim'],
+        "gan/psnr_improvement": final_quality['psnr'] - initial_quality['psnr']
+    })
+
+    print("Enhanced GAN training completed!")
+    
+    # Load and save best models as final models
+    print(f"\n Best model was found at epoch {best_epoch} with combined score {best_combined_score:.4f}")
+    print("Loading best weights for final save...")
+    
+    try:
+        # Load best weights
+        inverse_classifier.load_weights("best_gan_inverse_classifier.weights.h5")
+        decoder.load_weights("best_gan_decoder.weights.h5")
+        real_fake_classifier.load_weights("best_gan_real_fake_classifier.weights.h5")
+        print(" Best weights loaded successfully!")
+        
+        # Save as final models (overwrite any previous versions)
+        inverse_classifier.save_weights("inverse_classifier.weights.h5")
+        decoder.save_weights("decoder.weights.h5")
+        real_fake_classifier.save_weights("real_fake_classifier.weights.h5")
+        print(" Best models saved as final weights!")
+        
+    except Exception as e:
+        print(f" Could not load best weights: {e}")
+        print("Saving current (final epoch) weights instead...")
+        inverse_classifier.save_weights("inverse_classifier.weights.h5")
+        decoder.save_weights("decoder.weights.h5")
+        real_fake_classifier.save_weights("real_fake_classifier.weights.h5")
+    
+    # Also keep a backup of the best weights with timestamp
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    try:
+        inverse_classifier.save_weights(f"best_gan_inverse_classifier_{timestamp}.weights.h5")
+        decoder.save_weights(f"best_gan_decoder_{timestamp}.weights.h5")
+        real_fake_classifier.save_weights(f"best_gan_real_fake_classifier_{timestamp}.weights.h5")
+        print(f" Best models also saved with timestamp: {timestamp}")
+    except:
+        print(" Could not save timestamped backup")
 
 if __name__ == "__main__":
     latent_dim = 256
     batch_size = 64 
-    epochs = 1      # More epochs
+    epochs = 3
 
     # Update wandb config with actual values - allow changes for testing
     wandb.config.update({
@@ -1323,17 +1339,36 @@ if __name__ == "__main__":
 
     # check if decoder and encoder weights exist, if so load them
     import os
+    encoder = buildEncoder(latent_dim)
+    decoder = buildDecoder(latent_dim)
+    
     if os.path.exists("encoder.weights.h5") and os.path.exists("decoder.weights.h5"):
-        print("Loading existing model weights...")
-        encoder = buildEncoder(latent_dim)
-        decoder = buildDecoder(latent_dim)
-        encoder.load_weights("encoder.weights.h5")
-        decoder.load_weights("decoder.weights.h5")
+        try:
+            print("Loading existing model weights...")
+            encoder.load_weights("encoder.weights.h5")
+            decoder.load_weights("decoder.weights.h5")
+            
+            # Test if loaded weights work by doing a quick reconstruction test
+            print("Testing loaded weights...")
+            test_batch = next(iter(ds_train.take(1)))
+            test_image = tf.cast(test_batch['image'][:1], tf.float32) / 255.0
+            z_mean, z_log_var, z = encoder(test_image, training=False)
+            test_recon = decoder(z, training=False)
+            
+            # Check if reconstruction is reasonable (not all zeros or garbage)
+            recon_mean = tf.reduce_mean(test_recon).numpy()
+            if recon_mean < 0.01 or recon_mean > 0.99:
+                print(f"WARNING: Loaded weights seem corrupted (recon mean: {recon_mean}). Will retrain.")
+                weights_ok = False
+            else:
+                print(f"Loaded weights seem OK (recon mean: {recon_mean})")
+                weights_ok = True
+        except Exception as e:
+            print(f"Error loading weights: {e}. Will train from scratch.")
+            weights_ok = False
     else:
         print("No existing model weights found. Training from scratch.")
-        # Build models
-        encoder = buildEncoder(latent_dim)
-        decoder = buildDecoder(latent_dim)
+        weights_ok = False
 
     # Log model summaries to wandb
     print("Logging model architectures to wandb...")
@@ -1370,6 +1405,7 @@ if __name__ == "__main__":
         "model_summaries/decoder": wandb.Html(f"<pre>{decoder_summary_text}</pre>")
     })
     
+    display_reconstructions(encoder, decoder, ds_train, num_images=1)
     display_reconstructions(encoder, decoder, ds_train, num_images=1)
 
     classifier = buildClassifier(latent_dim)
@@ -1474,17 +1510,26 @@ if __name__ == "__main__":
     # Training with wandb logging
     print("Starting training with wandb logging...")
     
-    # train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    # Train VAE first - this is CRITICAL!
+    if not weights_ok:
+        print("Training VAE from scratch...")
+        train(ds_train, encoder, decoder, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    else:
+        print("Skipping VAE training - using existing weights")
     
     # Log sample reconstructions after VAE training
     log_generated_images_to_wandb(inverse_classifier, decoder, "post_vae_")
+
+    log_reconstruction_images_to_wandb(encoder, decoder, ds_train, "post_vae_")
     
+    # Train inverse classifier
     train_inverse_classifier(ds_train, encoder, inverse_classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
     # Log sample generations after inverse classifier training
     log_generated_images_to_wandb(inverse_classifier, decoder, "post_inverse_")
     
-    train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
+    # Train classifier
+    # train_classifier(ds_train, encoder, classifier, epochs=epochs, batch_size=batch_size, latent_dim=latent_dim)
     
     # Build and train real/fake classifier
     print("\n=== Training Real/Fake Classifier ===")
@@ -1515,7 +1560,7 @@ if __name__ == "__main__":
     gan_epochs = wandb.config.gan_epochs
     # Use smaller batch size for GAN training to avoid OOM
     gan_batch_size = 16  # Reduced from original batch_size
-    train_gan(ds_train, inverse_classifier, decoder, real_fake_classifier, epochs=gan_epochs, batch_size=gan_batch_size, latent_dim=latent_dim)
+    train_gan(ds_train, inverse_classifier, decoder, real_fake_classifier, encoder, epochs=gan_epochs, batch_size=gan_batch_size, latent_dim=latent_dim)
     
     # Log post-GAN generations
     log_generated_images_to_wandb(inverse_classifier, decoder, "post_gan_")
